@@ -92,29 +92,3 @@ pencatatan kehadiran dan pengumpulan Daily Report.
 </td>
 </tr>
 </table>
-
----
-
-## 🔄 How It Works
-
-```text
-                    ┌───────────────┐
-                    │     LOGIN     │
-                    └───────┬───────┘
-                            │
-                            ▼
-                 ┌─────────────────────┐
-                 │  ROLE IDENTIFICATION │
-                 └──────────┬──────────┘
-                            │
-          ┌─────────────────┼─────────────────┐
-          ▼                 ▼                 ▼
-      ┌────────┐       ┌────────┐       ┌──────────┐
-      │ ADMIN  │       │ MENTOR │       │ PESERTA  │
-      └───┬────┘       └───┬────┘       └────┬─────┘
-          │                │                  │
-          ▼                ▼                  ▼
-      Kelola Data      Kelola Materi      Ikuti Materi
-      Kelola Program   Monitor Absensi    Absensi
-                       Review Report      Daily Report
-                                          Pengajuan Izin
