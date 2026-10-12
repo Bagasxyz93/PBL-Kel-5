@@ -1,5 +1,8 @@
 import { initSidebar } from "./Siswa/sidebar.js";
 import { initDashboard } from "./Siswa/dashboard.js";
+import { initAbsensi } from "./Siswa/absensi.js";
+import { initIzin } from "./Siswa/izin.js";
+import { initDailyReport } from "./Siswa/daily-report.js"; // Import module daily report
 
 async function loadComponent(elementId, filePath) {
     const container = document.getElementById(elementId);
@@ -40,8 +43,21 @@ async function initComponents() {
         )
     ]);
 
+    // Inisialisasi sidebar untuk highlight menu aktif
     initSidebar();
-    initDashboard();
+
+    // Deteksi halaman aktif berdasarkan URL
+    const path = window.location.pathname;
+
+    if (path.includes("Dashboard.html")) {
+        initDashboard();
+    } else if (path.includes("Absensi.html")) {
+        initAbsensi();
+    } else if (path.includes("Izin.html")) {
+        initIzin();
+    } else if (path.includes("Daily-report.html")) {
+        initDailyReport();
+    }
 }
 
 initComponents();
