@@ -1,4 +1,3 @@
-
 const loginForm = document.getElementById("loginForm");
 const identityInput = document.getElementById("identity");
 const passwordInput = document.getElementById("password");
@@ -7,6 +6,7 @@ const eyeIcon = document.getElementById("eyeIcon");
 const formMessage = document.getElementById("formMessage");
 const forgotPassword = document.getElementById("forgotPassword");
 
+// Menampilkan pesan pada form
 function showMessage(message, type = "error") {
     const styles = {
         error: ["border-red-200", "bg-red-50", "text-red-700"],
@@ -23,10 +23,12 @@ function showMessage(message, type = "error") {
     formMessage.textContent = message;
 }
 
+// Menyembunyikan pesan
 function hideMessage() {
     formMessage.classList.add("hidden");
 }
 
+// Fitur tampil/sembunyikan password
 togglePassword.addEventListener("click", () => {
     const show = passwordInput.type === "password";
 
@@ -52,20 +54,15 @@ togglePassword.addEventListener("click", () => {
         `;
 });
 
+// Login sementara tanpa validasi akun
 loginForm.addEventListener("submit", (event) => {
     event.preventDefault();
 
-    if (!identityInput.value.trim() || !passwordInput.value) {
-        showMessage("NISN/email dan password wajib diisi.");
-        return;
-    }
-
-    showMessage(
-        "Form berhasil divalidasi. Autentikasi akun belum terhubung ke backend.",
-        "info"
-    );
+    // Langsung masuk ke Dashboard Siswa
+    window.location.href = "/pages/Siswa/Dashboard.html";
 });
 
+// Fitur lupa password sementara
 forgotPassword.addEventListener("click", (event) => {
     event.preventDefault();
 
@@ -75,5 +72,6 @@ forgotPassword.addEventListener("click", (event) => {
     );
 });
 
+// Hilangkan pesan saat input berubah
 identityInput.addEventListener("input", hideMessage);
 passwordInput.addEventListener("input", hideMessage);
