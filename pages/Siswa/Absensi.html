@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Absen Siswa | SI-IN</title>
+    <link rel="stylesheet" href="/src/css/style.css">
+</head>
+
+<body class="m-0 bg-[#f8fafc] font-sans text-slate-800 antialiased">
+    <div class="flex min-h-screen w-full bg-[#f8fafc]">
+
+        <!-- Sidebar Fixed / Sticky -->
+        <div id="sidebar-container" class="sticky top-0 h-screen shrink-0"></div>
+
+        <!-- Konten Utama -->
+        <div class="flex min-h-screen min-w-0 flex-1 flex-col">
+
+            <!-- Header -->
+            <div id="header-container" class="sticky top-0 z-10 shrink-0"></div>
+
+            <main class="flex-1 p-6 lg:p-8">
+
+                <!-- Card Sesi Hari Ini -->
+                <article class="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
+                    <div class="flex items-center justify-between pb-6">
+                        <div class="flex items-center gap-2">
+                            <h1 class="text-xl font-extrabold tracking-tight text-slate-800">
+                                ABSEN
+                            </h1>
+                            <span class="text-xs font-semibold text-slate-400">• Sesi Hari Ini</span>
+                        </div>
+
+                        <!-- Badge Status -->
+                        <span id="status-absen-badge" class="flex items-center gap-1.5 rounded-full bg-emerald-500 px-4 py-1.5 text-xs font-bold text-white shadow-sm">
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            HADIR
+                        </span>
+                    </div>
+
+                    <!-- Grid Detail Sesi -->
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                        <div class="rounded-xl bg-slate-50/80 p-4 border border-slate-100">
+                            <p class="text-[10px] font-bold tracking-wider text-slate-400 uppercase">PROGRAM</p>
+                            <p class="mt-1.5 text-xs font-bold text-slate-800">KELAS INKUBASI WEB DEVELOPMENT</p>
+                        </div>
+
+                        <div class="rounded-xl bg-slate-50/80 p-4 border border-slate-100">
+                            <p class="text-[10px] font-bold tracking-wider text-slate-400 uppercase">MATERI</p>
+                            <p class="mt-1.5 text-xs font-bold text-slate-800">SLICING UI & TAILWIND CSS</p>
+                        </div>
+
+                        <div class="rounded-xl bg-slate-50/80 p-4 border border-slate-100">
+                            <p class="text-[10px] font-bold tracking-wider text-slate-400 uppercase">TANGGAL</p>
+                            <p class="mt-1.5 text-xs font-bold text-slate-800" id="tanggal-absen-hari-ini">14/05/2024</p>
+                        </div>
+
+                        <div class="rounded-xl bg-slate-50/80 p-4 border border-slate-100 md:col-span-2">
+                            <p class="text-[10px] font-bold tracking-wider text-slate-400 uppercase">MENTOR</p>
+                            <p class="mt-1.5 text-xs font-bold text-slate-800">BPK. RENDI KURNIAWAN, S.Kom</p>
+                        </div>
+
+                        <div class="rounded-xl bg-slate-50/80 p-4 border border-slate-100">
+                            <p class="text-[10px] font-bold tracking-wider text-slate-400 uppercase">JAM</p>
+                            <p class="mt-1.5 text-xs font-bold text-slate-800">08.00 – 13.00 WIB</p>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Section Riwayat Absen -->
+                <article class="mt-6 rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
+                    <h2 class="text-base font-extrabold tracking-tight text-slate-800 mb-6">
+                        RIWAYAT ABSEN
+                    </h2>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead>
+                                <tr class="border-b border-slate-800 text-[11px] font-bold tracking-wider text-slate-800 uppercase">
+                                    <th class="pb-3 pl-2">PERIODE</th>
+                                    <th class="pb-3">PROGRAM</th>
+                                    <th class="pb-3 text-right pr-2">ACTION</th>
+                                </tr>
+                            </thead>
+                            <tbody id="riwayat-absen-container" class="divide-y divide-slate-100 font-medium">
+                                <!-- Data di-render lewat JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </article>
+
+            </main>
+
+            <!-- Footer -->
+            <div id="footer-container" class="mt-auto shrink-0"></div>
+        </div>
+    </div>
+
+    <script type="module" src="/src/js/components.js"></script>
+</body>
+</html>

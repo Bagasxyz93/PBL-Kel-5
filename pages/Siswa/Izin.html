@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Izin Siswa | SI-IN</title>
+    <link rel="stylesheet" href="/src/css/style.css">
+</head>
+
+<body class="m-0 bg-[#f8fafc] font-sans text-slate-800 antialiased">
+    <div class="flex min-h-screen w-full bg-[#f8fafc]">
+
+        <!-- Sidebar Fixed / Sticky -->
+        <div id="sidebar-container" class="sticky top-0 h-screen shrink-0"></div>
+
+        <!-- Konten Utama -->
+        <div class="flex min-h-screen min-w-0 flex-1 flex-col">
+
+            <!-- Header -->
+            <div id="header-container" class="sticky top-0 z-10 shrink-0"></div>
+
+            <main class="flex-1 p-6 lg:p-8">
+
+                <!-- Title & Kuota Banner -->
+                <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
+                    <div>
+                        <div class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                            <span>MODUL PRESENSI SISWA</span>
+                            <span>•</span>
+                            <span>Tahun Ajaran 2025/2026</span>
+                        </div>
+                        <h1 class="mt-1 text-2xl font-bold tracking-tight text-slate-800">
+                            Pengajuan Izin Siswa
+                        </h1>
+                        <p class="mt-1 text-xs text-slate-400">
+                            Formulir dispensasi resmi inkubasi vokasi, praktikum laboratorium, dan verifikasi surat keterangan.
+                        </p>
+                    </div>
+
+                    <!-- Card Sisa Kuota -->
+                    <div class="flex items-center gap-4 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
+                        <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                <line x1="16" y1="2" x2="16" y2="6"/>
+                                <line x1="8" y1="2" x2="8" y2="6"/>
+                                <line x1="3" y1="10" x2="21" y2="10"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-[10px] font-bold tracking-wider text-slate-400 uppercase">SISA KUOTA IZIN SEMESTER</span>
+                                <span class="rounded-full bg-emerald-50 px-2 py-0.5 text-[9px] font-bold text-emerald-600">Aktif</span>
+                            </div>
+                            <p class="text-sm font-bold text-slate-800">
+                                4 Hari <span class="text-xs font-normal text-slate-400">dari 6 hari</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Ajukan Izin -->
+                <article class="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
+                    <div class="mb-6 flex items-center justify-between border-b border-slate-100 pb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h2 class="text-sm font-bold text-slate-800">Ajukan Izin</h2>
+                                <p class="text-[11px] text-slate-400">Lengkapi detail agenda inkubasi yang tidak dapat dihadiri beserta dokumen otentik.</p>
+                            </div>
+                        </div>
+
+                        <span class="flex items-center gap-1.5 rounded-full bg-slate-50 px-3 py-1 text-[10px] font-medium text-slate-500">
+                            <span class="h-2 w-2 rounded-full bg-emerald-400"></span>
+                            Status: Aktif Memproses
+                        </span>
+                    </div>
+
+                    <form id="form-izin" class="space-y-5">
+                        <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+                            <!-- Input Tanggal -->
+                            <div>
+                                <div class="flex items-center justify-between mb-1.5">
+                                    <label class="text-[10px] font-bold tracking-wider text-slate-600 uppercase">TANGGAL PERIZINAN <span class="text-rose-500">*</span></label>
+                                    <span class="text-[10px] text-slate-400">Pilih 1 hari / rentang</span>
+                                </div>
+                                <div class="relative">
+                                    <input type="date" value="2024-05-23" class="w-full rounded-xl border border-slate-200 bg-slate-50/50 p-3 text-xs font-semibold text-slate-700 outline-none focus:border-indigo-400 focus:bg-white transition">
+                                </div>
+                                <p class="mt-1 text-[10px] text-slate-400">Batas konfirmasi maksimal pukul 07.30 WIB di hari kegiatan berlangsung.</p>
+                            </div>
+
+                            <!-- Input Kegiatan -->
+                            <div>
+                                <label class="block mb-1.5 text-[10px] font-bold tracking-wider text-slate-600 uppercase">KEGIATAN INKUBASI / MAPEL <span class="text-rose-500">*</span></label>
+                                <select class="w-full rounded-xl border border-slate-200 bg-slate-50/50 p-3 text-xs font-semibold text-slate-700 outline-none focus:border-indigo-400 focus:bg-white transition">
+                                    <option>Praktikum Inkubasi Web Dev (Lab Komputer 03)</option>
+                                    <option>Mentoring & Standup Harian</option>
+                                </select>
+                                <p class="mt-1 text-[10px] text-slate-400">Kegiatan diampu oleh mentor/instruktur terdaftar di portal.</p>
+                            </div>
+                        </div>
+
+                        <!-- Input Alasan -->
+                        <div>
+                            <div class="flex items-center justify-between mb-1.5">
+                                <label class="text-[10px] font-bold tracking-wider text-slate-600 uppercase">ALASAN IZIN <span class="text-rose-500">*</span></label>
+                                <span class="text-[10px] text-slate-400">0 / 250 KARAKTER</span>
+                            </div>
+                            <textarea rows="3" placeholder="Tuliskan keterangan detail (Contoh: Mengalami demam dan influenza sejak semalam, mendapatkan rekomendasi istirahat 2 hari dari dokter Puskesmas Gondanglegi)." class="w-full rounded-xl border border-slate-200 bg-slate-50/50 p-3 text-xs font-medium text-slate-700 outline-none focus:border-indigo-400 focus:bg-white transition resize-none"></textarea>
+                        </div>
+
+                        <!-- Upload Bukti -->
+                        <div>
+                            <label class="block mb-1.5 text-[10px] font-bold tracking-wider text-slate-600 uppercase">UPLOAD BUKTI PENDUKUNG (SURAT DOKTER / SURAT WALI) <span class="text-rose-500">*</span></label>
+                            <div class="flex flex-col sm:flex-row items-center justify-between gap-4 rounded-xl border border-dashed border-indigo-200 bg-indigo-50/30 p-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-100 text-indigo-600">
+                                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs font-bold text-slate-800">Unggah Surat Dispensasi / Resep Medis</p>
+                                        <p class="text-[10px] text-slate-400">Format diterima: PDF, PNG, JPG (Maksimal 5.0 MB)</p>
+                                    </div>
+                                </div>
+                                <label class="cursor-pointer rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 shadow-sm transition">
+                                    <span>PILIH FILE</span>
+                                    <input type="file" class="hidden">
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Action Submit -->
+                        <div class="flex flex-wrap items-center justify-between gap-4 border-t border-slate-100 pt-4">
+                            <p class="text-[10px] text-slate-400">🔒 Data diverifikasi otomatis oleh Wali Kelas & Koordinator Inkubasi.</p>
+                            <button type="submit" class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#5865ff] to-[#8050ff] px-6 py-2.5 text-xs font-bold text-white shadow-md shadow-indigo-500/20 hover:opacity-95 transition">
+                                AJUKAN IZIN
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </form>
+                </article>
+
+                <!-- Table Riwayat Izin -->
+                <article class="mt-6 rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
+                    <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
+                        <div>
+                            <h2 class="text-base font-bold text-slate-800">Riwayat Izin</h2>
+                            <p class="text-xs text-slate-400">Daftar permohonan izin belajar dan status verifikasi pembimbing industri.</p>
+                        </div>
+
+                        <select class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-600 outline-none">
+                            <option>Semester Genap 2024</option>
+                        </select>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead>
+                                <tr class="border-b border-slate-100 text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+                                    <th class="pb-3 pl-2">TANGGAL IZIN</th>
+                                    <th class="pb-3">JENIS KEGIATAN / ALASAN</th>
+                                    <th class="pb-3">BUKTI DOKUMEN</th>
+                                    <th class="pb-3">TANGGAL PENGAJUAN</th>
+                                    <th class="pb-3">STATUS</th>
+                                    <th class="pb-3 pr-2">CATATAN MENTOR</th>
+                                </tr>
+                            </thead>
+                            <tbody id="riwayat-izin-container" class="divide-y divide-slate-100">
+                                <!-- Data di-render lewat JS -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-slate-100 pt-4 text-xs text-slate-400">
+                        <p>Menampilkan <span class="font-bold text-slate-700">4 riwayat</span> perizinan dari total 4 data semester ini.</p>
+                        <div class="flex items-center gap-1">
+                            <button class="rounded-lg border border-slate-200 px-3 py-1 font-semibold text-slate-400 hover:bg-slate-50 disabled:opacity-50" disabled>Sebelumnya</button>
+                            <button class="rounded-lg bg-indigo-600 px-3 py-1 font-bold text-white shadow-sm">1</button>
+                            <button class="rounded-lg border border-slate-200 px-3 py-1 font-semibold text-slate-400 hover:bg-slate-50 disabled:opacity-50" disabled>Selanjutnya</button>
+                        </div>
+                    </div>
+                </article>
+
+            </main>
+
+            <!-- Footer -->
+            <div id="footer-container" class="mt-auto shrink-0"></div>
+        </div>
+    </div>
+
+    <script type="module" src="/src/js/components.js"></script>
+</body>
+</html>

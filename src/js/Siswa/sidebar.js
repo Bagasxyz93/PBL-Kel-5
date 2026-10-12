@@ -1,31 +1,35 @@
 export function initSidebar() {
     const currentPath = window.location.pathname.toLowerCase();
+    const sidebarLinks = document.querySelectorAll(".sidebar-link");
 
-    const menuMap = [
-        { keyword: "dashboard", key: "dashboard" },
-        { keyword: "absensi", key: "absensi" },
-        { keyword: "izin", key: "izin" },
-        { keyword: "daily-report", key: "daily-report" },
-        { keyword: "materi", key: "materi" },
-        { keyword: "profil", key: "profil" }
+    // Class untuk item non-aktif
+    const inactiveClasses = ["text-slate-400", "hover:bg-white/5", "hover:text-white"];
+    
+    // Class untuk item aktif (background gradient)
+    const activeClasses = [
+        "bg-gradient-to-r",
+        "from-[#5865ff]",
+        "to-[#8050ff]",
+        "text-white",
+        "font-semibold",
+        "shadow-lg",
+        "shadow-indigo-500/20"
     ];
 
-    let activeKey = "dashboard";
+    sidebarLinks.forEach((link) => {
+        const href = link.getAttribute("href").toLowerCase();
 
-    for (const menu of menuMap) {
-        if (currentPath.includes(menu.keyword)) {
-            activeKey = menu.key;
-            break;
+        // Cek apakah URL saat ini cocok dengan href menu
+        if (currentPath.includes(href) || (currentPath.endsWith("/") && href.includes("dashboard.html"))) {
+            // Reset dulu class non-aktif
+            link.classList.remove(...inactiveClasses);
+            // Tambahkan class aktif
+            link.classList.add(...activeClasses);
+        } else {
+            // Hapus class aktif
+            link.classList.remove(...activeClasses);
+            // Tambahkan class non-aktif
+            link.classList.add(...inactiveClasses);
         }
-    }
-
-    document.querySelectorAll(".sidebar-link").forEach((link) => {
-        const isActive = link.dataset.menu === activeKey;
-
-        link.classList.toggle("bg-violet-600", isActive);
-        link.classList.toggle("text-white", isActive);
-
-        link.classList.toggle("text-slate-300", !isActive);
-        link.classList.toggle("hover:bg-slate-700", !isActive);
     });
 }
