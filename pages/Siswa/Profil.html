@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil Siswa | SI-IN</title>
+    <link rel="stylesheet" href="/src/css/style.css">
+</head>
+
+<body class="min-h-screen bg-[#e9edf5] text-slate-800 antialiased">
+
+<div id="app" class="invisible flex min-h-screen w-full opacity-0 transition-opacity duration-200">
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar-container" class="sticky top-0 h-screen w-60 shrink-0"></aside>
+
+    <!-- AREA UTAMA -->
+    <div class="flex min-w-0 flex-1 flex-col">
+
+        <!-- HEADER -->
+        <header id="header-container" class="sticky top-0 z-20 shrink-0"></header>
+
+        <!-- KONTEN -->
+        <main class="flex-1 p-5 lg:p-8">
+            <div class="mx-auto max-w-[1400px]">
+
+                <!-- JUDUL HALAMAN -->
+                <div class="mb-6">
+                    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+                        PROFIL SISWA
+                    </p>
+                    <h1 class="mt-1 text-2xl font-bold tracking-tight text-slate-800">
+                        Profil Saya
+                    </h1>
+                    <p class="mt-1 text-sm text-slate-500">
+                        Kelola informasi akun dan lihat ringkasan aktivitasmu.
+                    </p>
+                </div>
+
+                <!-- GRID UTAMA -->
+                <div class="grid grid-cols-1 items-start gap-6 xl:grid-cols-12">
+
+                    <!-- KOLOM KIRI: PROFIL -->
+                    <section class="xl:col-span-6">
+                        <div class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-5 shadow-[0_12px_30px_rgba(15,23,42,0.10)] sm:p-6">
+
+                            <!-- JUDUL KARTU -->
+                            <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
+                                <h2 class="text-lg font-bold text-slate-900">
+                                    PROFIL SAYA
+                                </h2>
+
+                                <span class="inline-flex items-center gap-2 rounded-full bg-indigo-50 px-3 py-1.5 text-[10px] font-semibold text-indigo-600">
+                                    <span class="h-1.5 w-1.5 rounded-full bg-indigo-500"></span>
+                                    Tahun Ajaran 2025/2026
+                                </span>
+                            </div>
+
+                            <!-- IDENTITAS SISWA -->
+                            <div class="rounded-xl border border-slate-200 bg-slate-50/80 p-4 sm:p-5">
+
+                                <!-- TOMBOL EDIT -->
+                                <div class="mb-1 flex justify-end">
+                                    <button
+                                        id="btn-edit-profil"
+                                        type="button"
+                                        class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-medium text-slate-600 transition hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-600">
+
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                            width="14" height="14" viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor"
+                                            stroke-width="1.8" stroke-linecap="round"
+                                            stroke-linejoin="round" aria-hidden="true">
+                                            <rect x="3" y="11" width="18" height="11" rx="2"/>
+                                            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                                        </svg>
+
+                                        Edit Password
+                                    </button>
+                                </div>
+
+                                <!-- AVATAR DI ATAS NAMA -->
+                                <div class="relative -mt-12 flex flex-col items-start gap-2">
+
+                                    <!-- LOGO PROFIL -->
+                                    <div class="relative flex h-24 w-24 shrink-0 items-center justify-center rounded-full border-4 border-white bg-slate-200 shadow-sm">
+
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                            width="52" height="52" viewBox="0 0 24 24"
+                                            fill="currentColor"
+                                            class="text-slate-400"
+                                            aria-hidden="true">
+                                            <path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Z"/>
+                                            <path d="M4 21a8 8 0 0 1 16 0H4Z"/>
+                                        </svg>
+
+                                        <!-- BADGE VERIFIKASI -->
+                                        <span class="absolute bottom-0 right-0 flex h-6 w-6 items-center justify-center rounded-full border-2 border-white bg-indigo-600 text-xs font-bold text-white">
+                                            ✓
+                                        </span>
+                                    </div>
+
+                                    <!-- NAMA DAN NISN -->
+                                    <div class="min-w-0">
+                                        <h3 id="profil-nama" class="break-words text-base font-bold text-slate-900">
+                                            NERAZURIANCTA
+                                        </h3>
+
+                                        <p class="mt-1 text-xs text-slate-500">
+                                            STATUS
+                                            <span class="mx-1">•</span>
+                                            NISN:
+                                            <span id="profil-nisn" class="font-medium text-indigo-600">
+                                                2000000000
+                                            </span>
+                                        </p>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <!-- INFORMASI AKUN -->
+                            <div class="mt-4 rounded-xl border border-slate-200 bg-slate-50/80 p-4 sm:p-5">
+
+                                <h3 class="mb-4 text-sm font-bold text-slate-800">
+                                    Informasi Akun
+                                </h3>
+
+                                <div class="divide-y divide-slate-200/80">
+
+                                    <div class="flex items-center justify-between gap-4 py-3">
+                                        <span class="text-xs text-slate-500">Email</span>
+                                        <span id="profil-email" class="break-all text-right text-xs font-medium text-slate-800">
+                                            nerazaja@gmail.com
+                                        </span>
+                                    </div>
+
+                                    <div class="flex items-center justify-between gap-4 py-3">
+                                        <span class="text-xs text-slate-500">No. Telepon</span>
+                                        <span id="profil-telepon" class="text-right text-xs font-medium text-slate-800">
+                                            081xxxx
+                                        </span>
+                                    </div>
+
+                                    <div class="flex items-center justify-between gap-4 py-3">
+                                        <span class="text-xs text-slate-500">Program</span>
+                                        <span id="profil-program" class="rounded-md bg-white px-2 py-1 text-right text-[10px] font-semibold text-slate-700 shadow-sm">
+                                            Website Dev
+                                        </span>
+                                    </div>
+
+                                    <div class="flex items-center justify-between gap-4 py-3">
+                                        <span class="text-xs text-slate-500">Status</span>
+                                        <span id="profil-status" class="rounded-full bg-slate-200 px-3 py-1 text-[10px] font-semibold text-slate-700">
+                                            AKTIF
+                                        </span>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </section>
+
+                    <!-- KOLOM KANAN -->
+                    <section class="space-y-5 xl:col-span-6">
+
+                        <!-- KARTU KEHADIRAN -->
+                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+
+                            <article class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-lg">
+                                <p class="text-[10px] font-medium uppercase tracking-wider text-slate-500">
+                                    KEHADIRAN
+                                </p>
+
+                                <p id="kehadiran-tepat-persen" class="mt-2 text-3xl font-bold tracking-tight text-slate-700">
+                                    100%
+                                </p>
+
+                                <p class="mt-1 flex items-center gap-1 text-[10px] font-medium text-emerald-500">
+                                    <span aria-hidden="true">↑</span>
+                                    Tepat Waktu
+                                </p>
+                            </article>
+
+                            <!-- KARTU DAILY REPORT -->
+                            <article class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-lg">
+                                <p class="text-[10px] font-medium uppercase tracking-wider text-slate-500">
+                                    DAILY REPORT DIKUMPULKAN
+                                </p>
+
+                                <p id="daily-report-persen" class="mt-2 text-3xl font-bold tracking-tight text-slate-700">
+                                    100%
+                                </p>
+
+                                <p class="mt-1 text-[10px] text-slate-400">
+                                    Target Laporan Semester Genap
+                                </p>
+                            </article>
+
+                        </div>
+
+                        <!-- JADWAL HARI INI -->
+                        <article class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6">
+
+                            <div class="mb-5 flex items-center justify-between gap-3">
+                                <h2 class="text-base font-bold text-slate-800">
+                                    Jadwal Hari Ini
+                                </h2>
+
+                                <button
+                                    id="btn-lihat-jadwal"
+                                    type="button"
+                                    class="text-xs font-medium text-indigo-600 transition hover:text-indigo-800">
+                                    Lihat Semua
+                                </button>
+                            </div>
+
+                            <div id="daftar-jadwal" class="space-y-1">
+
+                                <!-- JADWAL 1 -->
+                                <div class="flex items-center gap-3 border-t border-slate-100 py-3">
+                                    <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-100 text-[10px] font-semibold text-slate-500">
+                                        PW
+                                    </div>
+
+                                    <div class="min-w-0 flex-1">
+                                        <h3 class="truncate text-xs font-semibold text-slate-700">
+                                            Pemrograman Web &amp; API
+                                        </h3>
+                                        <p class="truncate text-[10px] text-slate-400">
+                                            Senin, Lab Komputer 02
+                                        </p>
+                                    </div>
+
+                                    <span class="shrink-0 rounded-md bg-slate-100 px-2 py-1 text-[9px] font-medium text-slate-600">
+                                        07:30 - 09:30
+                                    </span>
+                                </div>
+
+                                <!-- JADWAL 2 -->
+                                <div class="flex items-center gap-3 border-t border-slate-100 py-3">
+                                    <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-100 text-[10px] font-semibold text-slate-500">
+                                        BD
+                                    </div>
+
+                                    <div class="min-w-0 flex-1">
+                                        <h3 class="truncate text-xs font-semibold text-slate-700">
+                                            Basis Data Relasional
+                                        </h3>
+                                        <p class="truncate text-[10px] text-slate-400">
+                                            Senin, Lab Software 01
+                                        </p>
+                                    </div>
+
+                                    <span class="shrink-0 rounded-md bg-slate-100 px-2 py-1 text-[9px] font-medium text-slate-600">
+                                        09:45 - 11:45
+                                    </span>
+                                </div>
+
+                                <!-- JADWAL 3 -->
+                                <div class="flex items-center gap-3 border-t border-slate-100 py-3">
+                                    <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-100 text-[10px] font-semibold text-slate-500">
+                                        UI
+                                    </div>
+
+                                    <div class="min-w-0 flex-1">
+                                        <h3 class="truncate text-xs font-semibold text-slate-700">
+                                            Desain Antarmuka UI/UX
+                                        </h3>
+                                        <p class="truncate text-[10px] text-slate-400">
+                                            Senin, Lab Multimedia
+                                        </p>
+                                    </div>
+
+                                    <span class="shrink-0 rounded-md bg-slate-100 px-2 py-1 text-[9px] font-medium text-slate-600">
+                                        12:30 - 14:30
+                                    </span>
+                                </div>
+
+                                <!-- JADWAL 4 -->
+                                <div class="flex items-center gap-3 border-t border-slate-100 py-3">
+                                    <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-100 text-[10px] font-semibold text-slate-500">
+                                        PK
+                                    </div>
+
+                                    <div class="min-w-0 flex-1">
+                                        <h3 class="truncate text-xs font-semibold text-slate-700">
+                                            Projek Kejuruan RPL
+                                        </h3>
+                                        <p class="truncate text-[10px] text-slate-400">
+                                            Senin, Studio Kreatif
+                                        </p>
+                                    </div>
+
+                                    <span class="shrink-0 rounded-md bg-slate-100 px-2 py-1 text-[9px] font-medium text-slate-600">
+                                        14:45 - 16:00
+                                    </span>
+                                </div>
+
+                            </div>
+
+                            <p id="jadwal-kosong" class="hidden py-8 text-center text-sm text-slate-400">
+                                Belum ada jadwal untuk hari ini.
+                            </p>
+
+                        </article>
+
+                    </section>
+                </div>
+            </div>
+        </main>
+
+        <!-- FOOTER -->
+        <footer id="footer-container" class="mt-auto shrink-0"></footer>
+
+    </div>
+</div>
+
+<!-- MODAL EDIT PROFIL -->
+<div id="modal-edit-profil"
+    class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/40 p-4 backdrop-blur-sm">
+
+    <div class="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
+
+        <div class="mb-5 flex items-center justify-between">
+            <h2 class="text-lg font-bold text-slate-800">
+                Edit Profil
+            </h2>
+
+            <button
+                id="btn-tutup-modal"
+                type="button"
+                class="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+                aria-label="Tutup modal">
+                ✕
+            </button>
+        </div>
+
+        <form id="form-edit-profil" class="space-y-4">
+
+            <div>
+                <label for="edit-nama" class="mb-1.5 block text-xs font-semibold text-slate-600">
+                    Nama Siswa
+                </label>
+
+                <input
+                    id="edit-nama"
+                    name="nama"
+                    type="text"
+                    required
+                    class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none transition focus:border-indigo-400 focus:ring-4 focus:ring-indigo-50">
+            </div>
+
+            <div>
+                <label for="edit-email" class="mb-1.5 block text-xs font-semibold text-slate-600">
+                    Email
+                </label>
+
+                <input
+                    id="edit-email"
+                    name="email"
+                    type="email"
+                    required
+                    class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none transition focus:border-indigo-400 focus:ring-4 focus:ring-indigo-50">
+            </div>
+
+            <div>
+                <label for="edit-telepon" class="mb-1.5 block text-xs font-semibold text-slate-600">
+                    Nomor Telepon
+                </label>
+
+                <input
+                    id="edit-telepon"
+                    name="telepon"
+                    type="tel"
+                    class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none transition focus:border-indigo-400 focus:ring-4 focus:ring-indigo-50">
+            </div>
+
+            <div class="flex justify-end gap-3 pt-2">
+                <button
+                    id="btn-batal-edit"
+                    type="button"
+                    class="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-50">
+                    Batal
+                </button>
+
+                <button
+                    type="submit"
+                    class="rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-700">
+                    Simpan
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<!-- NOTIFIKASI -->
+<div
+    id="profil-toast"
+    role="status"
+    aria-live="polite"
+    class="fixed bottom-6 right-6 z-[60] hidden max-w-sm rounded-xl bg-slate-900 px-5 py-3 text-sm text-white shadow-xl">
+</div>
+
+<!-- KOMPONEN DAN JAVASCRIPT -->
+<script type="module" src="/src/js/components.js"></script>
+
+</body>
+</html>
