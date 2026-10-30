@@ -1,3 +1,5 @@
+import { supabase } from "./supabase.js";
+
 const loginForm = document.getElementById("loginForm");
 const identityInput = document.getElementById("identity");
 const passwordInput = document.getElementById("password");
@@ -6,17 +8,36 @@ const eyeIcon = document.getElementById("eyeIcon");
 const formMessage = document.getElementById("formMessage");
 const forgotPassword = document.getElementById("forgotPassword");
 
+// Tujuan halaman berdasarkan role pengguna.
+const rolePages = {
+    admin: "/pages/Admin/Dashboard.html",
+    mentor: "/pages/Mentor/Dashboard.html",
+    peserta: "/pages/Siswa/Dashboard.html",
+};
+
 // Menampilkan pesan pada form
 function showMessage(message, type = "error") {
     const styles = {
-        error: ["border-red-200", "bg-red-50", "text-red-700"],
-        info: ["border-blue-200", "bg-blue-50", "text-blue-700"],
+        error: [
+            "border-red-200",
+            "bg-red-50",
+            "text-red-700",
+        ],
+        info: [
+            "border-blue-200",
+            "bg-blue-50",
+            "text-blue-700",
+        ],
     };
 
     formMessage.classList.remove(
         "hidden",
-        "border-red-200", "bg-red-50", "text-red-700",
-        "border-blue-200", "bg-blue-50", "text-blue-700"
+        "border-red-200",
+        "bg-red-50",
+        "text-red-700",
+        "border-blue-200",
+        "bg-blue-50",
+        "text-blue-700"
     );
 
     formMessage.classList.add(...styles[type]);
@@ -54,20 +75,79 @@ togglePassword.addEventListener("click", () => {
         `;
 });
 
-// Login sementara tanpa validasi akun
-loginForm.addEventListener("submit", (event) => {
+// Proses login menggunakan RPC Supabase (RLS tetap aman menyala)
+loginForm.addEventListener("submit", async (event) => {
     event.preventDefault();
+    hideMessage();
 
-    // Langsung masuk ke Dashboard Siswa
-    window.location.href = "/pages/Siswa/Dashboard.html";
+    const identity = identityInput.value.trim();
+    const password = passwordInput.value;
+
+    if (!identity || !password) {
+        showMessage("Email dan password wajib diisi.");
+        return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identity)) {
+        showMessage("Masukkan alamat email yang valid.");
+        return;
+    }
+
+    const submitButton = loginForm.querySelector(
+        'button[type="submit"]'
+    );
+
+    if (submitButton) {
+        submitButton.disabled = true;
+    }
+
+    try {
+        // Memanggil fungsi database yang sudah dibuat di Supabase
+        const { data, error } = await supabase.rpc("login_user", {
+            input_email: identity,
+            input_password: password,
+        });
+
+        if (error || !data || data.length === 0) {
+            showMessage("Email atau password salah.");
+            return;
+        }
+
+        // Ambil data user dari hasil fungsi RPC
+        const user = data[0];
+        const role = user.role?.toLowerCase();
+
+        // Pastikan role terdaftar
+        if (!rolePages[role]) {
+            showMessage("Role akun tidak valid. Hubungi administrator.");
+            return;
+        }
+
+        // Simpan sesi ke localStorage
+        localStorage.setItem("userRole", role);
+        localStorage.setItem("userName", user.nama);
+        localStorage.setItem("userId", user.id);
+
+        // Arahkan pengguna sesuai role
+        window.location.href = rolePages[role];
+
+    } catch (error) {
+        console.error("Kesalahan login:", error);
+        showMessage(
+            "Terjadi kesalahan saat menghubungi server. Coba lagi."
+        );
+    } finally {
+        if (submitButton) {
+            submitButton.disabled = false;
+        }
+    }
 });
 
 // Fitur lupa password sementara
-forgotPassword.addEventListener("click", (event) => {
+forgotPassword.addEventListener("click", async (event) => {
     event.preventDefault();
-
     showMessage(
-        "Fitur lupa password akan tersedia setelah backend terintegrasi.",
+        "Silakan hubungi administrator untuk mereset password.",
         "info"
     );
 });
