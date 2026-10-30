@@ -1,4 +1,4 @@
-<header class="flex h-20 items-center justify-between gap-4 border-b border-slate-100 bg-white/80 px-8 backdrop-blur-md">
+<header id="header-wrapper" class="sticky top-0 z-30 flex h-20 items-center justify-between gap-4 border-b border-slate-100 bg-white/80 px-8 backdrop-blur-md shrink-0 transition-colors duration-300">
     <div class="w-full max-w-md">
         <div class="relative flex items-center">
             <svg class="absolute left-4 h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -7,14 +7,14 @@
             <input
                 type="search"
                 id="search-menu"
-                placeholder="SEARCH MENU (CONTOH: ABSEN, TUGAS, JADWAL...)"
+                placeholder="CARI MENU (CONTOH: ABSEN, TUGAS, JADWAL...)"
                 class="w-full rounded-full border border-slate-100 bg-slate-50/80 py-2.5 pl-11 pr-4 text-[11px] font-semibold tracking-wider text-slate-600 uppercase placeholder:text-slate-400 focus:border-indigo-300 focus:bg-white focus:outline-none focus:ring-4 focus:ring-indigo-500/10 transition-all"
             >
         </div>
     </div>
 
     <div class="flex items-center gap-5">
-        <!-- Notification Icon -->
+        <!-- Notifikasi -->
         <button
             type="button"
             aria-label="Notifikasi"
@@ -26,18 +26,15 @@
             <span class="absolute right-2.5 top-2.5 h-2 w-2 rounded-full bg-rose-500 ring-2 ring-white"></span>
         </button>
 
-        <!-- User Profile -->
+        <!-- Profil Pengguna -->
         <div class="flex items-center gap-3 border-l border-slate-100 pl-5">
             <div class="text-right">
-                <p id="nama-siswa-header" class="text-sm font-bold text-slate-800">
-                    Nezaruriancta
-                </p>
-                <p class="text-xs font-semibold text-indigo-600">Siswa Web Dev</p>
+                <p id="header-user-name" class="text-sm font-bold text-slate-800">Pengguna</p>
+                <p id="header-user-role-badge" class="text-xs font-semibold text-indigo-600">Portal SI-IN</p>
             </div>
 
-            <div id="avatar-siswa"
-                 class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-[#5865ff] to-[#8050ff] text-xs font-bold text-white shadow-md shadow-indigo-500/20">
-                NR
+            <div id="header-user-avatar" class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-[#5865ff] to-[#8050ff] text-xs font-bold text-white shadow-md">
+                US
             </div>
         </div>
     </div>
