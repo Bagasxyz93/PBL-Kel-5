@@ -1,11 +1,18 @@
-import { supabase } from "./supabase.js";
+import { supabase } from "../supabase.js";
 
-document.addEventListener("DOMContentLoaded", () => {
+// Fungsi untuk menginisialisasi data tabel siswa
+function initAdminSiswa() {
     const searchInput = document.getElementById("searchSiswa");
     const filterKelas = document.getElementById("filterKelas");
     const tabelSiswaBody = document.getElementById("tabelSiswaBody");
     const refreshBtn = document.getElementById("refreshBtn");
     const tambahSiswaBtn = document.getElementById("tambahSiswaBtn");
+
+    // Jika tabelSiswaBody belum ada di DOM, tunggu sebentar lalu coba lagi
+    if (!tabelSiswaBody) {
+        setTimeout(initAdminSiswa, 100);
+        return;
+    }
 
     // Data Mockup Sesuai Figma Kelola Data Siswa
     const dummySiswa = [
@@ -18,8 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Fungsi Render Tabel
     function renderTable(data) {
-        if (!tabelSiswaBody) return;
-        
+        // DIPERBAIKI: Menggunakan (data.length === 0)
         if (data.length === 0) {
             tabelSiswaBody.innerHTML = `<tr><td colspan="6" class="py-8 text-center text-slate-400">Tidak ada data siswa ditemukan.</td></tr>`;
             return;
@@ -69,8 +75,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Fungsi Filter & Pencarian
     function filterData() {
-        const keyword = searchInput.value.toLowerCase();
-        const selectedKelas = filterKelas.value;
+        const keyword = searchInput ? searchInput.value.toLowerCase() : "";
+        const selectedKelas = filterKelas ? filterKelas.value : "";
 
         const filtered = dummySiswa.filter(siswa => {
             const matchKeyword = siswa.nama.toLowerCase().includes(keyword) || siswa.nis.includes(keyword) || siswa.email.toLowerCase().includes(keyword);
@@ -84,22 +90,23 @@ document.addEventListener("DOMContentLoaded", () => {
     if (searchInput) searchInput.addEventListener("input", filterData);
     if (filterKelas) filterKelas.addEventListener("change", filterData);
 
-    // Tombol Tambah Siswa
     if (tambahSiswaBtn) {
         tambahSiswaBtn.addEventListener("click", () => {
             alert("Fitur tambah siswa baru akan segera dibuka.");
         });
     }
 
-    // Tombol Refresh
     if (refreshBtn) {
         refreshBtn.addEventListener("click", () => {
-            searchInput.value = "";
-            filterKelas.value = "";
+            if (searchInput) searchInput.value = "";
+            if (filterKelas) filterKelas.value = "";
             renderTable(dummySiswa);
         });
     }
 
-    // Render awal saat halaman dimuat
+    // Render awal data dummy
     renderTable(dummySiswa);
-});
+}
+
+// Panggil fungsi inisialisasi
+initAdminSiswa();
