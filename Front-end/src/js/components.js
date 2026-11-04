@@ -5,6 +5,9 @@ import { initDailyReport } from "./Siswa/daily-report.js";
 import { initMateri } from "./Siswa/materi.js";
 import { initProfil } from "./Siswa/profil.js";
 
+// Import tambahan untuk halaman Mentor:
+import { initMentorDashboard } from "./Mentor/dashboard.js";
+
 /* =========================================================
 KONFIGURASI MENU & TEMA BERDASARKAN ROLE
 ========================================================= */
@@ -184,6 +187,15 @@ function initStudentPage(path) {
 }
 
 /* =========================================================
+INISIALISASI HALAMAN MENTOR
+========================================================= */
+
+function initMentorPage(path) {
+    if (path.endsWith("/dashboard.html")) initMentorDashboard();
+    // Tambahkan inisialisasi halaman mentor lain di sini jika sudah dibuat (misal: absensi mentor, dll)
+}
+
+/* =========================================================
 INISIALISASI KOMPONEN UTAMA
 ========================================================= */
 
@@ -220,6 +232,8 @@ async function initComponents() {
 
         if (path.includes("/pages/siswa/")) {
             initStudentPage(path);
+        } else if (path.includes("/pages/mentor/")) {
+            initMentorPage(path);
         }
 
     } catch (error) {
