@@ -1,4 +1,4 @@
-import { supabase } from "../supabase.js";
+
 
 // Fungsi untuk menginisialisasi data tabel siswa
 function initAdminSiswa() {

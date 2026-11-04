@@ -1,4 +1,4 @@
-import { supabase } from "../supabase.js";
+
 
 document.addEventListener("DOMContentLoaded", () => {
     // Tombol keluar bisa berada di header universal atau di dalam halaman
