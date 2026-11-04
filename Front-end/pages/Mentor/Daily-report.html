@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelola Daily Report Mentor - SI-IN</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/src/css/style.css">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+</head>
+<body class="bg-[#f4f7fe] m-0 p-0 text-slate-800 h-screen overflow-hidden">
+
+    <!-- Wrapper Utama Aplikasi -->
+    <div id="app" class="flex h-screen w-screen overflow-hidden invisible opacity-0 transition-opacity duration-300">
+
+        <!-- CONTAINER SIDEBAR -->
+        <div id="sidebar-container" class="shrink-0 h-full"></div>
+
+        <!-- Area Konten Utama -->
+        <div class="flex-1 flex flex-col h-full overflow-y-auto relative">
+            
+            <!-- HEADER CONTAINER -->
+            <div id="header-container" class="sticky top-0 z-30 shrink-0"></div>
+
+            <!-- KONTEN KELOLA DAILY REPORT MENTOR -->
+            <main class="flex-1 p-8 max-w-7xl w-full mx-auto space-y-6">
+                
+                <!-- Menu Pembinaan & Tombol Aksi Atas -->
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                    <div>
+                        <div class="flex items-center gap-2 mb-1.5">
+                            <span class="text-xs text-slate-400">Menu Pembinaan Siswa</span>
+                            <span class="text-slate-300">•</span>
+                            <span class="text-xs font-bold text-emerald-600">Pemeriksaan Harian Aktif</span>
+                        </div>
+                        <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Pemeriksaan Daily Report</h1>
+                        <p class="text-xs text-slate-500 mt-0.5">Pantau pencapaian mandiri, progres proyek inkubasi siswa bimbingan, serta berikan tinjauan dan evaluasi langsung setiap hari.</p>
+                    </div>
+                    
+                    <div class="flex items-center gap-3">
+                        <div class="flex items-center gap-2 bg-white px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 shadow-sm">
+                            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            <span>17 Okt 2026</span>
+                        </div>
+                        <button class="flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-700 px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold shadow-sm transition">
+                            <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            Export Rekap
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 4 Kartu Statistik Ringkasan -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- Kartu 1 -->
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                        <div class="space-y-1">
+                            <p class="text-[11px] font-semibold text-slate-400">Laporan Masuk</p>
+                            <h3 class="text-3xl font-extrabold text-slate-900">15 / 15</h3>
+                        </div>
+                        <div class="p-3 rounded-xl bg-blue-50 text-blue-600 flex flex-col items-center justify-center">
+                            <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5H2v7h7V5Z"/><path d="M22 5h-7v7h7V5Z"/><path d="M9 14H2v7h7v-7Z"/><path d="M22 14h-7v7h7v-7Z"/></svg>
+                            <span class="text-[10px] font-bold">100%</span>
+                        </div>
+                    </div>
+
+                    <!-- Kartu 2 -->
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                        <div class="space-y-1">
+                            <p class="text-[11px] font-semibold text-slate-400">Perlu Diperiksa</p>
+                            <h3 class="text-3xl font-extrabold text-slate-900">4</h3>
+                        </div>
+                        <div class="p-3 rounded-xl bg-indigo-50 text-indigo-600 flex flex-col items-center justify-center">
+                            <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                            <span class="text-[9px] font-bold">Prioritas</span>
+                        </div>
+                    </div>
+
+                    <!-- Kartu 3 -->
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                        <div class="space-y-1">
+                            <p class="text-[11px] font-semibold text-slate-400">Disetujui / Selesai</p>
+                            <h3 class="text-3xl font-extrabold text-slate-900">10</h3>
+                            <p class="text-[10px] text-emerald-600 font-medium">Hari ini</p>
+                        </div>
+                        <div class="p-3 rounded-xl bg-emerald-50 text-emerald-600 flex flex-col items-center justify-center">
+                            <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        </div>
+                    </div>
+
+                    <!-- Kartu 4 -->
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                        <div class="space-y-1">
+                            <p class="text-[11px] font-semibold text-slate-400">Minta Revisi</p>
+                            <h3 class="text-3xl font-extrabold text-slate-900">1</h3>
+                        </div>
+                        <div class="p-3 rounded-xl bg-rose-50 text-rose-500 flex flex-col items-center justify-center">
+                            <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                            <span class="text-[9px] font-bold">Tindak Lanjut</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bagian Filter & Tab Navigasi Status -->
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col lg:flex-row items-center justify-between gap-4">
+                    <div class="flex flex-wrap items-center gap-3 w-full lg:w-auto">
+                        <!-- Input Pencarian -->
+                        <div class="relative flex-1 sm:w-80">
+                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                            </span>
+                            <input type="text" id="input-search-report" placeholder="Cari siswa atau materi inkubasi..." class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:border-[#00b09b] transition">
+                        </div>
+                        <!-- Dropdown Program -->
+                        <select id="filter-program" class="bg-slate-50 border border-slate-200 text-slate-700 text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-[#00b09b] transition">
+                            <option value="">Semua Program</option>
+                            <option value="web-dev">Web Development</option>
+                        </select>
+                        <!-- Dropdown Status -->
+                        <select id="filter-status" class="bg-slate-50 border border-slate-200 text-slate-700 text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-[#00b09b] transition">
+                            <option value="">Semua Status</option>
+                            <option value="menunggu">Menunggu</option>
+                            <option value="diterima">Diterima</option>
+                            <option value="ditolak">Ditolak</option>
+                        </select>
+                    </div>
+
+                    <!-- Tab Filter Kategori Cepat -->
+                    <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl text-xs font-semibold text-slate-600">
+                        <button class="tab-btn px-3 py-1.5 rounded-lg bg-white shadow-sm text-slate-900" data-tab="semua">Semua (15)</button>
+                        <button class="tab-btn px-3 py-1.5 rounded-lg hover:text-slate-900 transition" data-tab="belum-dinilai">Belum Dinilai (4)</button>
+                        <button class="tab-btn px-3 py-1.5 rounded-lg hover:text-slate-900 transition" data-tab="selesai">Selesai Diperiksa (11)</button>
+                    </div>
+                </div>
+
+                <!-- Tabel Kelola Daily Report -->
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-slate-100 text-[11px] font-bold text-slate-400 uppercase tracking-wider bg-slate-50/50">
+                                    <th class="py-3.5 px-6">No</th>
+                                    <th class="py-3.5 px-6">Nama Siswa</th>
+                                    <th class="py-3.5 px-6">Program</th>
+                                    <th class="py-3.5 px-6">Waktu Kirim</th>
+                                    <th class="py-3.5 px-6">Topik & Judul Laporan</th>
+                                    <th class="py-3.5 px-6">Lampiran</th>
+                                    <th class="py-3.5 px-6">Status Laporan</th>
+                                    <th class="py-3.5 px-6 text-center">Tindakan</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-report-body" class="divide-y divide-slate-100 text-xs">
+                                <!-- Data akan di-generate otomatis oleh daily-report.js -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination Bawah Tabel -->
+                    <div class="p-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+                        <span id="pagination-info">Menampilkan 1 - 4 dari 15 laporan harian siswa</span>
+                        <div class="flex items-center gap-1.5" id="pagination-buttons">
+                            <button class="w-8 h-8 rounded-lg border border-slate-200 flex items-center justify-center text-slate-400 hover:bg-slate-50 transition">&lt;</button>
+                            <button class="w-8 h-8 rounded-lg bg-[#00b09b] text-white font-bold flex items-center justify-center shadow-sm">1</button>
+                            <button class="w-8 h-8 rounded-lg border border-slate-200 flex items-center justify-center font-medium text-slate-600 hover:bg-slate-50 transition">2</button>
+                            <button class="w-8 h-8 rounded-lg border border-slate-200 flex items-center justify-center font-medium text-slate-600 hover:bg-slate-50 transition">3</button>
+                            <button class="w-8 h-8 rounded-lg border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-50 transition">&gt;</button>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+
+            <!-- FOOTER CONTAINER -->
+            <div id="footer-container" class="shrink-0"></div>
+
+        </div>
+    </div>
+
+    <!-- Panggil sistem komponen Anda -->
+    <script type="module" src="/src/js/components.js"></script>
+</body>
+</html>
