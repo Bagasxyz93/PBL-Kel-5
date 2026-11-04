@@ -59,7 +59,7 @@ const roleConfig = {
         roleBadgeText: "Administrator",
         roleBadgeColor: "text-red-600",
         versionText: "Versi Admin v1.2",
-        avatarBg: "bg-red-600 shadow-red-500/20", // Warna merah sesuai tema admin
+        avatarBg: "bg-red-600 shadow-red-500/20",
         menus: [
             { label: "Dashboard", icon: "dashboard", href: "/pages/Admin/Dashboard.html", active: ["dashboard.html"] },
             { label: "Data Siswa", icon: "siswa", href: "/pages/Admin/Siswa.html", active: ["siswa.html"] },
@@ -109,11 +109,10 @@ function setupDynamicLayout(role) {
     const config = roleConfig[role] || roleConfig.peserta;
     const currentPath = window.location.pathname.toLowerCase();
     
-    // Tentukan nama user berdasarkan role jika belum ada di localStorage
     let defaultName = "Pengguna";
     if (role === "admin") defaultName = "Administrator";
     else if (role === "mentor") defaultName = "Guru Mentor";
-    else defaultName = "Peserta Dummy";
+    else defaultName = "Peserta";
 
     const userName = localStorage.getItem("userName") || defaultName;
 
@@ -148,7 +147,7 @@ function setupDynamicLayout(role) {
         }).join("");
     }
 
-    // 2. Setup Header Dinamis (Nama, Badge Role, dan Warna Background Avatar)
+    // 2. Setup Header Dinamis
     const headerUserName = document.getElementById("header-user-name");
     const headerUserRoleBadge = document.getElementById("header-user-role-badge");
     const headerUserAvatar = document.getElementById("header-user-avatar");
@@ -161,7 +160,6 @@ function setupDynamicLayout(role) {
     if (headerUserAvatar) {
         const initials = userName.split(" ").map(n => n[0]).join("").substring(0, 2).toUpperCase();
         headerUserAvatar.textContent = initials || "US";
-        // Mengubah background avatar secara dinamis sesuai tema role (Merah untuk Admin, Hijau untuk Mentor, dll)
         headerUserAvatar.className = `flex h-10 w-10 items-center justify-center rounded-xl ${config.avatarBg} text-xs font-bold text-white shadow-md`;
     }
 
@@ -192,7 +190,6 @@ INISIALISASI KOMPONEN UTAMA
 async function initComponents() {
     const path = window.location.pathname.toLowerCase();
 
-    // Halaman login di luar folder /pages/ aman dari layout dashboard
     if (!path.includes("/pages/")) return;
 
     const app = document.getElementById("app");
@@ -212,14 +209,13 @@ async function initComponents() {
 
         if (app) app.classList.add("invisible", "opacity-0");
 
-        // Memuat komponen master layout universal secara bersamaan
+        // Memuat komponen master layout universal
         await Promise.all([
             loadComponent("sidebar-container", "/component/layout/sidebar.html"),
             loadComponent("header-container", "/component/layout/header.html").catch(() => {}),
             loadComponent("footer-container", "/component/layout/footer.html").catch(() => {})
         ]);
 
-        // Terapkan layout dinamis (Sidebar, Header, Footer menyesuaikan role)
         setupDynamicLayout(userRole);
 
         if (path.includes("/pages/siswa/")) {
