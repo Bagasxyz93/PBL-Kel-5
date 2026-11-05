@@ -69,33 +69,6 @@ const aktivitasSiswa = [
     }
 ];
 
-const jadwalSiswa = [
-    {
-        waktu: "08:00 - 11:30",
-        judul: "Praktikum Frontend Web Dev",
-        lokasi: "Lab Komputer 02 • Unit Inkubasi",
-        status: "Selesai",
-        statusClass: "bg-emerald-50 text-emerald-600",
-        bgClass: "bg-slate-50/80 border-slate-100"
-    },
-    {
-        waktu: "13:00 - 14:30",
-        judul: "Mentoring & Standup Harian",
-        lokasi: "Mentor: Bpk. Rendi (Ruang Briefing)",
-        status: "Sedang Jalan",
-        statusClass: "bg-indigo-50 text-indigo-600 font-semibold",
-        bgClass: "bg-[#f5f6ff] border-indigo-100"
-    },
-    {
-        waktu: "16:30 - 17:00",
-        judul: "Upload Daily Report & Checkout",
-        lokasi: "Portal SI-IN SMK Asy-Syadzili",
-        status: "Mendatang",
-        statusClass: "bg-slate-100 text-slate-500",
-        bgClass: "bg-slate-50/80 border-slate-100"
-    }
-];
-
 function renderStatistik() {
     const container = document.getElementById("statistik-container");
     if (!container) return;
@@ -162,66 +135,16 @@ function renderAktivitas() {
     }).join("");
 }
 
-function renderJadwal() {
-    const container = document.getElementById("jadwal-container");
-    const jumlahJadwal = document.getElementById("jumlah-jadwal");
-    if (!container) return;
-
-    container.innerHTML = jadwalSiswa.map((item) => `
-        <article class="flex items-center justify-between gap-4 rounded-xl border ${item.bgClass} p-4 transition-all">
-            <div class="flex items-center gap-3.5 min-w-0">
-                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-500 text-white shadow-md shadow-indigo-500/20">
-                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                    </svg>
-                </div>
-
-                <div class="min-w-0">
-                    <h3 class="text-xs font-bold text-slate-800 truncate">
-                        ${item.judul}
-                    </h3>
-                    <p class="mt-0.5 flex items-center gap-1 text-[11px] text-slate-400 truncate">
-                        <svg class="h-3 w-3 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                        </svg>
-                        ${item.lokasi}
-                    </p>
-                </div>
-            </div>
-
-            <div class="text-right shrink-0">
-                <p class="text-xs font-bold text-indigo-600">${item.waktu}</p>
-                <span class="mt-1 inline-block rounded-md px-2 py-0.5 text-[10px] ${item.statusClass}">
-                    ${item.status}
-                </span>
-            </div>
-        </article>
-    `).join("");
-
-    if (jumlahJadwal) {
-        jumlahJadwal.textContent = `${jadwalSiswa.length} Sesi Terjadwal`;
-    }
-}
-
-function renderTanggal() {
-    const tanggal = document.getElementById("tanggal-hari-ini");
-    if (!tanggal) return;
-
-    tanggal.textContent = "Selasa, 14 Mei 2024";
-}
-
 function renderSapaan() {
     const sapaan = document.getElementById("sapaan-siswa");
     if (!sapaan) return;
 
-    const namaSiswa = "Nezaruriancta";
-    sapaan.textContent = `Halo , ${namaSiswa}!`;
+    const namaSiswa = "Nerazuriancta";
+    sapaan.textContent = `Halo, ${namaSiswa}!`;
 }
 
 export function initDashboard() {
     renderStatistik();
     renderAktivitas();
-    renderJadwal();
-    renderTanggal();
     renderSapaan();
 }
