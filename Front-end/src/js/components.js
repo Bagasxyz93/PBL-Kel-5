@@ -171,6 +171,19 @@ function setupDynamicLayout(role) {
     if (footerVersion) {
         footerVersion.textContent = config.versionText;
     }
+
+    // 4. Setup Event Listener Tombol Logout
+    const btnLogout = document.getElementById("btn-logout");
+    if (btnLogout) {
+        btnLogout.addEventListener("click", () => {
+            // Hapus data sesi penyimpanan lokal
+            localStorage.removeItem("userName");
+            localStorage.removeItem("userRole");
+            
+            // Arahkan kembali ke halaman login (sesuaikan path file login kamu jika berbeda, misal /index.html atau /login.html)
+            window.location.href = "/index.html"; 
+        });
+    }
 }
 
 /* =========================================================
@@ -192,7 +205,6 @@ INISIALISASI HALAMAN MENTOR
 
 function initMentorPage(path) {
     if (path.endsWith("/dashboard.html")) initMentorDashboard();
-    // Tambahkan inisialisasi halaman mentor lain di sini jika sudah dibuat (misal: absensi mentor, dll)
 }
 
 /* =========================================================
