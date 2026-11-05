@@ -16,10 +16,10 @@
         <!-- CONTAINER SIDEBAR (Fixed/Static di kiri) -->
         <div id="sidebar-container" class="shrink-0 h-full"></div>
 
-        <!-- Area Konten Utama (Menggunakan flex-1 dan overflow-y-auto sebagai wadah utama scroll) -->
+        <!-- Area Konten Utama -->
         <div class="flex-1 flex flex-col h-full overflow-y-auto relative">
             
-            <!-- HEADER CONTAINER (Akan otomatis sticky karena wadah utamanya overflow-y-auto) -->
+            <!-- HEADER CONTAINER -->
             <div id="header-container" class="sticky top-0 z-30 shrink-0"></div>
 
             <!-- KONTEN DASHBOARD ADMIN -->
@@ -53,10 +53,9 @@
                                 <div class="w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600">
                                     <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                                 </div>
-                                <span class="bg-emerald-50 text-emerald-600 px-2.5 py-1 rounded-full text-[10px] font-bold">+4 batch ini</span>
                             </div>
                             <p class="text-xs font-semibold text-slate-400">Total Siswa</p>
-                            <h3 class="text-3xl font-black text-slate-900 mt-1">48</h3>
+                            <h3 class="text-3xl font-black text-slate-900 mt-1">25</h3>
                         </div>
                         <div class="mt-6 pt-4 border-t border-slate-50 flex items-center justify-between text-xs">
                             <span class="text-slate-400">Siswa inkubasi aktif</span>
@@ -70,10 +69,9 @@
                                 <div class="w-12 h-12 rounded-2xl bg-purple-50 flex items-center justify-center text-purple-600">
                                     <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                                 </div>
-                                <span class="bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full text-[10px] font-bold">Standar Kuota</span>
                             </div>
                             <p class="text-xs font-semibold text-slate-400">Total Guru/Mentor</p>
-                            <h3 class="text-3xl font-black text-slate-900 mt-1">6</h3>
+                            <h3 class="text-3xl font-black text-slate-900 mt-1">3</h3>
                         </div>
                         <div class="mt-6 pt-4 border-t border-slate-50 flex items-center justify-between text-xs">
                             <span class="text-slate-400">Mentor tersertifikasi</span>
@@ -87,20 +85,21 @@
                                 <div class="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600">
                                     <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                                 </div>
-                                <span class="bg-blue-50 text-blue-600 px-2.5 py-1 rounded-full text-[10px] font-bold">Kelas Berjalan</span>
                             </div>
                             <p class="text-xs font-semibold text-slate-400">Total Program</p>
-                            <h3 class="text-3xl font-black text-slate-900 mt-1">5</h3>
+                            <h3 class="text-3xl font-black text-slate-900 mt-1">3</h3>
                         </div>
                         <div class="mt-6 pt-4 border-t border-slate-50 flex items-center justify-between text-xs">
                             <span class="text-slate-400">Kurikulum inkubasi terdaftar</span>
-                            <a href="/pages/Admin/Program.html" class="font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1">Jadwal Detail &rarr;</a>
+                            <a href="/pages/Admin/Program.html" class="font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1">Kelola Program &rarr;</a>
                         </div>
                     </div>
                 </div>
 
-                <!-- Bagian Bawah: Grafik & Pengumuman -->
+                <!-- Bagian Bawah: Grafik Aktivitas & Program Tersedia -->
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    
+                    <!-- Grafik Aktivitas Program (7 Hari Terakhir) -->
                     <div class="lg:col-span-2 bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between">
                         <div class="flex items-center justify-between mb-6">
                             <div>
@@ -128,21 +127,50 @@
                         </div>
                     </div>
 
+                    <!-- Program Tersedia -->
                     <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between">
                         <div>
                             <div class="flex items-center justify-between mb-4">
-                                <h3 class="font-bold text-slate-800 text-base">Pengumuman</h3>
-                                <span class="bg-indigo-50 text-indigo-600 px-2.5 py-0.5 rounded-full text-[10px] font-bold">3 Baru</span>
+                                <h3 class="font-bold text-slate-800 text-base">Program Tersedia</h3>
+                                <span class="bg-blue-50 text-blue-600 px-2.5 py-0.5 rounded-full text-[10px] font-bold">3 Program</span>
                             </div>
                             <div class="space-y-3">
-                                <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100"><h4 class="text-xs font-bold text-slate-800">Jadwal kelas 2 minggu ke depan</h4><p class="text-[11px] text-slate-500 mt-1">Sinkronisasi modul inkubasi...</p></div>
-                                <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100"><h4 class="text-xs font-bold text-slate-800">Rapat evaluasi program</h4><p class="text-[11px] text-slate-500 mt-1">Pertemuan berkala seluruh mentor...</p></div>
+                                <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100 flex items-center gap-3">
+                                    <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-xs font-bold text-slate-800">Web Development</h4>
+                                        <p class="text-[11px] text-slate-500 mt-0.5">Pengembangan website dan aplikasi web.</p>
+                                    </div>
+                                </div>
+                                <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100 flex items-center gap-3">
+                                    <div class="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-xs font-bold text-slate-800">Desktop Development</h4>
+                                        <p class="text-[11px] text-slate-500 mt-0.5">Pengembangan aplikasi desktop.</p>
+                                    </div>
+                                </div>
+                                <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100 flex items-center gap-3">
+                                    <div class="w-9 h-9 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-xs font-bold text-slate-800">Computer Networking</h4>
+                                        <p class="text-[11px] text-slate-500 mt-0.5">Pembelajaran jaringan komputer.</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <button class="mt-6 w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold shadow-md shadow-blue-600/20 transition">
-                            + Tambah Pengumuman
-                        </button>
+                        
+                        <!-- Tombol Tambah Program Baru (Di dalam card Program Tersedia) -->
+                        <a href="/pages/Admin/Program.html" class="mt-6 w-full py-3 text-white rounded-xl text-xs font-semibold shadow-md shadow-blue-600/20 transition hover:opacity-95 flex items-center justify-center gap-1.5 text-center" style="background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%) !important;">
+                            <span>+</span> Tambah Program Baru
+                        </a>
                     </div>
+
                 </div>
 
             </main>

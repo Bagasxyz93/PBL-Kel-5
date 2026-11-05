@@ -1,17 +1,14 @@
-
-
 document.addEventListener("DOMContentLoaded", () => {
     const searchInput = document.getElementById("searchMentor");
     const filterBidang = document.getElementById("filterBidang");
     const tabelMentorBody = document.getElementById("tabelMentorBody");
     const tambahGuruBtn = document.getElementById("tambahGuruBtn");
 
-    // Data Mockup Sesuai Figma Kelola Data Mentor
+    // Data Mockup Sesuai Figma Kelola Data Mentor (3 Mentor Utama)[cite: 12]
     const dummyMentor = [
-        { id: 1, inisial: "PR", warnaBg: "bg-purple-100 text-purple-700", nama: "Ibu Pur", email: "pur.mentor@si-in.sch.id", nip: "198701012006042001", bidang: "Matematika / Logika", status: "Aktif" },
-        { id: 2, inisial: "RN", warnaBg: "bg-blue-100 text-blue-700", nama: "Ibu Rina", email: "rina.mentor@si-in.sch.id", nip: "198805122010021002", bidang: "Pemrograman Web", status: "Aktif" },
-        { id: 3, inisial: "UP", warnaBg: "bg-indigo-100 text-indigo-700", nama: "Ibu Upik", email: "upik.mentor@si-in.sch.id", nip: "199201082014032005", bidang: "UI/UX Design", status: "Aktif" },
-        { id: 4, inisial: "SN", warnaBg: "bg-emerald-100 text-emerald-700", nama: "Bapak Sanipon", email: "prawit.mentor@si-in.sch.id", nip: "198904242015031001", bidang: "Cloud & Data", status: "Aktif" }
+        { id: 1, inisial: "PR", warnaBg: "bg-purple-100 text-purple-700", nama: "Ibu Pur", email: "pur.mentor@si-in.sch.id", nip: "198701012006042001", bidang: "Web Development", status: "Aktif" },
+        { id: 2, inisial: "RN", warnaBg: "bg-blue-100 text-blue-700", nama: "Ibu Rina", email: "rina.mentor@si-in.sch.id", nip: "198805122010021002", bidang: "Desktop Development", status: "Aktif" },
+        { id: 3, inisial: "UP", warnaBg: "bg-indigo-100 text-indigo-700", nama: "Ibu Upik", email: "upik.mentor@si-in.sch.id", nip: "199201082014032005", bidang: "Computer Networking", status: "Aktif" }
     ];
 
     // Fungsi Render Tabel Mentor
