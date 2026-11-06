@@ -1,0 +1,211 @@
+<div class="space-y-6">
+    <!-- Breadcrumb & Tombol Navigasi Atas -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div class="flex items-center gap-2 text-xs text-slate-500">
+            <span class="hover:text-slate-700 cursor-pointer">SI-IN</span>
+            <span>•</span>
+            <span class="hover:text-slate-700 cursor-pointer">Portal Guru & Mentor</span>
+            <span>•</span>
+            <span class="hover:text-slate-700 cursor-pointer" id="breadcrumb-back-list">Kelola Materi</span>
+            <span>•</span>
+            <span class="font-bold text-[#00b09b]">Unggah Materi Baru</span>
+        </div>
+        
+        <div class="flex items-center gap-3">
+            <button id="btn-reset-form" class="flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-700 px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold shadow-sm transition">
+                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                Reset Form
+            </button>
+            <button id="btn-back-to-list" class="flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-700 px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold shadow-sm transition">
+                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Kembali ke Daftar Materi
+            </button>
+        </div>
+    </div>
+
+    <!-- Header Banner Form -->
+    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="space-y-1">
+            <div class="flex items-center gap-2">
+                <h1 class="text-xl font-extrabold text-slate-900">Unggah Materi Pembelajaran Baru</h1>
+                <span class="px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-600 text-[10px] font-bold">Modul TA 2024/2025</span>
+            </div>
+            <p class="text-xs text-slate-500">Publikasikan silabus, modul praktikum, video pembelajaran, atau slide presentasi untuk siswa binaan inkubasi. Pastikan materi mematuhi kerangka kompetensi inkubator teknologi.</p>
+        </div>
+        <div class="flex items-center gap-3 bg-slate-50 px-4 py-3 rounded-xl border border-slate-200/80 shrink-0">
+            <div class="p-2.5 rounded-xl bg-emerald-50 text-[#00b09b]">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            </div>
+            <div>
+                <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Kapasitas Mentor</p>
+                <p class="text-xs font-bold text-slate-800">12 / 20 Modul Aktif</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Grid Form Utama & Panel Samping -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Kolom Kiri: Input Data Form (2 Grid span) -->
+        <div class="lg:col-span-2 space-y-6">
+            
+            <!-- Bagian 1: Informasi Dasar Materi -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-5">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                    <div class="flex items-center gap-2.5">
+                        <span class="w-7 h-7 rounded-lg bg-emerald-50 text-[#00b09b] flex items-center justify-center font-bold text-xs">1</span>
+                        <h3 class="font-bold text-slate-900 text-sm">Bagian 1: Informasi Dasar Materi</h3>
+                    </div>
+                    <span class="text-[11px] text-slate-400 font-medium">Langkah 1 dari 2</span>
+                </div>
+
+                <div class="space-y-4 text-xs">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1.5">Judul Materi / Topik Modul <span class="text-rose-500">*</span></label>
+                        <input type="text" placeholder="Maks. 120 Karakter" class="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:border-[#00b09b] transition">
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1.5">Program Sasaran <span class="text-rose-500">*</span></label>
+                            <select class="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 focus:outline-none focus:border-[#00b09b] transition">
+                                <option value="">Pilih Program...</option>
+                                <option value="Web Development">Web Development</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1.5">Estimasi Durasi Belajar <span class="text-rose-500">*</span></label>
+                            <input type="text" value="90 Menit / 2 SKS Mandiri" class="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:border-[#00b09b] transition">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1.5">Kategori / Topik Keahlian <span class="text-rose-500">*</span></label>
+                        <div class="flex flex-wrap gap-2">
+                            <button type="button" class="px-3 py-1.5 rounded-xl bg-emerald-50 text-[#00b09b] font-bold border border-emerald-200 text-xs">✓ Pemrograman Web & API</button>
+                            <button type="button" class="px-3 py-1.5 rounded-xl bg-slate-50 text-slate-600 font-medium border border-slate-200 text-xs hover:bg-slate-100">UI/UX Design & Prototype</button>
+                            <button type="button" class="px-3 py-1.5 rounded-xl bg-slate-50 text-slate-600 font-medium border border-slate-200 text-xs hover:bg-slate-100">Logika & Algoritma</button>
+                            <button type="button" class="px-3 py-1.5 rounded-xl bg-slate-50 text-slate-600 font-medium border border-slate-200 text-xs hover:bg-slate-100">Pitch Deck & Bisnis</button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1.5">Deskripsi & Instruksi Pengerjaan Siswa</label>
+                        <div class="border border-slate-200 rounded-xl overflow-hidden bg-slate-50">
+                            <div class="flex items-center gap-1 bg-white px-3 py-2 border-b border-slate-200 text-slate-500">
+                                <button class="p-1 hover:bg-slate-100 rounded font-bold">B</button>
+                                <button class="p-1 hover:bg-slate-100 rounded italic">I</button>
+                                <button class="p-1 hover:bg-slate-100 rounded">🔗</button>
+                                <button class="p-1 hover:bg-slate-100 rounded">📋</button>
+                            </div>
+                            <textarea rows="4" placeholder="Tuliskan instruksi singkat bagi siswa yang akan mempelajari modul ini..." class="w-full p-3 bg-transparent focus:outline-none text-slate-700"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bagian 2: Konten & Lampiran Pembelajaran -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-5">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                    <div class="flex items-center gap-2.5">
+                        <span class="w-7 h-7 rounded-lg bg-emerald-50 text-[#00b09b] flex items-center justify-center font-bold text-xs">2</span>
+                        <h3 class="font-bold text-slate-900 text-sm">Bagian 2: Konten & Lampiran Pembelajaran</h3>
+                    </div>
+                    <span class="text-[11px] text-slate-400 font-medium">Langkah 2 dari 2</span>
+                </div>
+
+                <div class="space-y-4 text-xs">
+                    <div class="flex items-center gap-2 bg-slate-100 p-1 rounded-xl w-fit font-semibold text-slate-600">
+                        <button class="px-3.5 py-1.5 rounded-lg bg-white shadow-sm text-slate-900">📄 File Dokumen / Slide</button>
+                        <button class="px-3.5 py-1.5 rounded-lg hover:text-slate-900 transition">🔗 Tautan / Video Eksternal</button>
+                    </div>
+
+                    <!-- Area Dropzone File -->
+                    <div class="border-2 border-dashed border-slate-200 rounded-2xl p-8 text-center space-y-3 bg-slate-50/50 hover:bg-slate-50 transition cursor-pointer">
+                        <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-[#00b09b] mx-auto flex items-center justify-center shadow-sm">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                        </div>
+                        <div>
+                            <p class="font-bold text-slate-800">Tarik & lepas file ke area ini, atau <span class="text-[#00b09b]">Klik untuk Telusuri</span></p>
+                            <p class="text-[11px] text-slate-400 mt-0.5">Mendukung format: PDF, PPTX, MP4, atau Arsip Proyek .ZIP (Ukuran berkas maks. 50 MB)</p>
+                        </div>
+                        <div class="flex items-center justify-center gap-2 pt-1">
+                            <span class="px-2 py-1 rounded bg-slate-200/70 text-slate-600 text-[10px] font-semibold">PDF Modul</span>
+                            <span class="px-2 py-1 rounded bg-slate-200/70 text-slate-600 text-[10px] font-semibold">Slide PPT</span>
+                            <span class="px-2 py-1 rounded bg-slate-200/70 text-slate-600 text-[10px] font-semibold">Starter Code ZIP</span>
+                        </div>
+                    </div>
+
+                    <!-- File Terlampir Preview -->
+                    <div class="p-4 rounded-xl border border-slate-200 bg-white flex items-center justify-between shadow-sm">
+                        <div class="flex items-center gap-3">
+                            <div class="p-2.5 rounded-lg bg-red-50 text-red-600 font-bold text-xs">PDF</div>
+                            <div>
+                                <p class="font-bold text-slate-900">Modul_4_Integrasi_Payment_Midtrans_v2.pdf</p>
+                                <p class="text-[11px] text-slate-400">Ukuran: 4.8 MB • Diunggah: Hari ini, 10:15 WIB • <span class="text-emerald-600 font-semibold">✓ Terverifikasi Aman</span></p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button class="p-2 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 transition" title="Lihat">👁️</button>
+                            <button class="p-2 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 transition" title="Hapus">🗑️</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Kolom Kanan: Status & Pratinjau (1 Grid span) -->
+        <div class="space-y-6">
+            
+            <!-- Kartu Status & Visibilitas -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4 text-xs">
+                <h3 class="font-bold text-slate-900 text-sm pb-2 border-b border-slate-100">Status & Visibilitas</h3>
+                
+                <div class="space-y-3">
+                    <label class="flex items-start gap-3 p-3 rounded-xl border border-emerald-200 bg-emerald-50/40 cursor-pointer">
+                        <input type="radio" name="visibilitas" checked class="mt-0.5 text-[#00b09b] focus:ring-[#00b09b]">
+                        <div>
+                            <div class="flex items-center gap-1.5 font-bold text-slate-900">
+                                <span>Publikasikan Sekarang</span>
+                                <span class="px-2 py-0.5 rounded bg-emerald-500 text-white text-[9px] font-bold">AKTIF</span>
+                            </div>
+                            <p class="text-[11px] text-slate-500 mt-0.5">Siswa langsung dapat membaca, mengunduh, dan mengerjakan tugas.</p>
+                        </div>
+                    </label>
+
+                    <label class="flex items-start gap-3 p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer">
+                        <input type="radio" name="visibilitas" class="mt-0.5 text-[#00b09b] focus:ring-[#00b09b]">
+                        <div>
+                            <div class="flex items-center gap-1.5 font-bold text-slate-900">
+                                <span>Simpan sebagai Draf</span>
+                                <span class="px-2 py-0.5 rounded bg-slate-200 text-slate-700 text-[9px] font-bold">DRAF</span>
+                            </div>
+                            <p class="text-[11px] text-slate-500 mt-0.5">Hanya terlihat oleh Anda dan rekan mentor pengampu inkubator.</p>
+                        </div>
+                    </label>
+                </div>
+
+                <div class="pt-2">
+                    <button class="w-full py-3 bg-[#00b09b] hover:bg-[#009b88] text-white font-bold rounded-xl shadow-md shadow-emerald-500/20 transition mb-2">
+                        Publikasikan Materi
+                    </button>
+                    <button class="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition">
+                        Simpan sebagai Draf
+                    </button>
+                </div>
+            </div>
+
+            <!-- Kartu Standar Materi Inkubasi -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-3 text-xs">
+                <h3 class="font-bold text-slate-900 text-sm pb-2 border-b border-slate-100">Standar Materi Inkubasi</h3>
+                <ul class="space-y-2 text-slate-600">
+                    <li class="flex items-start gap-2">✓ Menyertakan tujuan pembelajaran spesifik dan target luaran portofolio.</li>
+                    <li class="flex items-start gap-2">✓ Kode sumber atau API credential WAJIB menggunakan mode Sandbox / Testnet.</li>
+                    <li class="flex items-start gap-2">✓ Materi video eksternal beresolusi minimal 720p dengan audio jelas.</li>
+                </ul>
+            </div>
+
+        </div>
+
+    </div>
+</div>

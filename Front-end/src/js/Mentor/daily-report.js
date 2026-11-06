@@ -1,5 +1,5 @@
 /* =========================================================
-LOGIKA HALAMAN KELOLA DAILY REPORT MENTOR
+LOGIKA HALAMAN KELOLA DAILY REPORT MENTOR & POP-UP DETAIL
 ========================================================= */
 
 const dataDailyReports = [
@@ -9,13 +9,13 @@ const dataDailyReports = [
         nis: "1234567801",
         program: "Web Development",
         waktu: "17:15 WIB<br><span class='text-[10px] text-slate-400 font-normal'>17 Okt 2026</span>",
+        tglLaporan: "17 Oktober 2026",
         judul: "Mengerjakan rancangan prototype dan alur checkout",
-        deskripsi: "Modul katalog sudah selesai, kendala integrasi gateway...",
-        lampiran: "1 File",
-        lampiranIcon: "file",
-        status: "Menunggu",
-        initials: "AF",
-        avatarBg: "bg-[#2864ed]"
+        deskripsi: "Hari ini saya mengerjakan bagian UI pada project MVP inkubasi. Modul katalog sudah selesai, namun kendala masih bingung dengan integrasi payment gateway sandbox.",
+        lampiran: "Dokumentasi_Progress_Checkout.pdf",
+        lampiranInfo: "Format Dokumen PDF • 2.4 MB",
+        lampiranTipe: "PDF",
+        status: "Menunggu"
     },
     {
         no: 2,
@@ -23,13 +23,13 @@ const dataDailyReports = [
         nis: "1234567802",
         program: "Web Development",
         waktu: "16:40 WIB<br><span class='text-[10px] text-slate-400 font-normal'>17 Okt 2026</span>",
+        tglLaporan: "17 Oktober 2026",
         judul: "Riset 15 Pelanggan Potensial (Customer Validation)",
-        deskripsi: "Telah melakukan wawancara langsung ke 10 mahasiswa...",
-        lampiran: "Sheet",
-        lampiranIcon: "sheet",
-        status: "Diterima",
-        initials: "SA",
-        avatarBg: "bg-[#00b09b]"
+        deskripsi: "Telah melakukan wawancara langsung ke 10 mahasiswa terkait kebutuhan aplikasi pencatatan keuangan harian.",
+        lampiran: "Sheet_Validasi_Customer.xlsx",
+        lampiranInfo: "Format Spreadsheet • 1.8 MB",
+        lampiranTipe: "XLS",
+        status: "Diterima"
     },
     {
         no: 3,
@@ -37,13 +37,13 @@ const dataDailyReports = [
         nis: "1234567803",
         program: "Web Development",
         waktu: "15:10 WIB<br><span class='text-[10px] text-slate-400 font-normal'>17 Okt 2026</span>",
+        tglLaporan: "17 Oktober 2026",
         judul: "Konfigurasi Database Postgres & API Authentication",
-        deskripsi: "Terdapat error koneksi SSL pool pada Supabase...",
-        lampiran: "Repo",
-        lampiranIcon: "repo",
-        status: "Ditolak",
-        initials: "BS",
-        avatarBg: "bg-rose-500"
+        deskripsi: "Terdapat error koneksi SSL pool pada Supabase saat implementasi JSON Web Token.",
+        lampiran: "Error_Log_Supabase.txt",
+        lampiranInfo: "Format Text Log • 500 KB",
+        lampiranTipe: "TXT",
+        status: "Ditolak"
     },
     {
         no: 4,
@@ -51,15 +51,17 @@ const dataDailyReports = [
         nis: "1234567804",
         program: "Web Development",
         waktu: "14:05 WIB<br><span class='text-[10px] text-slate-400 font-normal'>17 Okt 2026</span>",
+        tglLaporan: "17 Oktober 2026",
         judul: "Penyusunan Pitch Deck 10 Slide & Financial Projection",
-        deskripsi: "Unit economics dihitung berdasarkan asumsi COGS produk...",
-        lampiran: "2 File",
-        lampiranIcon: "file",
-        status: "Diterima",
-        initials: "RF",
-        avatarBg: "bg-emerald-600"
+        deskripsi: "Unit economics dihitung berdasarkan asumsi COGS produk digital dan proyeksi pendapatan tahun pertama.",
+        lampiran: "PitchDeck_Startup_v1.pdf",
+        lampiranInfo: "Format Dokumen PDF • 5.1 MB",
+        lampiranTipe: "PDF",
+        status: "Diterima"
     }
 ];
+
+let activeReportId = null;
 
 export function initMentorDailyReport() {
     console.log("Modul Kelola Daily Report Mentor berhasil dimuat.");
@@ -72,17 +74,16 @@ export function initMentorDailyReport() {
 
     let activeTab = "semua";
 
-    // Fungsi render tabel
+    // Fungsi Render Tabel
     function renderTable(data) {
         if (!tableBody) return;
 
         if (data.length === 0) {
-            tableBody.innerHTML = `<tr><td colspan="8" class="py-6 text-center text-slate-400">Tidak ada laporan harian yang ditemukan.</td></tr>`;
+            tableBody.innerHTML = `<tr><td colspan="8" class="py-8 text-center text-slate-400">Tidak ada laporan harian yang ditemukan.</td></tr>`;
             return;
         }
 
-        tableBody.innerHTML = data.map(item => {
-            // Badge Status
+        tableBody.innerHTML = data.map((item, idx) => {
             let statusBadge = "";
             if (item.status === "Menunggu") {
                 statusBadge = `<span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-amber-50 text-amber-600 text-[11px] font-bold">Menunggu</span>`;
@@ -92,39 +93,27 @@ export function initMentorDailyReport() {
                 statusBadge = `<span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-rose-50 text-rose-600 text-[11px] font-bold">Ditolak</span>`;
             }
 
-            // Tombol Tindakan
             let actionBtn = item.status === "Menunggu"
-                ? `<button class="px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-600 font-semibold text-xs transition">Periksa</button>`
-                : `<button class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold text-xs transition">Detail ↗</button>`;
+                ? `<button onclick="window.openDailyReportModal(${item.no})" class="px-3.5 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-600 font-semibold text-xs transition shadow-sm">Periksa</button>`
+                : `<button onclick="window.openDailyReportModal(${item.no})" class="px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold text-xs transition inline-flex items-center gap-1">Detail ↗</button>`;
 
-            // Lampiran Icon & Badge
-            let lampiranBadge = `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 text-[10px] font-medium">📄 ${item.lampiran}</span>`;
-            if (item.lampiranIcon === "sheet") {
-                lampiranBadge = `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-medium">📊 ${item.lampiran}</span>`;
-            } else if (item.lampiranIcon === "repo") {
-                lampiranBadge = `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-purple-50 text-purple-700 text-[10px] font-medium">💻 ${item.lampiran}</span>`;
-            }
+            let lampiranBadge = `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 text-[10px] font-medium truncate max-w-[150px]">📄 ${item.lampiran}</span>`;
 
             return `
                 <tr class="hover:bg-slate-50/80 transition align-top">
-                    <td class="py-4 px-6 font-semibold text-slate-500">${item.no}</td>
+                    <td class="py-4 px-6 font-semibold text-slate-400">${idx + 1}</td>
                     <td class="py-4 px-6">
-                        <div class="flex items-center gap-3">
-                            <div class="h-9 w-9 rounded-full ${item.avatarBg} text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm">
-                                ${item.initials}
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-slate-900">${item.nama}</h4>
-                                <p class="text-[10px] text-slate-400">NIS: ${item.nis}</p>
-                            </div>
+                        <div>
+                            <h4 class="font-bold text-slate-900">${item.nama}</h4>
+                            <p class="text-[10px] text-slate-400 font-medium">NIS: ${item.nis}</p>
                         </div>
                     </td>
                     <td class="py-4 px-6">
-                        <span class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 text-[11px] font-medium">${item.program}</span>
+                        <span class="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-[11px] font-semibold">${item.program}</span>
                     </td>
                     <td class="py-4 px-6 font-medium text-slate-700 text-xs">${item.waktu}</td>
                     <td class="py-4 px-6 max-w-xs">
-                        <p class="font-bold text-slate-900 text-xs">${item.judul}</p>
+                        <p class="font-bold text-slate-900 text-xs hover:text-indigo-600 transition cursor-pointer" onclick="window.openDailyReportModal(${item.no})">${item.judul}</p>
                         <p class="text-[11px] text-slate-400 mt-0.5 truncate">${item.deskripsi}</p>
                     </td>
                     <td class="py-4 px-6">${lampiranBadge}</td>
@@ -135,10 +124,9 @@ export function initMentorDailyReport() {
         }).join("");
     }
 
-    // Render awal
     renderTable(dataDailyReports);
 
-    // Fungsi Filter Gabungan (Search, Program, Status, Tab)
+    // Fungsi Filter Data
     function applyFilters() {
         const keyword = (searchInput ? searchInput.value : "").toLowerCase();
         const progVal = (filterProgram ? filterProgram.value : "").toLowerCase();
@@ -149,7 +137,6 @@ export function initMentorDailyReport() {
             const matchProgram = progVal === "" || item.program.toLowerCase().includes(progVal);
             const matchStatus = statVal === "" || item.status.toLowerCase() === statVal;
 
-            // Kondisi Tab
             let matchTab = true;
             if (activeTab === "belum-dinilai") {
                 matchTab = item.status.toLowerCase() === "menunggu";
@@ -167,7 +154,6 @@ export function initMentorDailyReport() {
     if (filterProgram) filterProgram.addEventListener("change", applyFilters);
     if (filterStatus) filterStatus.addEventListener("change", applyFilters);
 
-    // Logika Klik Tab
     tabButtons.forEach(btn => {
         btn.addEventListener("click", (e) => {
             tabButtons.forEach(b => b.classList.remove("bg-white", "shadow-sm", "text-slate-900"));
@@ -180,4 +166,100 @@ export function initMentorDailyReport() {
             applyFilters();
         });
     });
+
+    // Inisialisasi Fungsi Global untuk Membuka & Mengelola Modal Pop-up
+    window.openDailyReportModal = async (id) => {
+        activeReportId = id;
+        const item = dataDailyReports.find(d => d.no === id);
+        if (!item) return;
+
+        const container = document.getElementById("daily-report-modal-container");
+        if (container && !container.innerHTML.trim()) {
+            try {
+                const response = await fetch('/component/Mentor/pop-up-daily-report.html');
+                if (response.ok) {
+                    container.innerHTML = await response.text();
+                    setupModalEventListeners();
+                } else {
+                    console.error("Gagal mengambil file pop-up daily report.");
+                }
+            } catch (err) {
+                console.error("Kesalahan jaringan saat memuat modal:", err);
+            }
+        }
+
+        // Isi data dinamis ke dalam elemen pop-up modal
+        const elNama = document.getElementById("modal-siswa-nama");
+        const elNis = document.getElementById("modal-siswa-nis");
+        const elProg = document.getElementById("modal-siswa-program");
+        const elInit = document.getElementById("modal-siswa-initial");
+        const elTgl = document.getElementById("modal-tgl-laporan");
+        const elJudul = document.getElementById("modal-judul-laporan");
+        const elDesk = document.getElementById("modal-deskripsi-laporan");
+        const elLampNama = document.getElementById("modal-lampiran-nama");
+        const elLampInfo = document.getElementById("modal-lampiran-info");
+        const elLampTipe = document.getElementById("modal-lampiran-tipe");
+
+        if (elNama) elNama.textContent = item.nama;
+        if (elNis) elNis.textContent = `NIS: ${item.nis} • Pembimbing: Ibu Sari Lestari`;
+        if (elProg) elProg.textContent = item.program;
+        if (elInit) elInit.textContent = item.nama.split(" ").map(n => n[0]).join("").toUpperCase();
+        if (elTgl) elTgl.textContent = item.tglLaporan;
+        if (elJudul) elJudul.textContent = item.judul;
+        if (elDesk) elDesk.textContent = item.deskripsi;
+        if (elLampNama) elLampNama.textContent = item.lampiran;
+        if (elLampInfo) elLampInfo.textContent = item.lampiranInfo;
+        if (elLampTipe) elLampTipe.textContent = item.lampiranTipe;
+
+        const modalEl = document.getElementById("modal-daily-report");
+        if (modalEl) modalEl.classList.remove("hidden");
+    };
+
+    function setupModalEventListeners() {
+        const closeBtn = document.getElementById("modal-close-btn");
+        const modalEl = document.getElementById("modal-daily-report");
+        const btnTerima = document.getElementById("btn-terima-laporan");
+        const btnTolak = document.getElementById("btn-tolak-revisi");
+        const templateBtns = document.querySelectorAll(".template-btn");
+        const textareaCatatan = document.getElementById("input-catatan-mentor");
+
+        if (closeBtn && modalEl) {
+            closeBtn.addEventListener("click", () => modalEl.classList.add("hidden"));
+            modalEl.addEventListener("click", (e) => {
+                if (e.target === modalEl) modalEl.classList.add("hidden");
+            });
+        }
+
+        templateBtns.forEach(btn => {
+            btn.addEventListener("click", () => {
+                if (textareaCatatan) {
+                    textareaCatatan.value = btn.textContent.trim().replace("+ ", "");
+                }
+            });
+        });
+
+        if (btnTerima) {
+            btnTerima.onclick = () => {
+                const item = dataDailyReports.find(d => d.no === activeReportId);
+                if (item) item.status = "Diterima";
+                alert("Daily report siswa berhasil disetujui!");
+                if (modalEl) modalEl.classList.add("hidden");
+                renderTable(dataDailyReports);
+            };
+        }
+
+        if (btnTolak) {
+            btnTolak.onclick = () => {
+                const item = dataDailyReports.find(d => d.no === activeReportId);
+                if (item) item.status = "Ditolak";
+                alert("Permintaan revisi daily report telah dikirim ke siswa.");
+                if (modalEl) modalEl.classList.add("hidden");
+                renderTable(dataDailyReports);
+            };
+        }
+    }
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+    initMentorDailyReport();
+});

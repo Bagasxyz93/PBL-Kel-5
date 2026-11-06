@@ -35,7 +35,7 @@ const roleConfig = {
 
     mentor: {
         title: "SI",
-        subtitle: "Portal Mentor",
+        subtitle: "SMK Asy-Syadzili",
         bgClass: "bg-[#064e3b]",
         logoBg: "bg-emerald-600 shadow-emerald-500/20",
         activeColor: "bg-emerald-600 text-white shadow-md shadow-emerald-600/30",
@@ -45,11 +45,11 @@ const roleConfig = {
         avatarBg: "bg-emerald-600 shadow-emerald-500/20",
         menus: [
             { label: "Dashboard", icon: "dashboard", href: "/pages/Mentor/Dashboard.html", active: ["dashboard.html"] },
-            { label: "Data Siswa", icon: "siswa", href: "/pages/Mentor/Siswa.html", active: ["siswa.html"] },
-            { label: "Absensi", icon: "absensi", href: "/pages/Mentor/Absensi.html", active: ["absensi.html"] },
+            { label: "Kelola Materi", icon: "materi", href: "/pages/Mentor/Materi.html", active: ["materi.html"] },
+            { label: "Rekap Absensi", icon: "absensi", href: "/pages/Mentor/Absensi.html", active: ["absensi.html"] },
             { label: "Daily Report", icon: "daily-report", href: "/pages/Mentor/Daily-report.html", active: ["daily-report.html"] },
-            { label: "Materi", icon: "materi", href: "/pages/Mentor/Materi.html", active: ["materi.html"] },
-            { label: "Profil", icon: "profil", href: "/pages/Mentor/Profil.html", active: ["profil.html"] }
+            { label: "Pengajuan Izin", icon: "izin", href: "/pages/Mentor/Izin.html", active: ["izin.html"] },
+            { label: "Profil Mentor", icon: "profil", href: "/pages/Mentor/Profil.html", active: ["profil.html"] }
         ]
     },
 
@@ -176,11 +176,8 @@ function setupDynamicLayout(role) {
     const btnLogout = document.getElementById("btn-logout");
     if (btnLogout) {
         btnLogout.addEventListener("click", () => {
-            // Hapus data sesi penyimpanan lokal
             localStorage.removeItem("userName");
             localStorage.removeItem("userRole");
-            
-            // Arahkan kembali ke halaman login (sesuaikan path file login kamu jika berbeda, misal /index.html atau /login.html)
             window.location.href = "/index.html"; 
         });
     }
@@ -233,7 +230,6 @@ async function initComponents() {
 
         if (app) app.classList.add("invisible", "opacity-0");
 
-        // Memuat komponen master layout universal
         await Promise.all([
             loadComponent("sidebar-container", "/component/layout/sidebar.html"),
             loadComponent("header-container", "/component/layout/header.html").catch(() => {}),
