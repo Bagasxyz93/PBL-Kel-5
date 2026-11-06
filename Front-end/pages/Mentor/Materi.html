@@ -26,8 +26,10 @@
             <!-- HEADER CONTAINER -->
             <div id="header-container" class="sticky top-0 z-30 shrink-0"></div>
 
-            <!-- KONTEN KELOLA MATERI MENTOR -->
-            <main class="flex-1 p-8 max-w-7xl w-full mx-auto space-y-6">
+            <!-- ==========================================
+                 VIEW 1: DAFTAR MATERI (LIST VIEW)
+                 ========================================== -->
+            <main id="view-list-materi" class="flex-1 p-8 max-w-7xl w-full mx-auto space-y-6">
                 
                 <!-- Bagian Judul & Tombol Aksi Atas -->
                 <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -48,14 +50,13 @@
                         </button>
                         <button id="btn-unggahl-materi" class="flex items-center gap-2 bg-[#00b09b] hover:bg-[#009b88] text-white px-4 py-2.5 rounded-xl text-xs font-semibold shadow-md shadow-emerald-500/20 transition">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                            + Unggah Materi
+                            Unggah Materi
                         </button>
                     </div>
                 </div>
 
                 <!-- 4 Kartu Statistik Ringkasan -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <!-- Kartu 1 -->
                     <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
                         <div class="space-y-1">
                             <p class="text-[11px] font-semibold text-slate-400">Total Materi Rilis</p>
@@ -66,8 +67,6 @@
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/></svg>
                         </div>
                     </div>
-
-                    <!-- Kartu 2 -->
                     <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
                         <div class="space-y-1">
                             <p class="text-[11px] font-semibold text-slate-400">Dokumen & Modul PDF</p>
@@ -78,8 +77,6 @@
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
                         </div>
                     </div>
-
-                    <!-- Kartu 3 -->
                     <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
                         <div class="space-y-1">
                             <p class="text-[11px] font-semibold text-slate-400">Video Rekaman</p>
@@ -90,12 +87,11 @@
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
                         </div>
                     </div>
-
-                    <!-- Kartu 4 -->
                     <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
                         <div class="space-y-1">
                             <p class="text-[11px] font-semibold text-slate-400">PPT & Tautan Eksternal</p>
                             <h3 class="text-3xl font-extrabold text-slate-900">6</h3>
+                            <p class="text-[11px] font-medium text-slate-500">Modul / Link</p>
                         </div>
                         <div class="p-3 rounded-xl bg-purple-50 text-purple-600">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
@@ -115,14 +111,14 @@
                     <div class="flex items-center gap-3 w-full md:w-auto">
                         <select id="filter-program" class="bg-slate-50 border border-slate-200 text-slate-700 text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-[#00b09b] transition">
                             <option value="">Semua Program / Kelas</option>
-                            <option value="web-dev">Web Development</option>
+                            <option value="Web Development">Web Development</option>
                         </select>
                         <select id="filter-format" class="bg-slate-50 border border-slate-200 text-slate-700 text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-[#00b09b] transition">
                             <option value="">Semua Format</option>
-                            <option value="pdf">PDF</option>
-                            <option value="video">Video</option>
-                            <option value="ppt">PPT</option>
-                            <option value="link">Link</option>
+                            <option value="PDF">PDF</option>
+                            <option value="Video">Video</option>
+                            <option value="PPT">PPT</option>
+                            <option value="Link">Link</option>
                         </select>
                         <button id="btn-reset-filter" class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-500 hover:text-slate-700 transition" title="Reset Filter">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
@@ -136,7 +132,7 @@
                         <table class="w-full text-left border-collapse">
                             <thead>
                                 <tr class="border-b border-slate-100 text-[11px] font-bold text-slate-400 uppercase tracking-wider bg-slate-50/50">
-                                    <th class="py-3.5 px-6">No</th>
+                                    <th class="py-3.5 px-6 w-16">No</th>
                                     <th class="py-3.5 px-6">Judul Materi & Deskripsi</th>
                                     <th class="py-3.5 px-6">Program / Kelas</th>
                                     <th class="py-3.5 px-6">Format</th>
@@ -144,8 +140,8 @@
                                     <th class="py-3.5 px-6">Tgl Unggah</th>
                                 </tr>
                             </thead>
-                            <tbody id="table-materi-body" class="divide-y divide-slate-100 text-xs">
-                                <!-- Data akan di-generate otomatis oleh materi.js -->
+                            <tbody id="table-materi-body" class="divide-y divide-slate-100 text-xs font-medium text-slate-600">
+                                <!-- Data dimuat dinamis oleh JavaScript -->
                             </tbody>
                         </table>
                     </div>
@@ -155,7 +151,7 @@
                         <span id="pagination-info">Menampilkan 1 - 5 dari 38 materi</span>
                         <div class="flex items-center gap-1.5" id="pagination-buttons">
                             <button class="w-8 h-8 rounded-lg border border-slate-200 flex items-center justify-center text-slate-400 hover:bg-slate-50 transition">&lt;</button>
-                            <button class="w-8 h-8 rounded-lg bg-[#00b09b] text-white font-bold flex items-center justify-center shadow-sm">1</button>
+                            <button class="w-8 h-8 rounded-lg bg-[#00b09b] text-white font-bold flex items-center justify-center shadow-sm shadow-emerald-500/20">1</button>
                             <button class="w-8 h-8 rounded-lg border border-slate-200 flex items-center justify-center font-medium text-slate-600 hover:bg-slate-50 transition">2</button>
                             <button class="w-8 h-8 rounded-lg border border-slate-200 flex items-center justify-center font-medium text-slate-600 hover:bg-slate-50 transition">3</button>
                             <span class="px-1 text-slate-400">...</span>
@@ -167,13 +163,19 @@
 
             </main>
 
-            <!-- FOOTER CONTAINER -->
-            <div id="footer-container" class="shrink-0"></div>
+
+            <!-- ==========================================
+                 VIEW 2: UNGGAH MATERI BARU (FORM VIEW)
+                 ========================================== -->
+            <div id="view-form-materi" class="flex-1 p-8 max-w-7xl w-full mx-auto space-y-6 hidden">
+                <div id="form-unggahl-container" class="w-full"></div>
+            </div>
 
         </div>
     </div>
 
-    <!-- Panggil sistem komponen Anda -->
+    <!-- Panggil skrip komponen global & skrip materi -->
     <script type="module" src="/src/js/components.js"></script>
+    <script type="module" src="/src/js/Mentor/materi.js"></script>
 </body>
 </html>
