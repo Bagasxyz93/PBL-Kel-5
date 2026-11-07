@@ -1,0 +1,225 @@
+<div class="space-y-6">
+    <!-- Breadcrumb & Judul Sesuai Figma -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+            <div class="flex items-center gap-2 text-xs font-semibold text-slate-400 tracking-wider mb-1 uppercase">
+                <span>Kelola Pengguna</span>
+                <span>/</span>
+                <span>Kelola Data Mentor</span>
+                <span>/</span>
+                <span class="text-indigo-600">Tambah Guru Baru</span>
+            </div>
+            <div class="flex items-center gap-3">
+                <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Tambah Guru / Mentor Baru</h1>
+                <span class="bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full text-xs font-bold border border-indigo-100">Registrasi Akun</span>
+            </div>
+            <p class="text-xs text-slate-500 mt-0.5">Registrasi akun instruktur dan mentor pembimbing kelas inkubasi SI-IN.</p>
+        </div>
+        
+        <div class="flex items-center gap-2">
+            <button id="btnKembaliMentor" class="bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 px-4 py-2.5 rounded-xl text-xs font-semibold shadow-sm transition flex items-center gap-1.5">
+                <span>&larr; Kembali ke Daftar</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Layout Utama 2 Kolom (Form di Kiri, Panel Samping di Kanan) -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start pb-12">
+        
+        <!-- Kiri: Form Input Data Mentor -->
+        <form id="formTambahMentor" class="lg:col-span-2 space-y-6">
+            
+            <!-- Bagian 1: Profil & Data Kepegawaian -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-5">
+                <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-sm">1. Profil & Data Kepegawaian Guru/Mentor</h3>
+                            <p class="text-[11px] text-slate-400">Informasi identitas personal, gelar akademis, dan rekam jejak formal.</p>
+                        </div>
+                    </div>
+                    <span class="bg-slate-100 text-slate-600 px-2.5 py-1 rounded-md text-[10px] font-bold">Bagian 1 dari 2</span>
+                </div>
+
+                <div class="space-y-4">
+                    <!-- Nama Lengkap & Gelar -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Nama Lengkap & Gelar <span class="text-red-500">*</span></label>
+                        <input type="text" id="namaMentor" required placeholder="Cth. Ibu Purwanti, S.Kom" class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 px-4 text-xs font-medium text-slate-700 placeholder:text-slate-400 focus:border-indigo-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/10 transition">
+                        <p class="text-[10px] text-slate-400 mt-1">Gunakan nama lengkap beserta gelar untuk pencetakan sertifikat evaluasi siswa.</p>
+                    </div>
+
+                    <!-- NIP & Kontak -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">NIP / ID Pengguna <span class="text-red-500">*</span></label>
+                            <input type="text" id="nipMentor" required placeholder="Cth. 198701012006042001" class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 px-4 text-xs font-medium text-slate-700 placeholder:text-slate-400 focus:border-indigo-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/10 transition">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Nomor Kontak / WhatsApp <span class="text-red-500">*</span></label>
+                            <input type="text" id="kontakMentor" required placeholder="+62 812-3456-7890" class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 px-4 text-xs font-medium text-slate-700 placeholder:text-slate-400 focus:border-indigo-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/10 transition">
+                        </div>
+                    </div>
+
+                    <!-- Email Dinas Resmi -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Email Dinas Resmi <span class="text-red-500">*</span></label>
+                        <input type="email" id="emailMentor" required placeholder="ibu.pur@si-in.sch.id" class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 px-4 text-xs font-medium text-slate-700 placeholder:text-slate-400 focus:border-indigo-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/10 transition">
+                        <p class="text-[10px] text-slate-400 mt-1">Digunakan untuk notifikasi pengajuan izin bimbingan dan daily report siswa.</p>
+                    </div>
+
+                    <!-- Program Keahlian / Bidang -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5">Program Keahlian <span class="text-red-500">*</span></label>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <label class="flex items-center gap-3 p-3.5 rounded-xl border border-slate-200 bg-slate-50/50 cursor-pointer hover:bg-slate-50 transition">
+                                <input type="radio" name="bidangMentor" value="Web Development" checked class="text-indigo-600 focus:ring-indigo-500">
+                                <div>
+                                    <span class="text-xs font-bold text-slate-800 block">Web Development</span>
+                                    <span class="text-[10px] text-slate-400">Pengembangan website dan aplikasi web.</span>
+                                </div>
+                            </label>
+                            <label class="flex items-center gap-3 p-3.5 rounded-xl border border-slate-200 bg-slate-50/50 cursor-pointer hover:bg-slate-50 transition">
+                                <input type="radio" name="bidangMentor" value="Desktop Development" class="text-indigo-600 focus:ring-indigo-500">
+                                <div>
+                                    <span class="text-xs font-bold text-slate-800 block">Desktop Development</span>
+                                    <span class="text-[10px] text-slate-400">Pengembangan aplikasi desktop.</span>
+                                </div>
+                            </label>
+                            <label class="flex items-center gap-3 p-3.5 rounded-xl border border-slate-200 bg-slate-50/50 cursor-pointer hover:bg-slate-50 transition md:col-span-2">
+                                <input type="radio" name="bidangMentor" value="Computer Networking" class="text-indigo-600 focus:ring-indigo-500">
+                                <div>
+                                    <span class="text-xs font-bold text-slate-800 block">Computer Networking</span>
+                                    <span class="text-[10px] text-slate-400">Pembelajaran jaringan komputer.</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bagian 2: Kredensial Akun & Hak Akses -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-5">
+                <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center text-purple-600">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-sm">2. Kredensial Akun & Hak Akses</h3>
+                            <p class="text-[11px] text-slate-400">Konfigurasi akun portal guru, keamanan sandi, dan status operasional.</p>
+                        </div>
+                    </div>
+                    <span class="bg-purple-50 text-purple-600 px-2.5 py-1 rounded-md text-[10px] font-bold">Bagian 2 dari 2</span>
+                </div>
+
+                <div class="space-y-4">
+                    <!-- Username SI-IN -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Username SI-IN <span class="text-red-500">*</span></label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 font-bold text-xs">@</span>
+                            <input type="text" id="usernameMentor" required placeholder="purwanti" class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 pl-9 pr-4 text-xs font-medium text-slate-700 placeholder:text-slate-400 focus:border-indigo-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/10 transition">
+                        </div>
+                        <p class="text-[10px] text-slate-400 mt-1">Hanya huruf kecil dan angka tanpa spasi. Digunakan saat masuk ke portal guru.</p>
+                    </div>
+
+                    <!-- Password & Konfirmasi -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Kata Sandi / Password <span class="text-red-500">*</span></label>
+                            <input type="password" id="passwordMentor" required placeholder="Minimal 8 karakter" class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 px-4 text-xs font-medium text-slate-700 placeholder:text-slate-400 focus:border-indigo-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/10 transition">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Konfirmasi Kata Sandi <span class="text-red-500">*</span></label>
+                            <input type="password" id="confirmPasswordMentor" required placeholder="Ulangi kata sandi" class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 px-4 text-xs font-medium text-slate-700 placeholder:text-slate-400 focus:border-indigo-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/10 transition">
+                        </div>
+                    </div>
+
+                    <!-- Status Akun -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5">Status Akun <span class="text-red-500">*</span></label>
+                        <div class="grid grid-cols-2 gap-4">
+                            <label class="flex items-center gap-2.5 p-3 rounded-xl border border-emerald-200 bg-emerald-50/30 cursor-pointer transition">
+                                <input type="radio" name="statusMentor" value="Aktif" checked class="text-emerald-600 focus:ring-emerald-500">
+                                <span class="text-xs font-bold text-slate-800">Aktif (Default)</span>
+                            </label>
+                            <label class="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 bg-slate-50/50 cursor-pointer transition">
+                                <input type="radio" name="statusMentor" value="Non-Aktif" class="text-indigo-600 focus:ring-indigo-500">
+                                <span class="text-xs font-semibold text-slate-700">Non-Aktif</span>
+                            </label>
+                        </div>
+                        <p class="text-[10px] text-slate-400 mt-1">Akun aktif dapat langsung login dan meninjau log absensi siswa.</p>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <!-- Kanan: Panel Panduan & Aksi -->
+        <div class="space-y-6">
+            
+            <!-- Panduan SOP -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-4">
+                <div class="flex items-center gap-3 pb-3 border-b border-slate-100">
+                    <div class="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-slate-800 text-xs">Ketentuan Registrasi</h4>
+                        <p class="text-[10px] text-slate-400">Standard Operating Procedure (SOP)</p>
+                    </div>
+                </div>
+
+                <ul class="space-y-3 text-[11px] text-slate-600">
+                    <li class="flex items-start gap-2">
+                        <span class="text-indigo-600 font-bold">•</span>
+                        <span>Instruktur yang terdaftar akan otomatis memiliki akses ke menu Materi dan Pemeriksaan Daily Report.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-indigo-600 font-bold">•</span>
+                        <span>Email resmi akan digunakan untuk mengirim tautan aktivasi satu kali dan verifikasi login perangkat baru.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-indigo-600 font-bold">•</span>
+                        <span>Alokasi kelas dapat diperbarui sewaktu-waktu oleh Administrator melalui menu Edit Jadwal Program.</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Kartu Pratinjau Mentor -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-4">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                    <h4 class="font-bold text-slate-800 text-xs">KARTU PENGENAL MENTOR</h4>
+                    <span class="bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded text-[9px] font-bold">Pratinjau</span>
+                </div>
+
+                <div class="p-3.5 rounded-xl border border-slate-100 bg-slate-50/50 flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-700 font-bold flex items-center justify-center text-xs">
+                        PR
+                    </div>
+                    <div>
+                        <p class="font-bold text-slate-800 text-xs">Ibu Pur</p>
+                        <p class="text-[10px] text-indigo-600 font-semibold">Web Development</p>
+                        <p class="text-[9px] font-mono text-slate-400 mt-0.5">NIP : 198701012006042001</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tombol Aksi -->
+            <div class="space-y-3">
+                <button type="submit" form="formTambahMentor" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold shadow-md shadow-blue-600/20 transition flex items-center justify-center gap-2" style="background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%) !important;">
+                    Simpan Data Guru / Mentor
+                </button>
+
+                <button id="btnBatalMentor" type="button" class="w-full py-3 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-xl text-xs font-semibold shadow-sm transition flex items-center justify-center">
+                    Batal
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
