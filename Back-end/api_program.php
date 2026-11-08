@@ -1,6 +1,10 @@
 <?php
+header("Access-Control-Allow-Origin: http://localhost:5173");
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type");
 header("Content-Type: application/json");
-include 'koneksi.php';
+
+require_once 'config/koneksi.php';
 
 $method = $_SERVER['REQUEST_METHOD'];
 

@@ -58,7 +58,7 @@
                         <div class="space-y-1">
                             <p class="text-[11px] font-semibold text-[#7e8fa9]">Total Siswa Bimbingan</p>
                             <div class="flex items-baseline gap-2">
-                                <span class="text-3xl font-extrabold text-[#29364b]">15</span>
+                                <span id="totalSiswaBimbingan" class="text-3xl font-extrabold text-[#29364b]">0</span>
                                 <span class="text-xs text-[#7e8fa9]">Siswa Aktif</span>
                             </div>
                         </div>
@@ -89,8 +89,8 @@
                         <div class="space-y-1">
                             <p class="text-[11px] font-semibold text-[#7e8fa9]">Daily Report Siswa</p>
                             <div class="flex items-center gap-3">
-                                <span class="text-3xl font-extrabold text-[#29364b]">5</span>
-                                <span class="px-2 py-0.5 rounded-full bg-amber-50 text-amber-600 font-bold text-[11px]">Perlu Review</span>
+                                <span id="totalReportMentor" class="text-3xl font-extrabold text-[#29364b]">0</span>
+                                <span id="perluReview" class="px-2 py-0.5 rounded-full bg-amber-50 text-amber-600 font-bold text-[11px]">0 Perlu Review</span>
                             </div>
                             <p class="text-[10px] text-[#7e8fa9]">Update: 10 mnt lalu</p>
                         </div>
@@ -260,5 +260,6 @@
 
     <!-- Panggil sistem komponen Anda -->
     <script type="module" src="/src/js/components.js"></script>
+    <script type="module" src="/src/js/Mentor/dashboard.js"></script>
 </body>
 </html>
