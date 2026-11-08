@@ -1,6 +1,10 @@
 <?php
+header("Access-Control-Allow-Origin: http://localhost:5173");
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type");
 header("Content-Type: application/json");
-include 'koneksi.php';
+
+require_once 'config/koneksi.php';
 
 $method = $_SERVER['REQUEST_METHOD'];
 
@@ -18,9 +22,19 @@ try {
 
         $reportList = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+        // Menghitung jumlah laporan yang perlu direview
+        $stmtReview = $pdo->prepare("
+            SELECT COUNT(*) 
+            FROM daily_report 
+            WHERE status = 'menunggu'
+        ");
+        $stmtReview->execute();
+        $totalPerluReview = $stmtReview->fetchColumn();
+
         echo json_encode([
             "success" => true,
-            "data" => $reportList
+            "data" => $reportList,
+            "total_perlu_review" => (int) $totalPerluReview
         ]);
     } elseif ($method === 'POST') {
         $input = json_decode(file_get_contents("php://input"), true);

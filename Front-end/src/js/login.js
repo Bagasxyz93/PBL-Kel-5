@@ -6,6 +6,13 @@ const eyeIcon = document.getElementById("eyeIcon");
 const formMessage = document.getElementById("formMessage");
 const forgotPassword = document.getElementById("forgotPassword");
 
+// Hubungkan form login ke backend PHP
+loginForm.action = "http://localhost:8000/auth/login_process.php";
+loginForm.method = "POST";
+
+identityInput.name = "username";
+passwordInput.name = "password";
+
 // Tujuan halaman berdasarkan role pengguna.
 const rolePages = {
     admin: "/pages/Admin/Dashboard.html",
@@ -73,121 +80,17 @@ togglePassword.addEventListener("click", () => {
         `;
 });
 
-// Proses login (DIBUAT SEMENTARA UNTUK FRONT-END TANPA BACKEND)
-loginForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    hideMessage();
+// Menampilkan pesan kesalahan login dari backend
+const params = new URLSearchParams(window.location.search);
+const error = params.get("error");
 
-    const identity = identityInput.value.trim();
-    const password = passwordInput.value;
+if (error === "invalid") {
+    showMessage("Username atau password tidak sesuai.");
+} else if (error === "empty") {
+    showMessage("Username dan password wajib diisi.");
+}
 
-    if (!identity || !password) {
-        showMessage("Username/NISN dan password wajib diisi.");
-        return;
-    }
-
-    const submitButton = loginForm.querySelector(
-        'button[type="submit"]'
-    );
-
-    if (submitButton) {
-        submitButton.disabled = true;
-    }
-
-    // [UNTUK SEMENTARA] Bypass fetch PHP, gunakan simulasi hardcode role agar teman bisa testing UI
-    try {
-        // Simulasi jeda loading singkat (biar terasa seperti request asli)
-        await new Promise(resolve => setTimeout(resolve, 500));
-
-        let role = "";
-        let mockUser = {};
-
-        // Aturan ketik manual untuk masuk ke masing-masing dashboard
-        if (identity === "admin" && password === "admin") {
-            role = "admin";
-            mockUser = { id: 1, role: "admin", nama: "Administrator" };
-        } else if (identity === "mentor" && password === "mentor") {
-            role = "mentor";
-            mockUser = { id: 2, role: "mentor", nama: "Mentor Pengampu" };
-        } else if (identity === "siswa" && password === "siswa") {
-            role = "peserta";
-            mockUser = { id: 3, role: "peserta", nama: "Siswa Peserta" };
-        } else {
-            // Jika salah, tampilkan info akun demo yang bisa dipakai
-            showMessage("Akun demo salah! Gunakan:\n- admin / admin\n- mentor / mentor\n- siswa / siswa", "error");
-            if (submitButton) submitButton.disabled = false;
-            return;
-        }
-
-        // Simpan sesi tiruan ke localStorage
-        localStorage.setItem("userRole", role);
-        localStorage.setItem("userName", mockUser.nama);
-        localStorage.setItem("userId", mockUser.id);
-
-        // Arahkan pengguna sesuai role tujuan
-        window.location.href = rolePages[role];
-
-    } catch (error) {
-        console.error("Kesalahan simulasi login:", error);
-        showMessage("Terjadi kesalahan sistem frontend.");
-    } finally {
-        if (submitButton) {
-            submitButton.disabled = false;
-        }
-    }
-
-    /* 
-    =================================================================
-    [KODE ASLI PHP BACKEND - JANGAN DIHAPUS, NANTI DIAKTIFKAN KEMBALI]
-    =================================================================
-    try {
-        const response = await fetch("http://localhost/PBL-Semester-3/Back-end/login_process.php", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ identity: identity, password: password }),
-        });
-
-        const result = await response.json();
-
-        if (!result.success) {
-            showMessage(result.message || "Username atau password salah.");
-            return;
-        }
-
-        const user = result.user;
-        const role = user.role?.toLowerCase();
-
-        if (!rolePages[role]) {
-            showMessage("Role akun tidak valid. Hubungi administrator.");
-            return;
-        }
-
-        localStorage.setItem("userRole", role);
-        localStorage.setItem("userName", user.nama);
-        localStorage.setItem("userId", user.id);
-
-        window.location.href = rolePages[role];
-
-    } catch (error) {
-        console.error("Kesalahan login:", error);
-        showMessage("Terjadi kesalahan saat menghubungi server backend. Coba lagi.");
-    } finally {
-        if (submitButton) {
-            submitButton.disabled = false;
-        }
-    }
-    */
-});
-
-// Fitur lupa password sementara
-forgotPassword.addEventListener("click", async (event) => {
-    event.preventDefault();
-    showMessage(
-        "Silakan hubungi administrator untuk mereset password.",
-        "info"
-    );
-});
-
-// Hilangkan pesan saat input berubah
-identityInput.addEventListener("input", hideMessage);
-passwordInput.addEventListener("input", hideMessage);
+// Membersihkan parameter error dari URL
+if (error) {
+    window.history.replaceState({}, document.title, window.location.pathname);
+}
