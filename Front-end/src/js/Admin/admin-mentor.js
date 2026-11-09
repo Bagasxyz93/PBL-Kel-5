@@ -129,8 +129,10 @@ async function initAdminMentor() {
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
                 </div>
                 <div>
-                    <p class="text-xs font-semibold text-slate-400">Bidang Peminatan</p>
-                    <h3 class="text-2xl font-black text-slate-900 mt-0.5">3 Bidang</h3>
+                    <p class="text-xs font-semibold text-slate-400">Program Peminatan</p>
+                    <h3 class="text-2xl font-black text-slate-900 mt-0.5">
+                        <span id="totalBidangPeminatan">0</span> Program
+                    </h3>
                 </div>
             </div>
 
@@ -217,7 +219,22 @@ async function initAdminMentor() {
 
     const searchInput = document.getElementById("searchMentor");
     const filterBidang = document.getElementById("filterBidang");
+    
+    // Memuat program dari database
     await loadFilterProgram();
+    
+    // Menghitung jumlah program
+    try {
+        const responseProgram = await fetch("http://localhost:8000/api_program.php");
+        const resultProgram = await responseProgram.json();
+    
+        if (resultProgram.success) {
+            document.getElementById("totalBidangPeminatan").textContent =
+                resultProgram.data.length;
+        }
+    } catch (error) {
+        console.error("Gagal menghitung jumlah program:", error);
+    }
     const tabelMentorBody = document.getElementById("tabelMentorBody");
     const tambahGuruBtn = document.getElementById("tambahGuruBtn");
     const mentorCount = document.getElementById("mentorCount");
