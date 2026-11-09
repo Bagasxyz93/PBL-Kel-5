@@ -46,6 +46,51 @@ async function loadProgramMentor(selectedProgramIds = []) {
     }
 }
 
+
+// Memperbarui kartu pratinjau mentor secara otomatis
+function updatePreviewMentor() {
+    const nama = document.getElementById("namaMentor")?.value.trim() || "";
+    const nip = document.getElementById("nipMentor")?.value.trim() || "";
+
+    const previewNama = document.getElementById("previewNama");
+    const previewNip = document.getElementById("previewNip");
+    const previewInisial = document.getElementById("previewInisial");
+    const previewProgram = document.getElementById("previewProgram");
+
+    // Memperbarui nama
+    previewNama.textContent = nama || "Nama Mentor";
+
+    // Memperbarui NIP
+    previewNip.textContent = "NIP : " + (nip || "-");
+
+    // Membuat inisial dari nama mentor
+    const inisial = nama
+        ? nama.split(/\s+/)
+            .filter(kata => kata.length > 0)
+            .slice(0, 2)
+            .map(kata => kata[0])
+            .join("")
+            .toUpperCase()
+        : "NM";
+
+    previewInisial.textContent = inisial;
+
+    // Mengambil program yang dicentang
+    const programDipilih = document.querySelectorAll(
+        'input[name="programMentor"]:checked'
+    );
+
+    const daftarProgram = Array.from(programDipilih).map(input => {
+        return input.parentElement.querySelector("span").textContent.trim();
+    });
+
+    // Memperbarui program pada kartu
+    previewProgram.textContent = daftarProgram.length > 0
+        ? daftarProgram.join(", ")
+        : "Program Keahlian";
+}
+
+
 export async function initAdminTambahMentor(onSuccess, mentor = null) {
     const formTambahMentor = document.getElementById("formTambahMentor");
     const btnKembali = document.getElementById("btnKembaliMentor");
@@ -93,6 +138,26 @@ export async function initAdminTambahMentor(onSuccess, mentor = null) {
     // Memuat daftar program
     await loadProgramMentor(
         mentor ? mentor.program_ids.map(Number) : []
+    );
+
+    // Memperbarui pratinjau setelah data form dan program dimuat
+    updatePreviewMentor();
+    
+    // Preview berubah saat nama atau NIP diketik
+    document.getElementById("namaMentor").addEventListener(
+        "input",
+        updatePreviewMentor
+    );
+    
+    document.getElementById("nipMentor").addEventListener(
+        "input",
+        updatePreviewMentor
+    );
+    
+    // Preview berubah saat program dicentang atau dilepas
+    document.getElementById("daftarProgramMentor").addEventListener(
+        "change",
+        updatePreviewMentor
     );
 
     const handleKembali = () => {
