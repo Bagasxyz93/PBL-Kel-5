@@ -1,187 +1,221 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Admin - SI-IN</title>
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="/src/css/style.css">
 </head>
+
 <body class="bg-[#f4f7fe] m-0 p-0 text-slate-800 h-screen overflow-hidden">
 
     <!-- Wrapper Utama Aplikasi -->
     <div id="app" class="flex h-screen w-screen overflow-hidden invisible opacity-0 transition-opacity duration-300">
 
-        <!-- CONTAINER SIDEBAR (Fixed/Static di kiri) -->
+        <!-- Sidebar -->
         <div id="sidebar-container" class="shrink-0 h-full"></div>
 
         <!-- Area Konten Utama -->
-        <div class="flex-1 flex flex-col h-full overflow-y-auto relative">
-            
-            <!-- HEADER CONTAINER -->
+        <div class="flex-1 min-w-0 flex flex-col h-full overflow-y-auto relative">
+
+            <!-- Header -->
             <div id="header-container" class="sticky top-0 z-30 shrink-0"></div>
 
-            <!-- KONTEN DASHBOARD ADMIN -->
+            <!-- Konten Dashboard Admin -->
             <main class="flex-1 p-8 max-w-7xl w-full mx-auto space-y-8">
-                
-                <!-- Bagian Judul & Informasi Tahun Ajaran -->
+
+                <!-- Judul Dashboard -->
                 <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <div>
-                        <span class="inline-block px-3 py-1 rounded-full bg-red-50 text-red-600 text-[11px] font-bold tracking-wide uppercase mb-2">Portal Administrasi</span>
-                        <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Dashboard Admin</h1>
-                        <p class="text-xs text-slate-500 mt-1">Selamat datang, Admin! Berikut ringkasan data sistem inkubasi.</p>
+                        <span class="inline-block px-3 py-1 rounded-full bg-red-50 text-red-600 text-[11px] font-bold tracking-wide uppercase mb-2">
+                            Portal Administrasi
+                        </span>
+
+                        <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">
+                            Dashboard Admin
+                        </h1>
+
+                        <p class="text-xs text-slate-500 mt-1">
+                            Selamat datang, Admin! Berikut ringkasan data sistem inkubasi.
+                        </p>
                     </div>
-                    
-                    <div class="flex items-center gap-3">
-                        <div class="flex items-center gap-2 bg-white px-4 py-2 rounded-xl border border-slate-200 shadow-sm text-xs font-medium text-slate-600">
-                            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                            Tahun Ajaran 2025/2026
-                            <span class="bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded text-[10px] font-bold ml-1">Semester Gasal</span>
-                        </div>
-                        <button class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl text-xs font-semibold shadow-md shadow-red-600/25 transition">
-                            Kelola Sistem
-                        </button>
-                    </div>
+
                 </div>
 
                 <!-- 3 Kartu Statistik Utama -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+                    <!-- Total Siswa -->
                     <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm relative overflow-hidden flex flex-col justify-between">
                         <div>
                             <div class="flex items-center justify-between mb-4">
                                 <div class="w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                        <circle cx="9" cy="7" r="4"/>
+                                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                                    </svg>
                                 </div>
                             </div>
+
                             <p class="text-xs font-semibold text-slate-400">Total Siswa</p>
                             <h3 id="totalSiswa" class="text-3xl font-black text-slate-900 mt-1">0</h3>
                         </div>
+
                         <div class="mt-6 pt-4 border-t border-slate-50 flex items-center justify-between text-xs">
                             <span class="text-slate-400">Siswa inkubasi aktif</span>
-                            <a href="/pages/Admin/Siswa.html" class="font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-1">Lihat Data &rarr;</a>
+                            <a href="/pages/Admin/Siswa.html" class="font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-1">
+                                Lihat Data &rarr;
+                            </a>
                         </div>
                     </div>
 
+                    <!-- Total Mentor -->
                     <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm relative overflow-hidden flex flex-col justify-between">
                         <div>
                             <div class="flex items-center justify-between mb-4">
                                 <div class="w-12 h-12 rounded-2xl bg-purple-50 flex items-center justify-center text-purple-600">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                        <circle cx="12" cy="7" r="4"/>
+                                    </svg>
                                 </div>
                             </div>
+
                             <p class="text-xs font-semibold text-slate-400">Total Guru/Mentor</p>
                             <h3 id="totalMentor" class="text-3xl font-black text-slate-900 mt-1">0</h3>
                         </div>
+
                         <div class="mt-6 pt-4 border-t border-slate-50 flex items-center justify-between text-xs">
                             <span class="text-slate-400">Mentor tersertifikasi</span>
-                            <a href="/pages/Admin/Mentor.html" class="font-bold text-purple-600 hover:text-purple-700 flex items-center gap-1">Kelola Mentor &rarr;</a>
+                            <a href="/pages/Admin/Mentor.html" class="font-bold text-purple-600 hover:text-purple-700 flex items-center gap-1">
+                                Kelola Mentor &rarr;
+                            </a>
                         </div>
                     </div>
 
+                    <!-- Total Program -->
                     <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm relative overflow-hidden flex flex-col justify-between">
                         <div>
                             <div class="flex items-center justify-between mb-4">
                                 <div class="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <rect x="3" y="4" width="18" height="18" rx="2"/>
+                                        <line x1="16" y1="2" x2="16" y2="6"/>
+                                        <line x1="8" y1="2" x2="8" y2="6"/>
+                                        <line x1="3" y1="10" x2="21" y2="10"/>
+                                    </svg>
                                 </div>
                             </div>
+
                             <p class="text-xs font-semibold text-slate-400">Total Program</p>
                             <h3 id="totalProgram" class="text-3xl font-black text-slate-900 mt-1">0</h3>
                         </div>
+
                         <div class="mt-6 pt-4 border-t border-slate-50 flex items-center justify-between text-xs">
                             <span class="text-slate-400">Kurikulum inkubasi terdaftar</span>
-                            <a href="/pages/Admin/Program.html" class="font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1">Kelola Program &rarr;</a>
+                            <a href="/pages/Admin/Program.html" class="font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1">
+                                Kelola Program &rarr;
+                            </a>
                         </div>
                     </div>
+
                 </div>
 
-                <!-- Bagian Bawah: Grafik Aktivitas & Program Tersedia -->
+                <!-- Bagian Bawah: Grafik dan Program -->
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    
-                    <!-- Grafik Aktivitas Program (7 Hari Terakhir) -->
+
+                    <!-- Grafik Aktivitas -->
                     <div class="lg:col-span-2 bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between">
+
                         <div class="flex items-center justify-between mb-6">
                             <div>
-                                <h3 class="font-bold text-slate-800 text-base">Aktivitas Program (7 Hari Terakhir)</h3>
-                                <p class="text-xs text-slate-400 mt-0.5">Frekuensi interaksi sesi inkubasi per tanggal aktif</p>
+                                <h3 class="font-bold text-slate-800 text-base">
+                                    Aktivitas Program (7 Hari Terakhir)
+                                </h3>
+
+                                <p class="text-xs text-slate-400 mt-0.5">
+                                    Jumlah presensi hadir dan pengumpulan Daily Report
+                                </p>
                             </div>
+
                             <div class="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-100 text-xs text-slate-600 font-medium">
-                                <span class="w-2 h-2 rounded-full bg-blue-600"></span> Sesi Kelas
+                                <span class="w-2 h-2 rounded-full bg-blue-600"></span>
+                                Total Aktivitas
                             </div>
                         </div>
 
-                        <div class="h-56 flex items-end justify-between gap-3 px-4 pt-8 pb-2 border-b border-slate-100">
-                            <div class="flex-1 flex flex-col items-center gap-2 h-full justify-end"><span class="text-[10px] font-bold text-slate-600">24</span><div class="w-full bg-blue-600 rounded-t-lg" style="height: 60%;"></div><span class="text-[10px] text-slate-400 mt-1">17/10</span></div>
-                            <div class="flex-1 flex flex-col items-center gap-2 h-full justify-end"><span class="text-[10px] font-bold text-slate-600">18</span><div class="w-full bg-blue-600 rounded-t-lg" style="height: 45%;"></div><span class="text-[10px] text-slate-400 mt-1">18/10</span></div>
-                            <div class="flex-1 flex flex-col items-center gap-2 h-full justify-end"><span class="text-[10px] font-bold text-slate-600">32</span><div class="w-full bg-blue-600 rounded-t-lg" style="height: 85%;"></div><span class="text-[10px] text-slate-400 mt-1">19/10</span></div>
-                            <div class="flex-1 flex flex-col items-center gap-2 h-full justify-end"><span class="text-[10px] font-bold text-slate-600">32</span><div class="w-full bg-blue-600 rounded-t-lg" style="height: 85%;"></div><span class="text-[10px] text-slate-400 mt-1">20/10</span></div>
-                            <div class="flex-1 flex flex-col items-center gap-2 h-full justify-end"><span class="text-[10px] font-bold text-slate-600">16</span><div class="w-full bg-blue-600 rounded-t-lg" style="height: 40%;"></div><span class="text-[10px] text-slate-400 mt-1">21/10</span></div>
-                            <div class="flex-1 flex flex-col items-center gap-2 h-full justify-end"><span class="text-[10px] font-bold text-slate-600">28</span><div class="w-full bg-blue-600 rounded-t-lg" style="height: 75%;"></div><span class="text-[10px] text-slate-400 mt-1">22/10</span></div>
-                            <div class="flex-1 flex flex-col items-center gap-2 h-full justify-end"><span class="text-[10px] font-bold text-slate-600">26</span><div class="w-full bg-blue-600 rounded-t-lg" style="height: 70%;"></div><span class="text-[10px] text-slate-400 mt-1">23/10</span></div>
+                        <!-- Grafik Batang dari Database -->
+                        <div
+                            id="grafikAktivitasDashboard"
+                            class="h-56 flex items-end justify-between gap-3 px-4 pt-8 pb-2 border-b border-slate-100"
+                        >
+                            <p class="w-full text-center text-xs text-slate-400">
+                                Memuat data aktivitas...
+                            </p>
                         </div>
 
+                        <!-- Informasi Aktivitas -->
                         <div class="mt-4 flex items-center justify-between text-xs bg-slate-50 p-3 rounded-xl border border-slate-100">
-                            <span class="text-slate-600">Puncak aktivitas terjadi pada <strong>19–20 Oktober</strong> dengan 32 partisipasi.</span>
-                            <span class="text-[11px] text-slate-400">Diperbarui 10 menit lalu</span>
+                            <span id="totalAktivitasDashboard" class="text-slate-600">
+                                Menghitung total aktivitas...
+                            </span>
+
+                            <span class="text-[11px] text-slate-400">
+                                7 hari terakhir
+                            </span>
                         </div>
+
                     </div>
 
                     <!-- Program Tersedia -->
                     <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between">
+
                         <div>
                             <div class="flex items-center justify-between mb-4">
-                                <h3 class="font-bold text-slate-800 text-base">Program Tersedia</h3>
-                                <span class="bg-blue-50 text-blue-600 px-2.5 py-0.5 rounded-full text-[10px] font-bold">3 Program</span>
+                                <h3 class="font-bold text-slate-800 text-base">
+                                    Program Tersedia
+                                </h3>
+
+                                <span id="jumlahProgramDashboard" class="bg-blue-50 text-blue-600 px-2.5 py-0.5 rounded-full text-[10px] font-bold">
+                                    0 Program
+                                </span>
                             </div>
-                            <div class="space-y-3">
-                                <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100 flex items-center gap-3">
-                                    <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-                                    </div>
-                                    <div>
-                                        <h4 class="text-xs font-bold text-slate-800">Web Development</h4>
-                                        <p class="text-[11px] text-slate-500 mt-0.5">Pengembangan website dan aplikasi web.</p>
-                                    </div>
-                                </div>
-                                <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100 flex items-center gap-3">
-                                    <div class="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-                                    </div>
-                                    <div>
-                                        <h4 class="text-xs font-bold text-slate-800">Desktop Development</h4>
-                                        <p class="text-[11px] text-slate-500 mt-0.5">Pengembangan aplikasi desktop.</p>
-                                    </div>
-                                </div>
-                                <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100 flex items-center gap-3">
-                                    <div class="w-9 h-9 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-                                    </div>
-                                    <div>
-                                        <h4 class="text-xs font-bold text-slate-800">Computer Networking</h4>
-                                        <p class="text-[11px] text-slate-500 mt-0.5">Pembelajaran jaringan komputer.</p>
-                                    </div>
-                                </div>
+
+                            <!-- Daftar Program dari Database -->
+                            <div id="daftarProgramDashboard" class="space-y-3">
+                                <p class="text-xs text-slate-400 text-center py-4">
+                                    Memuat program...
+                                </p>
                             </div>
                         </div>
-                        
-                        <!-- Tombol Tambah Program Baru (Di dalam card Program Tersedia) -->
-                        <a href="/pages/Admin/Program.html" class="mt-6 w-full py-3 text-white rounded-xl text-xs font-semibold shadow-md shadow-blue-600/20 transition hover:opacity-95 flex items-center justify-center gap-1.5 text-center" style="background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%) !important;">
+
+                        <!-- Tombol Tambah Program -->
+                        <a href="/pages/Admin/Program.html"
+                           class="mt-6 w-full py-3 text-white rounded-xl text-xs font-semibold shadow-md shadow-blue-600/20 transition hover:opacity-95 flex items-center justify-center gap-1.5 text-center"
+                           style="background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%) !important;">
                             <span>+</span> Tambah Program Baru
                         </a>
+
                     </div>
 
                 </div>
 
             </main>
 
-            <!-- FOOTER CONTAINER -->
-            <div id="footer-container" class="shrink-0"></div>
+            <!-- Footer -->
+            <div id="footer-container" class="shrink-0 w-full min-w-0"></div>
 
         </div>
     </div>
 
     <script type="module" src="/src/js/components.js"></script>
     <script type="module" src="/src/js/Admin/dashboard.js"></script>
+
 </body>
 </html>
