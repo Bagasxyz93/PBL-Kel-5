@@ -32,6 +32,7 @@ try {
             no_hp,
             email,
             username,
+            jenis_kelamin,
             status_akun
         FROM users
         WHERE id = ? AND role = 'mentor'

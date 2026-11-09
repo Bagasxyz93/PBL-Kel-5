@@ -118,6 +118,15 @@ export async function initAdminTambahMentor(onSuccess, mentor = null) {
         document.getElementById("emailMentor").value = mentor.email;
         document.getElementById("usernameMentor").value = mentor.username;
 
+        // Mengisi jenis kelamin mentor saat edit
+        const genderInput = document.querySelector(
+            `input[name="jenisKelaminMentor"][value="${mentor.jenis_kelamin}"]`
+        );
+
+        if (genderInput) {
+            genderInput.checked = true;
+        }
+
         const status = mentor.status_akun === "aktif" ? "Aktif" : "Non-Aktif";
 
         const statusInput = document.querySelector(
@@ -193,6 +202,17 @@ export async function initAdminTambahMentor(onSuccess, mentor = null) {
             const email = document.getElementById("emailMentor").value;
             const username = document.getElementById("usernameMentor").value;
 
+            const genderInput = document.querySelector(
+                'input[name="jenisKelaminMentor"]:checked'
+            );
+
+            if (!genderInput) {
+                alert("Pilih jenis kelamin mentor.");
+                return;
+            }
+
+            const jenis_kelamin = genderInput.value;
+
             const programDipilih = document.querySelectorAll(
                 'input[name="programMentor"]:checked'
             );
@@ -221,6 +241,7 @@ export async function initAdminTambahMentor(onSuccess, mentor = null) {
                 no_hp,
                 email,
                 username,
+                jenis_kelamin,
                 status: statusInput.value.toLowerCase(),
                 program_ids: programIds
             };

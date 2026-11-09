@@ -28,6 +28,7 @@ $nip = trim($data['nip'] ?? '');
 $no_hp = trim($data['no_hp'] ?? '');
 $email = trim($data['email'] ?? '');
 $username = trim($data['username'] ?? '');
+$jenis_kelamin = trim($data['jenis_kelamin'] ?? '');
 $password = $data['password'] ?? '';
 $status = strtolower($data['status'] ?? '');
 $programIds = $data['program_ids'] ?? [];
@@ -35,6 +36,8 @@ $programIds = $data['program_ids'] ?? [];
 if (
     $nama === '' || $nip === '' || $email === '' ||
     $username === '' || $password === '' ||
+    $jenis_kelamin === '' ||
+    !in_array($jenis_kelamin, ['Laki-laki', 'Perempuan']) ||
     !in_array($status, ['aktif', 'non-aktif']) ||
     !is_array($programIds) || count($programIds) === 0
 ) {
@@ -74,11 +77,11 @@ try {
 
     $stmt = $pdo->prepare("
         INSERT INTO users
-        (nama, username, email, password, role, nip, no_hp, status_akun)
-        VALUES (?, ?, ?, ?, 'mentor', ?, ?, ?)
+        (nama, username, email, password, role, nip, no_hp, jenis_kelamin, status_akun)
+        VALUES (?, ?, ?, ?, 'mentor', ?, ?, ?, ?)
         RETURNING id
     ");
-
+    
     $stmt->execute([
         $nama,
         $username,
@@ -86,6 +89,7 @@ try {
         $passwordHash,
         $nip,
         $no_hp,
+        $jenis_kelamin,
         $status
     ]);
 
