@@ -10,7 +10,9 @@
                 <span class="text-indigo-600">Tambah Guru Baru</span>
             </div>
             <div class="flex items-center gap-3">
-                <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Tambah Guru / Mentor Baru</h1>
+                <h1 id="judulFormMentor" class="text-2xl font-extrabold text-slate-900 tracking-tight">
+                    Tambah Guru / Mentor Baru
+                </h1>
                 <span class="bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full text-xs font-bold border border-indigo-100">Registrasi Akun</span>
             </div>
             <p class="text-xs text-slate-500 mt-0.5">Registrasi akun instruktur dan mentor pembimbing kelas inkubasi SI-IN.</p>
@@ -72,31 +74,16 @@
                         <p class="text-[10px] text-slate-400 mt-1">Digunakan untuk notifikasi pengajuan izin bimbingan dan daily report siswa.</p>
                     </div>
 
-                    <!-- Program Keahlian / Bidang -->
+                    <!-- Program Keahlian -->
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1.5">Program Keahlian <span class="text-red-500">*</span></label>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            <label class="flex items-center gap-3 p-3.5 rounded-xl border border-slate-200 bg-slate-50/50 cursor-pointer hover:bg-slate-50 transition">
-                                <input type="radio" name="bidangMentor" value="Web Development" checked class="text-indigo-600 focus:ring-indigo-500">
-                                <div>
-                                    <span class="text-xs font-bold text-slate-800 block">Web Development</span>
-                                    <span class="text-[10px] text-slate-400">Pengembangan website dan aplikasi web.</span>
-                                </div>
-                            </label>
-                            <label class="flex items-center gap-3 p-3.5 rounded-xl border border-slate-200 bg-slate-50/50 cursor-pointer hover:bg-slate-50 transition">
-                                <input type="radio" name="bidangMentor" value="Desktop Development" class="text-indigo-600 focus:ring-indigo-500">
-                                <div>
-                                    <span class="text-xs font-bold text-slate-800 block">Desktop Development</span>
-                                    <span class="text-[10px] text-slate-400">Pengembangan aplikasi desktop.</span>
-                                </div>
-                            </label>
-                            <label class="flex items-center gap-3 p-3.5 rounded-xl border border-slate-200 bg-slate-50/50 cursor-pointer hover:bg-slate-50 transition md:col-span-2">
-                                <input type="radio" name="bidangMentor" value="Computer Networking" class="text-indigo-600 focus:ring-indigo-500">
-                                <div>
-                                    <span class="text-xs font-bold text-slate-800 block">Computer Networking</span>
-                                    <span class="text-[10px] text-slate-400">Pembelajaran jaringan komputer.</span>
-                                </div>
-                            </label>
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5">
+                            Program Keahlian <span class="text-red-500">*</span>
+                        </label>
+                    
+                        <div id="daftarProgramMentor" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <p class="text-xs text-slate-400">
+                                Memuat daftar program...
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -129,7 +116,7 @@
                     </div>
 
                     <!-- Password & Konfirmasi -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div id="bagianPasswordMentor" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-1">Kata Sandi / Password <span class="text-red-500">*</span></label>
                             <input type="password" id="passwordMentor" required placeholder="Minimal 8 karakter" class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 px-4 text-xs font-medium text-slate-700 placeholder:text-slate-400 focus:border-indigo-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/10 transition">
@@ -212,7 +199,13 @@
 
             <!-- Tombol Aksi -->
             <div class="space-y-3">
-                <button type="submit" form="formTambahMentor" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold shadow-md shadow-blue-600/20 transition flex items-center justify-center gap-2" style="background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%) !important;">
+                <button
+                    id="btnSimpanMentor"
+                    type="submit"
+                    form="formTambahMentor"
+                    class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold shadow-md shadow-blue-600/20 transition flex items-center justify-center gap-2"
+                    style="background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%) !important;"
+                >
                     Simpan Data Guru / Mentor
                 </button>
 

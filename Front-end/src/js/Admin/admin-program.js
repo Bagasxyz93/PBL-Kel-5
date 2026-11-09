@@ -1,11 +1,6 @@
 import { initAdminTambahProgram } from "./admin-tambah-program.js";
 
-// Data Mockup Sesuai Figma Kelola Program Utama
-let dummyProgram = [
-    { id: 1, judul: "WEB Development", sub: "Pengembangan website dan aplikasi web.", status: "Aktif" },
-    { id: 2, judul: "Desktop Development", sub: "Pengembangan aplikasi desktop.", status: "Aktif" },
-    { id: 3, judul: "Computer Networking", sub: "Pembelajaran jaringan komputer.", status: "Aktif" }
-];
+let dataProgram = [];
 
 // Fungsi Memuat Tampilan Form Tambah Program (SPA View)
 async function renderTambahProgramView() {
@@ -19,17 +14,41 @@ async function renderTambahProgramView() {
         mainContainer.innerHTML = await response.text();
 
         // Inisialisasi logika form tambah program dari file terpisah
-        initAdminTambahProgram((newProgram) => {
-            if (newProgram && newProgram.judul) {
-                dummyProgram.push(newProgram);
-            }
-            initAdminProgram(); // Callback kembali ke tabel program utama
+        initAdminTambahProgram(() => {
+            initAdminProgram();
         });
 
     } catch (error) {
-        console.error("Error loading TambahProgram form:", error);
+           console.error("Error loading TambahProgram form:", error);
+       }
+    }   
+
+    async function renderEditProgramView(program) {
+        const mainContainer = document.getElementById("main-content-area");
+        if (!mainContainer) return;
+
+        try {
+            const response = await fetch("/component/Admin/TambahProgram.html");
+
+            if (!response.ok) {
+                throw new Error("Gagal memuat form program.");
+            }
+
+            mainContainer.innerHTML = await response.text();
+
+            // Ubah judul form menjadi Edit Program
+            const judul = mainContainer.querySelector("h1");
+            if (judul) judul.textContent = "Edit Program";
+
+            initAdminTambahProgram(() => {
+                initAdminProgram();
+            }, program);
+
+        } catch (error) {
+            console.error("Gagal membuka form edit:", error);
+            alert("Gagal membuka form edit program.");
+        }
     }
-}
 
 // Fungsi Utama: Tampilan Tabel Data Program
 function initAdminProgram() {
@@ -50,10 +69,6 @@ function initAdminProgram() {
             </div>
             
             <div class="flex items-center gap-3">
-                <div class="bg-red-50 border border-red-100 text-red-600 px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-red-600"></span>
-                    Batch 2025/2026 Aktif
-                </div>
                 <button id="tambahProgramBtn" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2.5 rounded-xl text-xs font-semibold shadow-md shadow-red-600/25 transition flex items-center gap-1.5">
                     <span>+ Tambah Program</span>
                 </button>
@@ -75,16 +90,7 @@ function initAdminProgram() {
             <div class="flex items-center gap-3 w-full md:w-auto justify-end">
                 <select id="filterProgram" class="rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-2.5 text-xs font-semibold text-slate-600 focus:outline-none focus:border-indigo-500">
                     <option value="">Semua Program</option>
-                    <option value="WEB Development">WEB Development</option>
-                    <option value="Desktop Development">Desktop Development</option>
-                    <option value="Computer Networking">Computer Networking</option>
                 </select>
-                <button class="p-2.5 rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50 transition" title="Download Data">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                </button>
-                <button id="refreshProgramBtn" class="p-2.5 rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50 transition" title="Refresh Data">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                </button>
             </div>
         </div>
 
@@ -125,7 +131,7 @@ function initAdminProgram() {
     const tambahProgramBtn = document.getElementById("tambahProgramBtn");
     const progCount = document.getElementById("progCount");
 
-    if (progCount) progCount.textContent = dummyProgram.length;
+    if (progCount) progCount.textContent = dataProgram.length;
 
     function renderTable(data) {
         if (!tabelProgramBody) return;
@@ -140,13 +146,13 @@ function initAdminProgram() {
                 <td class="py-4 px-6 text-slate-400 font-semibold">${index + 1}</td>
                 <td class="py-4 px-6">
                     <div>
-                        <p class="font-bold text-slate-800">${prog.judul}</p>
-                        <p class="text-[11px] text-slate-400 mt-0.5">${prog.sub}</p>
+                        <p class="font-bold text-slate-800">${prog.nama_program}</p>
+                        <p class="text-[11px] text-slate-400 mt-0.5">${prog.deskripsi || "-"}</p>
                     </div>
                 </td>
                 <td class="py-4 px-6">
                     <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-600 text-[11px] font-bold">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> ${prog.status}
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Aktif
                     </span>
                 </td>
                 <td class="py-4 px-6 text-right">
@@ -167,13 +173,58 @@ function initAdminProgram() {
         const keyword = searchInput ? searchInput.value.toLowerCase() : "";
         const selectedProg = filterProgram ? filterProgram.value : "";
 
-        const filtered = dummyProgram.filter(prog => {
-            const matchKeyword = prog.judul.toLowerCase().includes(keyword) || prog.sub.toLowerCase().includes(keyword);
-            const matchProg = selectedProg === "" || prog.judul === selectedProg;
+        const filtered = dataProgram.filter(prog => {
+            const matchKeyword = prog.nama_program.toLowerCase().includes(keyword);
+
+            const matchProg =
+                selectedProg === "" || prog.nama_program === selectedProg;
+
             return matchKeyword && matchProg;
         });
 
         renderTable(filtered);
+    }
+
+    async function loadDataProgram() {
+        try {
+            const response = await fetch("http://localhost:8000/api_program.php");
+            const result = await response.json();
+
+            if (!response.ok || !result.success) {
+                throw new Error(result.message || "Gagal memuat data program.");
+            }
+
+            dataProgram = result.data;
+
+            // Mengisi pilihan filter dari data database
+            if (filterProgram) {
+                filterProgram.innerHTML = `
+                    <option value="">Semua Program</option>
+                    ${dataProgram.map(prog => `
+                        <option value="${prog.nama_program}">
+                            ${prog.nama_program}
+                        </option>
+                    `).join("")}
+                `;
+            }
+
+            renderTable(dataProgram);
+
+            if (progCount) {
+                progCount.textContent = dataProgram.length;
+            }
+
+        } catch (error) {
+            console.error("Gagal mengambil data program:", error);
+
+            tabelProgramBody.innerHTML = `
+                <tr>
+                    <td colspan="4" class="py-8 text-center text-red-500">
+                        Gagal memuat data program.
+                    </td>
+                </tr>
+            `;
+        }
     }
 
     if (searchInput) searchInput.addEventListener("input", filterData);
@@ -185,15 +236,81 @@ function initAdminProgram() {
         });
     }
 
+    // Event tombol Edit Program
+    tabelProgramBody.addEventListener("click", (e) => {
+        const tombolEdit = e.target.closest(".action-edit");
+
+        if (!tombolEdit) return;
+
+        const idProgram = Number(tombolEdit.dataset.id);
+
+        const programDipilih = dataProgram.find(
+            (prog) => Number(prog.id) === idProgram
+        );
+
+        if (!programDipilih) {
+            alert("Data program tidak ditemukan.");
+            return;
+        }
+
+        renderEditProgramView(programDipilih);
+    });
+
+    // Event tombol Hapus Program
+    tabelProgramBody.addEventListener("click", async (e) => {
+        const tombolHapus = e.target.closest(".action-delete");
+
+        if (!tombolHapus) return;
+
+        const idProgram = Number(tombolHapus.dataset.id);
+
+        const konfirmasi = confirm(
+            "Apakah kamu yakin ingin menghapus program ini?"
+        );
+
+        if (!konfirmasi) return;
+
+        try {
+            const response = await fetch(
+                "http://localhost:8000/api_hapus_program.php",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        id: idProgram
+                    })
+                }
+            );
+
+            const result = await response.json();
+
+            if (!response.ok || !result.success) {
+                throw new Error(
+                    result.message || "Gagal menghapus program."
+                );
+            }
+
+            alert(result.message);
+
+            loadDataProgram();
+
+        } catch (error) {
+            console.error("Gagal menghapus program:", error);
+            alert(error.message || "Terjadi kesalahan saat menghapus program.");
+        }
+    });
+
     if (refreshBtn) {
         refreshBtn.addEventListener("click", () => {
             if (searchInput) searchInput.value = "";
             if (filterProgram) filterProgram.value = "";
-            renderTable(dummyProgram);
+            loadDataProgram();
         });
     }
 
-    renderTable(dummyProgram);
+    loadDataProgram();
 }
 
 // Inisialisasi awal saat halaman dimuat

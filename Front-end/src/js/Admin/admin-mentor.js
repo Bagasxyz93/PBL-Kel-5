@@ -1,11 +1,34 @@
 import { initAdminTambahMentor } from "./admin-tambah-mentor.js";
 
-// Data Mockup Sesuai Figma Kelola Data Mentor
-let dummyMentor = [
-    { id: 1, inisial: "PR", warnaBg: "bg-purple-100 text-purple-700", nama: "Ibu Pur", email: "pur.mentor@si-in.sch.id", nip: "198701012006042001", bidang: "Web Development", status: "Aktif" },
-    { id: 2, inisial: "RN", warnaBg: "bg-blue-100 text-blue-700", nama: "Ibu Rina", email: "rina.mentor@si-in.sch.id", nip: "198805122010021002", bidang: "Desktop Development", status: "Aktif" },
-    { id: 3, inisial: "UP", warnaBg: "bg-indigo-100 text-indigo-700", nama: "Ibu Upik", email: "upik.mentor@si-in.sch.id", nip: "199201082014032005", bidang: "Computer Networking", status: "Aktif" }
-];
+let dataMentor = [];
+
+// Memuat pilihan program dari database
+async function loadFilterProgram() {
+    const filterBidang = document.getElementById("filterBidang");
+
+    if (!filterBidang) return;
+
+    try {
+        const response = await fetch("http://localhost:8000/api_program.php");
+        const result = await response.json();
+
+        if (!result.success) {
+            throw new Error(result.message);
+        }
+
+        filterBidang.innerHTML = `
+            <option value="">Semua Bidang</option>
+            ${result.data.map(program => `
+                <option value="${program.nama_program}">
+                    ${program.nama_program}
+                </option>
+            `).join("")}
+        `;
+
+    } catch (error) {
+        console.error("Gagal memuat pilihan program:", error);
+    }
+}
 
 // Fungsi Memuat Tampilan Form Tambah Mentor (SPA View)
 async function renderTambahMentorView() {
@@ -28,8 +51,46 @@ async function renderTambahMentorView() {
     }
 }
 
+// Fungsi Memuat Tampilan Form Edit Mentor
+async function renderEditMentorView(mentorId) {
+    const mainContainer = document.getElementById("main-content-area");
+
+    if (!mainContainer) return;
+
+    try {
+        // Memuat form mentor
+        const responseHTML = await fetch("/component/Admin/TambahMentor.html");
+
+        if (!responseHTML.ok) {
+            throw new Error("Gagal memuat form mentor.");
+        }
+
+        mainContainer.innerHTML = await responseHTML.text();
+
+        // Mengambil detail mentor berdasarkan ID
+        const response = await fetch(
+            `http://localhost:8000/api_detail_mentor.php?id=${mentorId}`
+        );
+
+        const result = await response.json();
+
+        if (!result.success) {
+            throw new Error(result.message);
+        }
+
+        // Menampilkan form dalam mode edit
+        initAdminTambahMentor(() => {
+            initAdminMentor();
+        }, result.data);
+
+    } catch (error) {
+        console.error("Gagal membuka form edit mentor:", error);
+        alert(error.message || "Gagal membuka data mentor.");
+    }
+}
+
 // Fungsi Utama: Tampilan Tabel Data Mentor
-function initAdminMentor() {
+async function initAdminMentor() {
     const mainContainer = document.getElementById("main-content-area");
     if (!mainContainer) return;
 
@@ -79,7 +140,9 @@ function initAdminMentor() {
                 </div>
                 <div>
                     <p class="text-xs font-semibold text-slate-400">Status Akun</p>
-                    <h3 class="text-2xl font-black text-slate-900 mt-0.5">100% Aktif</h3>
+                    <h3 class="text-2xl font-black text-slate-900 mt-0.5">
+                        <span id="persentaseMentorAktif">0%</span> Aktif
+                    </h3>
                 </div>
             </div>
         </div>
@@ -99,14 +162,7 @@ function initAdminMentor() {
             <div class="flex items-center gap-3 w-full md:w-auto justify-end">
                 <select id="filterBidang" class="rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-2.5 text-xs font-semibold text-slate-600 focus:outline-none focus:border-indigo-500">
                     <option value="">Semua Bidang</option>
-                    <option value="Web Development">Web Development</option>
-                    <option value="Desktop Development">Desktop Development</option>
-                    <option value="Computer Networking">Computer Networking</option>
                 </select>
-                <button id="filterBtn" class="px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition flex items-center gap-1.5">
-                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
-                    Filter
-                </button>
             </div>
         </div>
 
@@ -119,7 +175,7 @@ function initAdminMentor() {
                             <th class="py-4 px-6 w-16">NO</th>
                             <th class="py-4 px-6">NAMA</th>
                             <th class="py-4 px-6">NIP / ID</th>
-                            <th class="py-4 px-6">BIDANG</th>
+                            <th class="py-4 px-6">PROGRAM</th>
                             <th class="py-4 px-6">STATUS</th>
                             <th class="py-4 px-6 text-right">AKSI</th>
                         </tr>
@@ -142,15 +198,51 @@ function initAdminMentor() {
         </div>
     `;
 
+    // Mengambil data mentor dari database
+    try {
+        const response = await fetch("http://localhost:8000/api_mentor.php");
+        const result = await response.json();
+
+        if (!result.success) {
+            throw new Error(result.message);
+        }
+
+        dataMentor = result.data;
+
+    } catch (error) {
+        console.error("Gagal memuat data mentor:", error);
+        alert("Gagal memuat data mentor dari database.");
+        dataMentor = [];
+    }
+
     const searchInput = document.getElementById("searchMentor");
     const filterBidang = document.getElementById("filterBidang");
+    await loadFilterProgram();
     const tabelMentorBody = document.getElementById("tabelMentorBody");
     const tambahGuruBtn = document.getElementById("tambahGuruBtn");
     const mentorCount = document.getElementById("mentorCount");
     const activeMentorCount = document.getElementById("activeMentorCount");
+    const persentaseMentorAktif = document.getElementById("persentaseMentorAktif");
 
-    if (mentorCount) mentorCount.textContent = dummyMentor.length;
-    if (activeMentorCount) activeMentorCount.textContent = dummyMentor.length;
+    if (mentorCount) {
+        mentorCount.textContent = dataMentor.length;
+    }
+
+    const jumlahAktif = dataMentor.filter(
+        mentor => mentor.status_akun === "aktif"
+    ).length;
+
+    if (activeMentorCount) {
+        activeMentorCount.textContent = jumlahAktif;
+    }
+
+    const persentase = dataMentor.length > 0
+        ? Math.round((jumlahAktif / dataMentor.length) * 100)
+        : 0;
+
+    if (persentaseMentorAktif) {
+        persentaseMentorAktif.textContent = persentase + "%";
+    }
 
     function renderTable(data) {
         if (!tabelMentorBody) return;
@@ -160,55 +252,77 @@ function initAdminMentor() {
             return;
         }
 
-        tabelMentorBody.innerHTML = data.map((mentor, index) => `
-            <tr class="hover:bg-slate-50/80 transition">
-                <td class="py-4 px-6 text-slate-400 font-semibold">${index + 1}</td>
-                <td class="py-4 px-6">
-                    <div class="flex items-center gap-3">
-                        <div class="w-9 h-9 rounded-xl ${mentor.warnaBg} font-bold flex items-center justify-center text-xs shrink-0 shadow-sm">
-                            ${mentor.inisial}
+       tabelMentorBody.innerHTML = data.map((mentor, index) => {
+            const inisial = mentor.nama
+                .split(" ")
+                .map(kata => kata[0])
+                .slice(0, 2)
+                .join("")
+                .toUpperCase();
+            
+            const statusAktif = mentor.status_akun === "aktif";
+            
+            return `
+                <tr class="hover:bg-slate-50/80 transition">
+                    <td class="py-4 px-6 text-slate-400 font-semibold">${index + 1}</td>
+            
+                    <td class="py-4 px-6">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-xl bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center text-xs shrink-0 shadow-sm">
+                                ${inisial}
+                            </div>
+                            <div>
+                                <p class="font-bold text-slate-800">${mentor.nama}</p>
+                                <p class="text-[11px] text-slate-400">${mentor.email}</p>
+                            </div>
                         </div>
-                        <div>
-                            <p class="font-bold text-slate-800">${mentor.nama}</p>
-                            <p class="text-[11px] text-slate-400">${mentor.email}</p>
+                    </td>
+            
+                    <td class="py-4 px-6 font-mono text-slate-600">${mentor.nip}</td>
+            
+                    <td class="py-4 px-6">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-[11px] font-bold">
+                            <span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
+                            ${mentor.program}
+                        </span>
+                    </td>
+            
+                    <td class="py-4 px-6">
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full ${statusAktif ? "bg-emerald-50 text-emerald-600" : "bg-red-50 text-red-600"} text-[11px] font-bold">
+                            <span class="w-1.5 h-1.5 rounded-full ${statusAktif ? "bg-emerald-500" : "bg-red-500"}"></span>
+                            ${statusAktif ? "Aktif" : "Non-Aktif"}
+                        </span>
+                    </td>
+            
+                    <td class="py-4 px-6 text-right">
+                        <div class="flex items-center justify-end gap-2">
+                            <button title="Edit" class="p-1.5 rounded-lg text-slate-400 hover:text-amber-600 hover:bg-amber-50 transition action-edit" data-id="${mentor.id}">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                            </button>
+            
+                            <button title="Hapus" class="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition action-delete" data-id="${mentor.id}">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                            </button>
                         </div>
-                    </div>
-                </td>
-                <td class="py-4 px-6 font-mono text-slate-600">${mentor.nip}</td>
-                <td class="py-4 px-6">
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-[11px] font-bold">
-                        <span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span> ${mentor.bidang}
-                    </span>
-                </td>
-                <td class="py-4 px-6">
-                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-600 text-[11px] font-bold">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> ${mentor.status}
-                    </span>
-                </td>
-                <td class="py-4 px-6 text-right">
-                    <div class="flex items-center justify-end gap-2">
-                        <button title="Lihat Detail" class="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition action-view" data-id="${mentor.id}">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                        </button>
-                        <button title="Edit" class="p-1.5 rounded-lg text-slate-400 hover:text-amber-600 hover:bg-amber-50 transition action-edit" data-id="${mentor.id}">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                        </button>
-                        <button title="Hapus" class="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition action-delete" data-id="${mentor.id}">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                        </button>
-                    </div>
-                </td>
-            </tr>
-        `).join("");
+                    </td>
+                </tr>
+            `;
+        }).join("");
     }
 
     function filterData() {
         const keyword = searchInput ? searchInput.value.toLowerCase() : "";
         const selectedBidang = filterBidang ? filterBidang.value : "";
 
-        const filtered = dummyMentor.filter(mentor => {
-            const matchKeyword = mentor.nama.toLowerCase().includes(keyword) || mentor.nip.includes(keyword) || mentor.email.toLowerCase().includes(keyword);
-            const matchBidang = selectedBidang === "" || mentor.bidang === selectedBidang;
+        const filtered = dataMentor.filter(mentor => {
+            const matchKeyword =
+                mentor.nama.toLowerCase().includes(keyword) ||
+                mentor.nip.includes(keyword);
+
+            const matchBidang =
+                selectedBidang === "" ||
+                mentor.program.includes(selectedBidang);
+
             return matchKeyword && matchBidang;
         });
 
@@ -224,7 +338,64 @@ function initAdminMentor() {
         });
     }
 
-    renderTable(dummyMentor);
+     // Event tombol Edit dan Hapus Mentor
+    if (tabelMentorBody) {
+        tabelMentorBody.addEventListener("click", async (e) => {
+
+            // Tombol Edit
+            const tombolEdit = e.target.closest(".action-edit");
+
+            if (tombolEdit) {
+                const mentorId = tombolEdit.dataset.id;
+                renderEditMentorView(mentorId);
+                return;
+            }
+
+            // Tombol Hapus
+            const tombolHapus = e.target.closest(".action-delete");
+
+            if (tombolHapus) {
+                const mentorId = tombolHapus.dataset.id;
+
+                const konfirmasi = confirm(
+                    "Apakah kamu yakin ingin menghapus data mentor ini?"
+                );
+
+                if (!konfirmasi) return;
+
+                try {
+                    const response = await fetch(
+                        "http://localhost:8000/api_hapus_mentor.php",
+                        {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({
+                                id: mentorId
+                            })
+                        }
+                    );
+
+                    const result = await response.json();
+
+                    if (!result.success) {
+                        alert(result.message);
+                        return;
+                    }
+
+                    alert(result.message);
+                    initAdminMentor();
+
+                } catch (error) {
+                    console.error("Gagal menghapus mentor:", error);
+                    alert("Terjadi kesalahan saat menghapus data mentor.");
+                }
+            }
+        });
+    }
+
+    renderTable(dataMentor);
 }
 
 // Inisialisasi awal saat halaman dimuat

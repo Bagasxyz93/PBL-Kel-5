@@ -1,47 +1,38 @@
+
 <?php
 header("Access-Control-Allow-Origin: http://localhost:5173");
-header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+header("Access-Control-Allow-Methods: GET, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 header("Content-Type: application/json");
 
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(204);
+    exit;
+}
+
 require_once 'config/koneksi.php';
 
-$method = $_SERVER['REQUEST_METHOD'];
-
 try {
-    if ($method === 'GET') {
-        // Ambil daftar program
-        $stmt = $pdo->prepare("SELECT * FROM program ORDER BY id DESC");
-        $stmt->execute();
-        $programList = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $stmt = $pdo->prepare("
+        SELECT id, nama_program, deskripsi
+        FROM program
+        ORDER BY id DESC
+    ");
 
-        echo json_encode([
-            "success" => true,
-            "data" => $programList
-        ]);
-    } elseif ($method === 'POST') {
-        // Tambah program baru (jika dibutuhkan dari panel admin)
-        $input = json_decode(file_get_contents("php://input"), true);
-        $nama_program = $input['nama_program'] ?? '';
-        $deskripsi = $input['deskripsi'] ?? '';
+    $stmt->execute();
+    $programList = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        if (empty($nama_program)) {
-            echo json_encode(["success" => false, "message" => "Nama program wajib diisi."]);
-            exit();
-        }
+    echo json_encode([
+        "success" => true,
+        "data" => $programList
+    ]);
 
-        $stmt = $pdo->prepare("INSERT INTO program (nama_program, deskripsi) VALUES (:nama_program, :deskripsi)");
-        $stmt->execute(['nama_program' => $nama_program, 'deskripsi' => $deskripsi]);
+} catch (PDOException $e) {
+    http_response_code(500);
 
-        echo json_encode([
-            "success" => true,
-            "message" => "Program berhasil ditambahkan."
-        ]);
-    }
-} catch (Exception $e) {
     echo json_encode([
         "success" => false,
-        "message" => "Terjadi kesalahan: " . $e->getMessage()
+        "message" => "Gagal memuat data program."
     ]);
 }
 ?>
