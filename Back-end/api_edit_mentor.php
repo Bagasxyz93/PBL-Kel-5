@@ -28,12 +28,15 @@ $nip = trim($data['nip'] ?? '');
 $no_hp = trim($data['no_hp'] ?? '');
 $email = trim($data['email'] ?? '');
 $username = trim($data['username'] ?? '');
+$jenis_kelamin = trim($data['jenis_kelamin'] ?? '');
 $status = strtolower($data['status'] ?? '');
 $programIds = $data['program_ids'] ?? [];
 
 if (
     !$id || $nama === '' || $nip === '' ||
     $email === '' || $username === '' ||
+    $jenis_kelamin === '' ||
+    !in_array($jenis_kelamin, ['Laki-laki', 'Perempuan']) ||
     !in_array($status, ['aktif', 'non-aktif']) ||
     !is_array($programIds) || count($programIds) === 0
 ) {
@@ -84,14 +87,21 @@ try {
     $stmt = $pdo->prepare("
         UPDATE users
         SET nama = ?, nip = ?, no_hp = ?,
-            email = ?, username = ?, status_akun = ?,
+            email = ?, username = ?, jenis_kelamin = ?,
+            status_akun = ?,
             updated_at = CURRENT_TIMESTAMP
         WHERE id = ? AND role = 'mentor'
     ");
-
+    
     $stmt->execute([
-        $nama, $nip, $no_hp,
-        $email, $username, $status, $id
+        $nama,
+        $nip,
+        $no_hp,
+        $email,
+        $username,
+        $jenis_kelamin,
+        $status,
+        $id
     ]);
 
     // Perbarui program mentor

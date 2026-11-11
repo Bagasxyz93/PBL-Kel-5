@@ -1,6 +1,36 @@
 
 document.addEventListener("DOMContentLoaded", () => {
 
+    // Menampilkan tanggal dan jam saat ini
+    function updateTanggalJam() {
+        const sekarang = new Date();
+
+        const tanggal = document.getElementById("tanggal-sekarang");
+        const jam = document.getElementById("jam-sekarang");
+
+        if (tanggal) {
+            tanggal.textContent = sekarang.toLocaleDateString("id-ID", {
+                weekday: "long",
+                day: "numeric",
+                month: "long",
+                year: "numeric"
+            });
+        }
+
+        if (jam) {
+            jam.textContent = sekarang.toLocaleTimeString("id-ID", {
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+                hour12: false,
+                timeZone: "Asia/Jakarta"
+            }) + " WIB";
+        }
+    }
+
+    updateTanggalJam();
+    setInterval(updateTanggalJam, 1000);
+
     // Mengambil ringkasan data dashboard dari database
     async function loadDataDashboard() {
         try {
