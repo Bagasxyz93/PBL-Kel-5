@@ -9,7 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-require_once 'config/koneksi.php';
+require_once '../../config/koneksi.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
@@ -27,7 +27,7 @@ if (!$id) {
     http_response_code(400);
     echo json_encode([
         "success" => false,
-        "message" => "ID mentor tidak ditemukan."
+        "message" => "ID siswa tidak ditemukan."
     ]);
     exit;
 }
@@ -35,36 +35,36 @@ if (!$id) {
 try {
     $pdo->beginTransaction();
 
-    // Memastikan data merupakan mentor
+    // Memastikan data merupakan siswa
     $cek = $pdo->prepare("
         SELECT id FROM users
-        WHERE id = ? AND role = 'mentor'
+        WHERE id = ? AND role = 'peserta'
     ");
     $cek->execute([$id]);
 
     if (!$cek->fetch()) {
-        throw new Exception("Data mentor tidak ditemukan.");
+        throw new Exception("Data siswa tidak ditemukan.");
     }
 
-    // Menghapus hubungan mentor dengan program
+    // Menghapus hubungan siswa dengan program
     $hapusProgram = $pdo->prepare("
-        DELETE FROM mentor_program
-        WHERE mentor_id = ?
+        DELETE FROM peserta_program
+        WHERE peserta_id = ?
     ");
     $hapusProgram->execute([$id]);
 
-    // Menghapus akun mentor
-    $hapusMentor = $pdo->prepare("
+    // Menghapus akun siswa
+    $hapusSiswa = $pdo->prepare("
         DELETE FROM users
-        WHERE id = ? AND role = 'mentor'
+        WHERE id = ? AND role = 'peserta'
     ");
-    $hapusMentor->execute([$id]);
+    $hapusSiswa->execute([$id]);
 
     $pdo->commit();
 
     echo json_encode([
         "success" => true,
-        "message" => "Data mentor berhasil dihapus."
+        "message" => "Data siswa berhasil dihapus."
     ]);
 
 } catch (PDOException $e) {
@@ -76,7 +76,7 @@ try {
 
     echo json_encode([
         "success" => false,
-        "message" => "Data mentor tidak dapat dihapus karena masih memiliki data yang terhubung, seperti materi."
+        "message" => "Data siswa tidak dapat dihapus karena masih memiliki data yang terhubung, seperti absensi atau Daily Report."
     ]);
 
 } catch (Exception $e) {

@@ -9,7 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-require_once 'config/koneksi.php';
+require_once '../../config/koneksi.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
@@ -27,7 +27,7 @@ if (!$id) {
     http_response_code(400);
     echo json_encode([
         "success" => false,
-        "message" => "ID siswa tidak ditemukan."
+        "message" => "ID mentor tidak ditemukan."
     ]);
     exit;
 }
@@ -35,36 +35,36 @@ if (!$id) {
 try {
     $pdo->beginTransaction();
 
-    // Memastikan data merupakan siswa
+    // Memastikan data merupakan mentor
     $cek = $pdo->prepare("
         SELECT id FROM users
-        WHERE id = ? AND role = 'peserta'
+        WHERE id = ? AND role = 'mentor'
     ");
     $cek->execute([$id]);
 
     if (!$cek->fetch()) {
-        throw new Exception("Data siswa tidak ditemukan.");
+        throw new Exception("Data mentor tidak ditemukan.");
     }
 
-    // Menghapus hubungan siswa dengan program
+    // Menghapus hubungan mentor dengan program
     $hapusProgram = $pdo->prepare("
-        DELETE FROM peserta_program
-        WHERE peserta_id = ?
+        DELETE FROM mentor_program
+        WHERE mentor_id = ?
     ");
     $hapusProgram->execute([$id]);
 
-    // Menghapus akun siswa
-    $hapusSiswa = $pdo->prepare("
+    // Menghapus akun mentor
+    $hapusMentor = $pdo->prepare("
         DELETE FROM users
-        WHERE id = ? AND role = 'peserta'
+        WHERE id = ? AND role = 'mentor'
     ");
-    $hapusSiswa->execute([$id]);
+    $hapusMentor->execute([$id]);
 
     $pdo->commit();
 
     echo json_encode([
         "success" => true,
-        "message" => "Data siswa berhasil dihapus."
+        "message" => "Data mentor berhasil dihapus."
     ]);
 
 } catch (PDOException $e) {
@@ -76,7 +76,7 @@ try {
 
     echo json_encode([
         "success" => false,
-        "message" => "Data siswa tidak dapat dihapus karena masih memiliki data yang terhubung, seperti absensi atau Daily Report."
+        "message" => "Data mentor tidak dapat dihapus karena masih memiliki data yang terhubung, seperti materi."
     ]);
 
 } catch (Exception $e) {

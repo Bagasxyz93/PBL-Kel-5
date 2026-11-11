@@ -8,7 +8,7 @@ header("Access-Control-Allow-Methods: GET, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 header("Content-Type: application/json");
 
-require_once 'config/koneksi.php';
+require_once '../../config/koneksi.php';
 
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'mentor') {
     echo json_encode([

@@ -10,22 +10,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-require_once 'config/koneksi.php';
+require_once '../../config/koneksi.php';
 
 try {
     $stmt = $pdo->prepare("
-        SELECT
-            (SELECT COUNT(*) FROM users WHERE role = 'peserta') AS total_siswa,
-            (SELECT COUNT(*) FROM users WHERE role = 'mentor') AS total_mentor,
-            (SELECT COUNT(*) FROM program) AS total_program
+        SELECT id, nama_program, deskripsi
+        FROM program
+        ORDER BY id DESC
     ");
 
     $stmt->execute();
-    $data = $stmt->fetch(PDO::FETCH_ASSOC);
+    $programList = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     echo json_encode([
         "success" => true,
-        "data" => $data
+        "data" => $programList
     ]);
 
 } catch (PDOException $e) {
@@ -33,7 +32,7 @@ try {
 
     echo json_encode([
         "success" => false,
-        "message" => "Gagal mengambil data dashboard."
+        "message" => "Gagal memuat data program."
     ]);
 }
 ?>

@@ -9,7 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-require_once 'config/koneksi.php';
+require_once '../../config/koneksi.php';
 
 $program_id = $_GET['program_id'] ?? '';
 
