@@ -10,7 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-require_once 'config/koneksi.php';
+require_once '../../config/koneksi.php';
 
 try {
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -24,46 +24,55 @@ try {
 
     $data = json_decode(file_get_contents("php://input"), true);
 
+    $id = $data['id'] ?? null;
     $namaProgram = trim($data['nama_program'] ?? '');
     $deskripsi = trim($data['deskripsi'] ?? '');
 
-    if ($namaProgram === '' || $deskripsi === '') {
+    if (!$id || $namaProgram === '' || $deskripsi === '') {
         http_response_code(400);
         echo json_encode([
             "success" => false,
-            "message" => "Nama dan deskripsi program wajib diisi."
+            "message" => "ID, nama, dan deskripsi program wajib diisi."
         ]);
         exit;
     }
 
     $stmt = $pdo->prepare("
-        INSERT INTO program (nama_program, deskripsi)
-        VALUES (:nama_program, :deskripsi)
+        UPDATE program
+        SET nama_program = :nama_program,
+            deskripsi = :deskripsi,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = :id
         RETURNING id
     ");
 
     $stmt->execute([
         ':nama_program' => $namaProgram,
-        ':deskripsi' => $deskripsi
+        ':deskripsi' => $deskripsi,
+        ':id' => $id
     ]);
 
     $programId = $stmt->fetchColumn();
 
+    if (!$programId) {
+        http_response_code(404);
+        echo json_encode([
+            "success" => false,
+            "message" => "Program tidak ditemukan."
+        ]);
+        exit;
+    }
+
     echo json_encode([
         "success" => true,
-        "message" => "Program berhasil ditambahkan.",
-        "data" => [
-            "id" => $programId,
-            "nama_program" => $namaProgram,
-            "deskripsi" => $deskripsi
-        ]
+        "message" => "Program berhasil diperbarui."
     ]);
 
 } catch (PDOException $e) {
     http_response_code(500);
     echo json_encode([
         "success" => false,
-        "message" => "Gagal menyimpan program."
+        "message" => "Gagal memperbarui program."
     ]);
 }
 ?>
