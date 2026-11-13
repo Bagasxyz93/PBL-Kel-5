@@ -198,7 +198,7 @@
             const selectProgram = document.getElementById("programSiswa");
         
             try {
-                const response = await fetch("http://localhost:8000/api_program.php");
+                const response = await fetch("http://localhost:8000/api/admin/api_program.php")
                 const result = await response.json();
             
                 if (!result.success) {
@@ -241,7 +241,7 @@
         
             try {
                 const response = await fetch(
-                    `http://localhost:8000/api_mentor_program.php?program_id=${programId}`
+                    `http://localhost:8000/api/admin/api_mentor_program.php?program_id=${programId}`
                 );
             
                 const result = await response.json();
@@ -379,8 +379,8 @@
         
             // Tentukan API berdasarkan mode form
             const url = siswaEdit
-                ? "http://localhost:8000/api_edit_siswa.php"
-                : "http://localhost:8000/api_tambah_siswa.php";
+                ? "http://localhost:8000/api/admin/api_edit_siswa.php"
+                : "http://localhost:8000/api/admin/api_tambah_siswa.php";
         
             try {
                 const response = await fetch(url, {
@@ -415,7 +415,7 @@
     async function renderEditSiswaView(siswaId) {
         try {
             const response = await fetch(
-                `http://localhost:8000/api_detail_siswa.php?id=${siswaId}`
+                `http://localhost:8000/api/admin/api_detail_siswa.php?id=${siswaId}`
             );
 
             const result = await response.json();
@@ -550,7 +550,7 @@
         
         async function loadDataSiswa() {
             try {
-                const response = await fetch("http://localhost:8000/api_siswa.php");
+                const response = await fetch("http://localhost:8000/api/admin/api_siswa.php")
                 const result = await response.json();
             
                 if (!result.success) {
@@ -777,7 +777,7 @@
             
                 try {
                     const response = await fetch(
-                        "http://localhost:8000/api_hapus_siswa.php",
+                        "http://localhost:8000/api/admin/api_hapus_siswa.php",
                         {
                             method: "POST",
                             headers: {

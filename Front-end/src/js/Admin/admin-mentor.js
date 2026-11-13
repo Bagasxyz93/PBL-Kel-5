@@ -9,7 +9,7 @@ async function loadFilterProgram() {
     if (!filterBidang) return;
 
     try {
-        const response = await fetch("http://localhost:8000/api_program.php");
+        const response = await fetch("http://localhost:8000/api/admin/api_program.php");
         const result = await response.json();
 
         if (!result.success) {
@@ -69,7 +69,7 @@ async function renderEditMentorView(mentorId) {
 
         // Mengambil detail mentor berdasarkan ID
         const response = await fetch(
-            `http://localhost:8000/api_detail_mentor.php?id=${mentorId}`
+            `http://localhost:8000/api/admin/api_detail_mentor.php?id=${mentorId}`
         );
 
         const result = await response.json();
@@ -202,7 +202,7 @@ async function initAdminMentor() {
 
     // Mengambil data mentor dari database
     try {
-        const response = await fetch("http://localhost:8000/api_mentor.php");
+        const response = await fetch("http://localhost:8000/api/admin/api_mentor.php");
         const result = await response.json();
 
         if (!result.success) {
@@ -225,7 +225,7 @@ async function initAdminMentor() {
     
     // Menghitung jumlah program
     try {
-        const responseProgram = await fetch("http://localhost:8000/api_program.php");
+        const responseProgram = await fetch("http://localhost:8000/api/admin/api_program.php");
         const resultProgram = await responseProgram.json();
     
         if (resultProgram.success) {
@@ -382,7 +382,7 @@ async function initAdminMentor() {
 
                 try {
                     const response = await fetch(
-                        "http://localhost:8000/api_hapus_mentor.php",
+                        "http://localhost:8000/api/admin/api_hapus_mentor.php",
                         {
                             method: "POST",
                             headers: {
