@@ -187,7 +187,7 @@ function initAdminProgram() {
 
     async function loadDataProgram() {
         try {
-            const response = await fetch("http://localhost:8000/api_program.php");
+            const response = await fetch("http://localhost:8000/api/admin/api_program.php");
             const result = await response.json();
 
             if (!response.ok || !result.success) {
@@ -272,7 +272,7 @@ function initAdminProgram() {
 
         try {
             const response = await fetch(
-                "http://localhost:8000/api_hapus_program.php",
+                "http://localhost:8000/api/admin/api_hapus_program.php",
                 {
                     method: "POST",
                     headers: {

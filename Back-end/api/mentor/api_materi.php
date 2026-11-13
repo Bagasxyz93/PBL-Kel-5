@@ -3,7 +3,7 @@
 session_start();
 
 header("Access-Control-Allow-Origin: http://localhost:5173");
-header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+header("Access-Control-Allow-Methods: GET, POST, DELETE, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 header("Access-Control-Allow-Credentials: true");
 header("Content-Type: application/json");
@@ -30,6 +30,7 @@ if (
 }
 
 $mentor_id = $_SESSION['user_id'];
+$lokasiFile = null;
 
 try {
 
@@ -130,7 +131,6 @@ try {
         }
 
         $file_materi = null;
-        $lokasiFile = null;
 
         // Proses upload file jika ada
         if (
@@ -203,6 +203,9 @@ try {
 
         $materi_id = $stmtInsert->fetchColumn();
 
+        // File sudah tersimpan bersama data materi
+        $lokasiFile = null;
+
         echo json_encode([
             "success" => true,
             "message" => "Materi berhasil dipublikasikan.",
@@ -215,8 +218,104 @@ try {
         exit;
     }
 
-    // Method selain GET dan POST
+
+    // ==========================================
+    // METHOD DELETE: Menghapus materi
+    // ==========================================
+    if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
+
+        // Mengambil ID materi dari JSON
+        $input = json_decode(file_get_contents("php://input"), true);
+        $materi_id = $input['id'] ?? '';
+
+        // Validasi ID materi
+        if (!ctype_digit((string) $materi_id) || (int) $materi_id < 1) {
+            http_response_code(400);
+            echo json_encode([
+                "success" => false,
+                "message" => "ID materi tidak valid."
+            ]);
+            exit;
+        }
+
+        // Memastikan materi milik mentor yang sedang login
+        $stmtCek = $pdo->prepare("
+            SELECT file_materi
+            FROM materi
+            WHERE id = ? AND mentor_id = ?
+        ");
+
+        $stmtCek->execute([$materi_id, $mentor_id]);
+        $dataMateri = $stmtCek->fetch(PDO::FETCH_ASSOC);
+
+        if (!$dataMateri) {
+            http_response_code(404);
+            echo json_encode([
+                "success" => false,
+                "message" => "Materi tidak ditemukan atau bukan milik Anda."
+            ]);
+            exit;
+        }
+
+        $file_materi = $dataMateri['file_materi'];
+
+        // Menghapus data materi dari database
+        $pdo->beginTransaction();
+
+        $stmtDelete = $pdo->prepare("
+            DELETE FROM materi
+            WHERE id = ? AND mentor_id = ?
+        ");
+
+        $stmtDelete->execute([$materi_id, $mentor_id]);
+
+        if ($stmtDelete->rowCount() === 0) {
+            $pdo->rollBack();
+
+            http_response_code(404);
+            echo json_encode([
+                "success" => false,
+                "message" => "Materi gagal dihapus."
+            ]);
+            exit;
+        }
+
+        $pdo->commit();
+
+        // Menghapus file fisik jika berasal dari folder upload materi
+        if (
+            $file_materi &&
+            preg_match(
+                '/\Auploads\/materi\/[a-f0-9]{32}\.(pdf|ppt|pptx|zip|mp4)\z/i',
+                $file_materi
+            )
+        ) {
+            $folderBackend = realpath(__DIR__ . '/../../');
+
+            if ($folderBackend !== false) {
+                $lokasiHapus = $folderBackend . DIRECTORY_SEPARATOR .
+                    str_replace('/', DIRECTORY_SEPARATOR, $file_materi);
+
+                if (is_file($lokasiHapus)) {
+                    if (!unlink($lokasiHapus)) {
+                        error_log("File materi gagal dihapus: " . $lokasiHapus);
+                    }
+                }
+            }
+        }
+
+        echo json_encode([
+            "success" => true,
+            "message" => "Materi berhasil dihapus."
+        ]);
+
+        exit;
+    }
+
+
+    // Method selain GET, POST, dan DELETE
     http_response_code(405);
+
     echo json_encode([
         "success" => false,
         "message" => "Method tidak diizinkan."
@@ -225,13 +324,18 @@ try {
 } catch (Throwable $e) {
 
     // Hapus file jika upload berhasil tetapi penyimpanan database gagal
-    if (isset($lokasiFile) && $lokasiFile && file_exists($lokasiFile)) {
+    if ($lokasiFile && file_exists($lokasiFile)) {
         unlink($lokasiFile);
+    }
+
+    if ($pdo->inTransaction()) {
+        $pdo->rollBack();
     }
 
     error_log($e->getMessage());
 
     http_response_code(500);
+
     echo json_encode([
         "success" => false,
         "message" => $e->getMessage()

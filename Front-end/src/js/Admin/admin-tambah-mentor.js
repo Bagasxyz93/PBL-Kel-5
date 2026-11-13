@@ -4,7 +4,7 @@ async function loadProgramMentor(selectedProgramIds = []) {
     if (!container) return;
 
     try {
-        const response = await fetch("http://localhost:8000/api_program.php");
+        const response = await fetch("http://localhost:8000/api/admin/api_program.php");
         const result = await response.json();
 
         if (!result.success) {
@@ -255,8 +255,8 @@ export async function initAdminTambahMentor(onSuccess, mentor = null) {
 
             // Memilih API tambah atau edit
             const url = mentor
-                ? "http://localhost:8000/api_edit_mentor.php"
-                : "http://localhost:8000/api_tambah_mentor.php";
+                ? "http://localhost:8000/api/admin/api_edit_mentor.php"
+                : "http://localhost:8000/api/admin/api_tambah_mentor.php";
 
             try {
                 const response = await fetch(url, {

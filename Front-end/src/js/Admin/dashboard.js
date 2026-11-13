@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Mengambil ringkasan data dashboard dari database
     async function loadDataDashboard() {
         try {
-            const response = await fetch("http://localhost:8000/api_dashboard.php");
+            const response = await fetch("http://localhost:8000/api/admin/api_dashboard.php");
             const result = await response.json();
 
             if (result.success) {
@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!daftarProgram || !jumlahProgram) return;
 
         try {
-            const response = await fetch("http://localhost:8000/api_program.php");
+            const response = await fetch("http://localhost:8000/api/admin/api_program.php");
             const result = await response.json();
 
             if (!result.success) {
@@ -132,7 +132,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!grafik || !totalAktivitas) return;
 
         try {
-            const response = await fetch("http://localhost:8000/api_aktivitas_dashboard.php");
+            const response = await fetch("http://localhost:8000/api/admin/api_aktivitas_dashboard.php");
             const result = await response.json();
 
             if (!result.success) {

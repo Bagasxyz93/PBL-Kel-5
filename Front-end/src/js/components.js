@@ -7,6 +7,7 @@ import { initProfil } from "./Siswa/profil.js";
 
 // Import tambahan untuk halaman Mentor:
 import { initMentorDashboard } from "./Mentor/dashboard.js";
+import { initMentorProfil } from "./Mentor/profil.js";
 
 /* =========================================================
 KONFIGURASI MENU & TEMA BERDASARKAN ROLE
@@ -39,7 +40,7 @@ const roleConfig = {
         bgClass: "bg-[#064e3b]",
         logoBg: "bg-emerald-600 shadow-emerald-500/20",
         activeColor: "bg-emerald-600 text-white shadow-md shadow-emerald-600/30",
-        roleBadgeText: "Mentor Web Dev",
+        roleBadgeText: "Memuat program...",
         roleBadgeColor: "text-emerald-600",
         versionText: "Versi Mentor v2.0",
         avatarBg: "bg-emerald-600 shadow-emerald-500/20",
@@ -105,6 +106,65 @@ async function loadComponent(elementId, filePath) {
 }
 
 /* =========================================================
+MENGAMBIL PROFIL MENTOR UNTUK HEADER
+========================================================= */
+
+async function loadHeaderMentorProfile() {
+    try {
+        const response = await fetch(
+            "http://localhost:8000/api/mentor/api_profil_mentor.php",
+            {
+                credentials: "include"
+            }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            throw new Error(result.message || "Gagal mengambil profil mentor.");
+        }
+
+        const mentor = result.data;
+
+        const headerUserName = document.getElementById("header-user-name");
+        const headerUserRoleBadge = document.getElementById("header-user-role-badge");
+        const headerUserAvatar = document.getElementById("header-user-avatar");
+
+        // Nama mentor
+        if (headerUserName) {
+            headerUserName.textContent = mentor.nama;
+        }
+
+        // Program yang diampu
+        if (headerUserRoleBadge) {
+            const daftarProgram = mentor.program || [];
+
+            const namaProgram = daftarProgram.length > 0
+                ? daftarProgram.map(item => item.nama_program).join(", ")
+                : "Belum ada program";
+
+            headerUserRoleBadge.textContent = "Mentor " + namaProgram;
+        }
+
+        // Inisial avatar
+        if (headerUserAvatar) {
+            const inisial = mentor.nama
+                .trim()
+                .split(/\s+/)
+                .slice(0, 2)
+                .map(kata => kata[0])
+                .join("")
+                .toUpperCase();
+
+            headerUserAvatar.textContent = inisial || "GM";
+        }
+
+    } catch (error) {
+        console.error("Gagal memuat profil header mentor:", error);
+    }
+}
+
+/* =========================================================
 RENDER LAYOUT DINAMIS (Sidebar, Header, Footer)
 ========================================================= */
 
@@ -155,13 +215,25 @@ function setupDynamicLayout(role) {
     const headerUserRoleBadge = document.getElementById("header-user-role-badge");
     const headerUserAvatar = document.getElementById("header-user-avatar");
 
-    if (headerUserName) headerUserName.textContent = userName;
+    if (headerUserName) {
+        headerUserName.textContent = role === "mentor"
+            ? "Memuat nama..."
+            : userName;
+    }
+
     if (headerUserRoleBadge) {
         headerUserRoleBadge.textContent = config.roleBadgeText;
         headerUserRoleBadge.className = `text-xs font-semibold ${config.roleBadgeColor}`;
     }
+
     if (headerUserAvatar) {
-        const initials = userName.split(" ").map(n => n[0]).join("").substring(0, 2).toUpperCase();
+        const initials = userName
+            .split(" ")
+            .map(n => n[0])
+            .join("")
+            .substring(0, 2)
+            .toUpperCase();
+
         headerUserAvatar.textContent = initials || "US";
         headerUserAvatar.className = `flex h-10 w-10 items-center justify-center rounded-xl ${config.avatarBg} text-xs font-bold text-white shadow-md`;
     }
@@ -201,7 +273,12 @@ INISIALISASI HALAMAN MENTOR
 ========================================================= */
 
 function initMentorPage(path) {
-    if (path.endsWith("/dashboard.html")) initMentorDashboard();
+    if (path.endsWith("/dashboard.html")) {
+        initMentorDashboard();
+    }
+    else if (path.endsWith("/profil.html")) {
+        initMentorProfil();
+    }
 }
 
 /* =========================================================
@@ -237,6 +314,10 @@ async function initComponents() {
         ]);
 
         setupDynamicLayout(userRole);
+
+        if (userRole === "mentor") {
+            await loadHeaderMentorProfile();
+        }
 
         if (path.includes("/pages/siswa/")) {
             initStudentPage(path);
