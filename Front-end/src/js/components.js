@@ -103,6 +103,10 @@ async function loadComponent(elementId, filePath) {
     }
 
     container.innerHTML = await response.text();
+
+    if (elementId === "header-container") {
+        bindNotificationButtonDirectly();
+    }
 }
 
 /* =========================================================
@@ -113,52 +117,31 @@ async function loadHeaderMentorProfile() {
     try {
         const response = await fetch(
             "http://localhost:8000/api/mentor/api_profil_mentor.php",
-            {
-                credentials: "include"
-            }
+            { credentials: "include" }
         );
 
         const result = await response.json();
-
-        if (!response.ok || !result.success) {
-            throw new Error(result.message || "Gagal mengambil profil mentor.");
-        }
+        if (!response.ok || !result.success) return;
 
         const mentor = result.data;
-
         const headerUserName = document.getElementById("header-user-name");
         const headerUserRoleBadge = document.getElementById("header-user-role-badge");
         const headerUserAvatar = document.getElementById("header-user-avatar");
 
-        // Nama mentor
-        if (headerUserName) {
-            headerUserName.textContent = mentor.nama;
-        }
+        if (headerUserName) headerUserName.textContent = mentor.nama;
 
-        // Program yang diampu
         if (headerUserRoleBadge) {
             const daftarProgram = mentor.program || [];
-
             const namaProgram = daftarProgram.length > 0
                 ? daftarProgram.map(item => item.nama_program).join(", ")
                 : "Belum ada program";
-
             headerUserRoleBadge.textContent = "Mentor " + namaProgram;
         }
 
-        // Inisial avatar
         if (headerUserAvatar) {
-            const inisial = mentor.nama
-                .trim()
-                .split(/\s+/)
-                .slice(0, 2)
-                .map(kata => kata[0])
-                .join("")
-                .toUpperCase();
-
+            const inisial = mentor.nama.trim().split(/\s+/).slice(0, 2).map(kata => kata[0]).join("").toUpperCase();
             headerUserAvatar.textContent = inisial || "GM";
         }
-
     } catch (error) {
         console.error("Gagal memuat profil header mentor:", error);
     }
@@ -179,7 +162,6 @@ function setupDynamicLayout(role) {
 
     const userName = localStorage.getItem("userName") || defaultName;
 
-    // 1. Setup Sidebar
     const sidebarWrapper = document.getElementById("sidebar-wrapper");
     const sidebarLogoBox = document.getElementById("sidebar-logo-box");
     const sidebarRoleSubtitle = document.getElementById("sidebar-role-subtitle");
@@ -193,9 +175,8 @@ function setupDynamicLayout(role) {
         sidebarLogoBox.className = `flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${config.logoBg} text-sm font-bold text-white shadow-md`;
         sidebarLogoBox.textContent = config.title;
     }
-    if (sidebarRoleSubtitle) {
-        sidebarRoleSubtitle.textContent = config.subtitle;
-    }
+    if (sidebarRoleSubtitle) sidebarRoleSubtitle.textContent = config.subtitle;
+    
     if (sidebarNavContainer) {
         sidebarNavContainer.innerHTML = config.menus.map(menu => {
             const isActive = menu.active.some(file => currentPath.endsWith(file.toLowerCase()));
@@ -210,41 +191,24 @@ function setupDynamicLayout(role) {
         }).join("");
     }
 
-    // 2. Setup Header Dinamis
     const headerUserName = document.getElementById("header-user-name");
     const headerUserRoleBadge = document.getElementById("header-user-role-badge");
     const headerUserAvatar = document.getElementById("header-user-avatar");
 
-    if (headerUserName) {
-        headerUserName.textContent = role === "mentor"
-            ? "Memuat nama..."
-            : userName;
-    }
-
+    if (headerUserName) headerUserName.textContent = role === "mentor" ? "Memuat nama..." : userName;
     if (headerUserRoleBadge) {
         headerUserRoleBadge.textContent = config.roleBadgeText;
         headerUserRoleBadge.className = `text-xs font-semibold ${config.roleBadgeColor}`;
     }
-
     if (headerUserAvatar) {
-        const initials = userName
-            .split(" ")
-            .map(n => n[0])
-            .join("")
-            .substring(0, 2)
-            .toUpperCase();
-
+        const initials = userName.split(" ").map(n => n[0]).join("").substring(0, 2).toUpperCase();
         headerUserAvatar.textContent = initials || "US";
         headerUserAvatar.className = `flex h-10 w-10 items-center justify-center rounded-xl ${config.avatarBg} text-xs font-bold text-white shadow-md`;
     }
 
-    // 3. Setup Footer Dinamis
     const footerVersion = document.getElementById("footer-version");
-    if (footerVersion) {
-        footerVersion.textContent = config.versionText;
-    }
+    if (footerVersion) footerVersion.textContent = config.versionText;
 
-    // 4. Setup Event Listener Tombol Logout
     const btnLogout = document.getElementById("btn-logout");
     if (btnLogout) {
         btnLogout.addEventListener("click", () => {
@@ -256,7 +220,242 @@ function setupDynamicLayout(role) {
 }
 
 /* =========================================================
-INISIALISASI HALAMAN SISWA
+DATA NOTIFIKASI SPESIFIK BERDASARKAN ROLE
+========================================================= */
+
+const notifikasiPerRole = {
+    peserta: [
+        {
+            kategori: "laporan",
+            judul: "Laporan Harian Siswa Disetujui",
+            badge: "Disetujui",
+            badgeClass: "bg-emerald-50 text-emerald-600 border border-emerald-200",
+            deskripsi: "Laporan harian magang Anda telah diperiksa dan disetujui oleh Mentor.",
+            waktu: "10 menit yang lalu",
+            unread: true
+        },
+        {
+            kategori: "materi",
+            judul: "Materi Baru: Modul Frontend Web Development",
+            badge: "Materi Baru",
+            badgeClass: "bg-indigo-50 text-indigo-600 border border-indigo-200",
+            deskripsi: "Mentor telah mengunggah modul pembelajaran baru untuk kelas Anda.",
+            waktu: "1 jam yang lalu",
+            unread: true
+        }
+    ],
+    mentor: [
+        {
+            kategori: "laporan",
+            judul: "Persetujuan Daily Report Siswa",
+            badge: "Menunggu Review",
+            badgeClass: "bg-amber-50 text-amber-600 border border-amber-200",
+            deskripsi: "Terdapat 5 laporan harian baru dari siswa bimbingan yang perlu Anda tinjau.",
+            waktu: "15 menit yang lalu",
+            unread: true
+        },
+        {
+            kategori: "materi",
+            judul: "Jadwal Bimbingan Inkubasi",
+            badge: "Agenda",
+            badgeClass: "bg-emerald-50 text-emerald-600 border border-emerald-200",
+            deskripsi: "Sesi bimbingan kelompok dijadwalkan berlangsung pukul 13.00 WIB hari ini.",
+            waktu: "3 jam yang lalu",
+            unread: false
+        }
+    ],
+    admin: [
+        {
+            kategori: "sistem",
+            judul: "Pendaftaran Akun Pengguna Baru",
+            badge: "Sistem Admin",
+            badgeClass: "bg-red-50 text-red-600 border border-red-200",
+            deskripsi: "Sistem mendapati registrasi akun peserta dan mentor baru yang masuk ke database.",
+            waktu: "5 menit yang lalu",
+            unread: true
+        },
+        {
+            kategori: "sistem",
+            judul: "Pemeliharaan Server Portal SI-IN",
+            badge: "Informasi",
+            badgeClass: "bg-slate-100 text-slate-600 border border-slate-200",
+            deskripsi: "Pembaruan server dan database sistem dijadwalkan malam ini pukul 23.00 WIB.",
+            waktu: "Kemarin",
+            unread: false
+        }
+    ]
+};
+
+/* =========================================================
+RENDER HALAMAN NOTIFIKASI & MAP DATA KE HTML STATIS
+========================================================= */
+
+async function renderNotifikasiView(userRole) {
+    const mainContainer = document.getElementById("main-content-area") || 
+                          document.querySelector("main") || 
+                          document.getElementById("app");
+    
+    if (!mainContainer) return;
+
+    // Ambil file notifikasi.html melalui fetch
+    const possiblePaths = [
+        "/component/Notifikasi/notifikasi.html",
+        "/Component/Notifikasi/notifikasi.html",
+        "/Front-end/component/Notifikasi/notifikasi.html",
+        "../../component/Notifikasi/notifikasi.html"
+    ];
+
+    let htmlContent = null;
+    for (const path of possiblePaths) {
+        try {
+            const response = await fetch(path);
+            if (response.ok) {
+                htmlContent = await response.text();
+                break;
+            }
+        } catch (e) {
+            // Lanjutkan jika path gagal
+        }
+    }
+
+    // Jika file HTML berhasil dimuat, masukkan ke kontainer
+    if (htmlContent) {
+        mainContainer.innerHTML = htmlContent;
+    } else {
+        // Fallback jika fetch gagal
+        mainContainer.innerHTML = `
+        <div class="space-y-6">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight text-slate-800">Notifikasi</h1>
+                    <p class="mt-0.5 text-xs text-slate-400">Daftar pemberitahuan sistem Anda.</p>
+                </div>
+                <button type="button" id="btn-mark-all-read" class="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 hover:text-indigo-700 transition">
+                    Tandai Semua Sudah Dibaca
+                </button>
+            </div>
+            <div class="space-y-3" id="notifikasi-list-container"></div>
+        </div>`;
+    }
+
+    // PROSES MENGISI DATA SESUAI ROLE AKTIF
+    populateNotifikasiData(userRole);
+    setupNotifikasiInteractions();
+}
+
+function populateNotifikasiData(userRole) {
+    const listContainer = document.getElementById("notifikasi-list-container");
+    if (!listContainer) return;
+
+    // Ambil data spesifik berdasarkan role (peserta, mentor, atau admin)
+    const listData = notifikasiPerRole[userRole] || notifikasiPerRole.peserta;
+
+    // Render ulang artikel notifikasi berdasarkan data role tersebut
+    listContainer.innerHTML = listData.map(item => `
+        <article class="notif-item rounded-2xl border border-slate-100 bg-white p-5 shadow-sm transition hover:border-slate-200 relative" data-category="${item.kategori}" data-unread="${item.unread}">
+            <div class="flex items-start justify-between gap-4">
+                <div class="flex items-start gap-4">
+                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600 font-bold">
+                        🔔
+                    </div>
+                    <div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <h2 class="text-sm font-bold text-slate-800">${item.judul}</h2>
+                            <span class="rounded-full px-2.5 py-0.5 text-[9px] font-bold ${item.badgeClass}">${item.badge}</span>
+                        </div>
+                        <p class="mt-1 text-xs text-slate-600 leading-relaxed">${item.deskripsi}</p>
+                        <span class="mt-2 block text-[10px] text-slate-400">${item.waktu}</span>
+                    </div>
+                </div>
+                ${item.unread ? '<div class="flex items-center gap-3 shrink-0"><span class="h-2.5 w-2.5 rounded-full bg-indigo-600 unread-dot" title="Belum dibaca"></span></div>' : ''}
+            </div>
+        </article>
+    `).join("");
+
+    // Update jumlah badge angka pada tab jika ada
+    const badgeSemua = document.querySelector('[data-filter="semua"] span');
+    if (badgeSemua) badgeSemua.textContent = listData.length;
+
+    const unreadCount = listData.filter(i => i.unread).length;
+    const badgeBelumDibaca = document.querySelector('[data-filter="belum-dibaca"] span');
+    if (badgeBelumDibaca) badgeBelumDibaca.textContent = unreadCount;
+}
+
+function setupNotifikasiInteractions() {
+    const tabs = document.querySelectorAll(".notif-tab");
+    const items = document.querySelectorAll(".notif-item");
+    const btnMarkAll = document.getElementById("btn-mark-all-read");
+
+    tabs.forEach(tab => {
+        tab.addEventListener("click", () => {
+            tabs.forEach(t => {
+                t.className = "notif-tab rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 transition";
+            });
+            tab.className = "notif-tab rounded-xl bg-indigo-600 px-4 py-2 text-xs font-bold text-white shadow-sm transition";
+
+            const filter = tab.dataset.filter;
+            const currentItems = document.querySelectorAll(".notif-item");
+
+            currentItems.forEach(item => {
+                const category = item.dataset.category;
+                const isUnread = item.dataset.unread === "true";
+
+                if (filter === "semua") {
+                    item.style.display = "block";
+                } else if (filter === "belum-dibaca") {
+                    item.style.display = isUnread ? "block" : "none";
+                } else if (filter === "laporan" && category === "laporan") {
+                    item.style.display = "block";
+                } else if (filter === "materi" && category === "materi") {
+                    item.style.display = "block";
+                } else {
+                    item.style.display = "none";
+                }
+            });
+        });
+    });
+
+    if (btnMarkAll) {
+        btnMarkAll.addEventListener("click", () => {
+            document.querySelectorAll(".unread-dot").forEach(dot => dot.remove());
+            document.querySelectorAll(".notif-item").forEach(item => item.dataset.unread = "false");
+            btnMarkAll.textContent = "Semua Sudah Dibaca";
+            btnMarkAll.classList.add("text-slate-400", "pointer-events-none");
+        });
+    }
+}
+
+/* =========================================================
+PENGIKAT LANGSUNG TOMBOL NOTIFIKASI
+========================================================= */
+
+function bindNotificationButtonDirectly() {
+    const btnNotifikasi = document.getElementById("btn-notifikasi");
+    if (!btnNotifikasi) return;
+
+    if (btnNotifikasi.dataset.bound === "true") return;
+    btnNotifikasi.dataset.bound = "true";
+
+    btnNotifikasi.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const currentPath = window.location.pathname.toLowerCase();
+        const savedRole = (localStorage.getItem("userRole") || "peserta").toLowerCase();
+
+        let activeRole = savedRole;
+        if (currentPath.includes("/admin/")) activeRole = "admin";
+        else if (currentPath.includes("/mentor/")) activeRole = "mentor";
+        else if (currentPath.includes("/siswa/")) activeRole = "peserta";
+
+        renderNotifikasiView(activeRole);
+    });
+}
+
+setInterval(bindNotificationButtonDirectly, 300);
+
+/* =========================================================
+INISIALISASI HALAMAN SISWA & MENTOR
 ========================================================= */
 
 function initStudentPage(path) {
@@ -268,15 +467,10 @@ function initStudentPage(path) {
     else if (path.endsWith("/profil.html")) initProfil();
 }
 
-/* =========================================================
-INISIALISASI HALAMAN MENTOR
-========================================================= */
-
 function initMentorPage(path) {
     if (path.endsWith("/dashboard.html")) {
         initMentorDashboard();
-    }
-    else if (path.endsWith("/profil.html")) {
+    } else if (path.endsWith("/profil.html")) {
         initMentorProfil();
     }
 }
@@ -287,14 +481,12 @@ INISIALISASI KOMPONEN UTAMA
 
 async function initComponents() {
     const path = window.location.pathname.toLowerCase();
-
     if (!path.includes("/pages/")) return;
 
     const app = document.getElementById("app");
 
     try {
         const savedRole = (localStorage.getItem("userRole") || "").toLowerCase();
-
         const userRole = path.includes("/pages/admin/")
             ? "admin"
             : path.includes("/pages/mentor/")

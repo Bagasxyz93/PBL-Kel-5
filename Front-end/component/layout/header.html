@@ -1,21 +1,13 @@
 <header id="header-wrapper" class="sticky top-0 z-30 flex h-20 items-center justify-between gap-4 border-b border-slate-100 bg-white/80 px-8 backdrop-blur-md shrink-0 transition-colors duration-300">
-    <div class="w-full max-w-md">
-        <div class="relative flex items-center">
-            <svg class="absolute left-4 h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-            </svg>
-            <input
-                type="search"
-                id="search-menu"
-                placeholder="CARI MENU (CONTOH: ABSEN, TUGAS, JADWAL...)"
-                class="w-full rounded-full border border-slate-100 bg-slate-50/80 py-2.5 pl-11 pr-4 text-[11px] font-semibold tracking-wider text-slate-600 uppercase placeholder:text-slate-400 focus:border-indigo-300 focus:bg-white focus:outline-none focus:ring-4 focus:ring-indigo-500/10 transition-all"
-            >
-        </div>
+    <div class="flex items-center gap-5">
+        <!-- Logo atau Judul Brand Opsional -->
+        <span class="text-base font-bold text-slate-800 tracking-wide">Portal SI-IN</span>
     </div>
 
     <div class="flex items-center gap-5">
-        <!-- Notifikasi -->
+        <!-- Notifikasi (Ditambahkan id="btn-notifikasi") -->
         <button
+            id="btn-notifikasi"
             type="button"
             aria-label="Notifikasi"
             class="relative flex h-10 w-10 items-center justify-center rounded-xl text-slate-400 hover:bg-slate-50 hover:text-slate-600 transition-colors"
