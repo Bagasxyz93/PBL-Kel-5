@@ -1,199 +1,197 @@
+/* =========================================================
+    LOGIKA HALAMAN PROFIL SISWA
+========================================================= */
+
 export function initProfil() {
-const nama = document.getElementById("profil-nama");
-const email = document.getElementById("profil-email");
-const telepon = document.getElementById("profil-telepon");
+    console.log("Modul Profil Siswa berhasil dimuat.");
 
-const btnEdit = document.getElementById("btn-edit-profil");
-const btnTutup = document.getElementById("btn-tutup-modal");
-const btnBatal = document.getElementById("btn-batal-edit");
+    const nama = document.getElementById("profil-nama");
+    const email = document.getElementById("profil-email");
+    const telepon = document.getElementById("profil-telepon");
 
-const modal = document.getElementById("modal-edit-profil");
-const form = document.getElementById("form-edit-profil");
+    const btnEdit = document.getElementById("btn-edit-profil");
+    const btnJadwal = document.getElementById("btn-lihat-jadwal");
+    const daftarJadwal = document.getElementById("daftar-jadwal");
+    const jadwalKosong = document.getElementById("jadwal-kosong");
+    const toast = document.getElementById("profil-toast");
 
-const inputNama = document.getElementById("edit-nama");
-const inputEmail = document.getElementById("edit-email");
-const inputTelepon = document.getElementById("edit-telepon");
-
-const toast = document.getElementById("profil-toast");
-const btnJadwal = document.getElementById("btn-lihat-jadwal");
-const daftarJadwal = document.getElementById("daftar-jadwal");
-const jadwalKosong = document.getElementById("jadwal-kosong");
-
-if (
-    !nama ||
-    !email ||
-    !telepon ||
-    !btnEdit ||
-    !modal ||
-    !form
-) {
-    return;
-}
-
-// Data awal halaman profil
-const dataAwal = {
-    nama: nama.textContent.trim(),
-    email: email.textContent.trim(),
-    telepon: telepon.textContent.trim()
-};
-
-const STORAGE_KEY = "siin_profil_siswa";
-
-// Membaca data profil dari localStorage
-function bacaProfil() {
-    try {
-        const dataTersimpan = localStorage.getItem(STORAGE_KEY);
-
-        if (dataTersimpan) {
-            return {
-                ...dataAwal,
-                ...JSON.parse(dataTersimpan)
-            };
-        }
-    } catch (error) {
-        console.error("Gagal membaca data profil:", error);
-    }
-
-    return { ...dataAwal };
-}
-
-let dataProfil = bacaProfil();
-
-// Menampilkan data profil
-function tampilkanProfil() {
-    nama.textContent = dataProfil.nama;
-    email.textContent = dataProfil.email;
-    telepon.textContent = dataProfil.telepon;
-}
-
-// Membuka modal edit
-function bukaModal() {
-    inputNama.value = dataProfil.nama;
-    inputEmail.value = dataProfil.email;
-    inputTelepon.value = dataProfil.telepon;
-
-    modal.classList.remove("hidden");
-    modal.classList.add("flex");
-
-    inputNama.focus();
-}
-
-// Menutup modal edit
-function tutupModal() {
-    modal.classList.add("hidden");
-    modal.classList.remove("flex");
-}
-
-// Notifikasi sederhana
-let toastTimer;
-
-function tampilkanToast(pesan) {
-    if (!toast) return;
-
-    toast.textContent = pesan;
-    toast.classList.remove("hidden");
-
-    clearTimeout(toastTimer);
-
-    toastTimer = setTimeout(() => {
-        toast.classList.add("hidden");
-    }, 2500);
-}
-
-// Simpan perubahan profil
-function simpanProfil(event) {
-    event.preventDefault();
-
-    const namaBaru = inputNama.value.trim();
-    const emailBaru = inputEmail.value.trim();
-    const teleponBaru = inputTelepon.value.trim();
-
-    if (!namaBaru || !emailBaru) {
-        tampilkanToast("Nama dan email wajib diisi.");
+    if (!nama || !email || !telepon || !btnEdit) {
         return;
     }
 
-    dataProfil = {
-        nama: namaBaru,
-        email: emailBaru,
-        telepon: teleponBaru || "-"
+    // Data awal halaman profil
+    const dataAwal = {
+        nama: nama.textContent.trim(),
+        email: email.textContent.trim(),
+        telepon: telepon.textContent.trim()
     };
 
-    try {
-        localStorage.setItem(
-            STORAGE_KEY,
-            JSON.stringify(dataProfil)
-        );
-    } catch (error) {
-        console.error("Gagal menyimpan data profil:", error);
-        tampilkanToast("Data tidak dapat disimpan di browser.");
-        return;
+    const STORAGE_KEY = "siin_profil_siswa";
+
+    // Membaca data profil dari localStorage
+    function bacaProfil() {
+        try {
+            const dataTersimpan = localStorage.getItem(STORAGE_KEY);
+            if (dataTersimpan) {
+                return {
+                    ...dataAwal,
+                    ...JSON.parse(dataTersimpan)
+                };
+            }
+        } catch (error) {
+            console.error("Gagal membaca data profil:", error);
+        }
+        return { ...dataAwal };
     }
 
+    let dataProfil = bacaProfil();
+
+    // Menampilkan data profil
+    function tampilkanProfil() {
+        nama.textContent = dataProfil.nama;
+        email.textContent = dataProfil.email;
+        telepon.textContent = dataProfil.telepon;
+    }
+
+    // Notifikasi Toast sederhana
+    let toastTimer;
+    function tampilkanToast(pesan) {
+        if (!toast) return;
+
+        toast.textContent = pesan;
+        toast.classList.remove("hidden");
+
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => {
+            toast.classList.add("hidden");
+        }, 2500);
+    }
+
+    // Tampilkan seluruh jadwal atau ringkasannya
+    let semuaJadwalDitampilkan = false;
+
+    btnJadwal?.addEventListener("click", () => {
+        if (!daftarJadwal || !jadwalKosong) return;
+
+        const jadwal = daftarJadwal.children;
+
+        if (jadwal.length === 0) {
+            jadwalKosong.classList.remove("hidden");
+            tampilkanToast("Belum ada jadwal yang tersedia.");
+            return;
+        }
+
+        semuaJadwalDitampilkan = !semuaJadwalDitampilkan;
+
+        Array.from(jadwal).forEach((item, index) => {
+            if (index >= 2) {
+                item.classList.toggle("hidden", !semuaJadwalDitampilkan);
+            }
+        });
+
+        btnJadwal.textContent = semuaJadwalDitampilkan
+            ? "Tampilkan Lebih Sedikit"
+            : "Lihat Semua";
+    });
+
+    // Terapkan data yang tersimpan
     tampilkanProfil();
-    tutupModal();
-    tampilkanToast("Profil berhasil diperbarui.");
+
+    // Awalnya tampilkan dua jadwal saja
+    if (daftarJadwal) {
+        Array.from(daftarJadwal.children).forEach((item, index) => {
+            if (index >= 2) {
+                item.classList.add("hidden");
+            }
+        });
+    }
+
+    // Inisialisasi Pop-up Ubah Password Terpusat
+    setupPasswordModal();
 }
 
-// Event tombol edit dan modal
-btnEdit.addEventListener("click", bukaModal);
+/* =========================================================
+    LOGIKA POP-UP UBAH PASSWORD (CHANGE PASSWORD)
+========================================================= */
 
-btnTutup?.addEventListener("click", tutupModal);
-btnBatal?.addEventListener("click", tutupModal);
+async function setupPasswordModal() {
+    const btnEditPassword = document.getElementById("btn-edit-profil");
+    let modalContainer = document.getElementById("password-modal-container");
 
-form.addEventListener("submit", simpanProfil);
-
-// Tutup modal ketika area luar modal diklik
-modal.addEventListener("click", (event) => {
-    if (event.target === modal) {
-        tutupModal();
-    }
-});
-
-// Tutup modal dengan tombol Escape
-document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && !modal.classList.contains("hidden")) {
-        tutupModal();
-    }
-});
-
-// Tampilkan seluruh jadwal atau ringkasannya
-let semuaJadwalDitampilkan = false;
-
-btnJadwal?.addEventListener("click", () => {
-    if (!daftarJadwal || !jadwalKosong) return;
-
-    const jadwal = daftarJadwal.children;
-
-    if (jadwal.length === 0) {
-        jadwalKosong.classList.remove("hidden");
-        tampilkanToast("Belum ada jadwal yang tersedia.");
-        return;
+    if (!modalContainer) {
+        modalContainer = document.createElement("div");
+        modalContainer.id = "password-modal-container";
+        document.body.appendChild(modalContainer);
     }
 
-    semuaJadwalDitampilkan = !semuaJadwalDitampilkan;
-
-    Array.from(jadwal).forEach((item, index) => {
-        if (index >= 2) {
-            item.classList.toggle("hidden", !semuaJadwalDitampilkan);
+    async function loadModalHtml() {
+        if (!modalContainer.innerHTML.trim()) {
+            try {
+                const response = await fetch('/component/Password/pop-up-ubah-password.html');
+                if (response.ok) {
+                    modalContainer.innerHTML = await response.text();
+                    initModalEvents();
+                } else {
+                    console.error("Gagal memuat file pop-up ubah password.");
+                }
+            } catch (err) {
+                console.error("Terjadi kesalahan jaringan:", err);
+            }
         }
-    });
+    }
 
-    btnJadwal.textContent = semuaJadwalDitampilkan
-        ? "Tampilkan Lebih Sedikit"
-        : "Lihat Semua";
-});
+    function initModalEvents() {
+        const modal = document.getElementById("modal-ubah-password");
+        const closeBtn = document.getElementById("modal-password-close-btn");
+        const cancelBtn = document.getElementById("modal-password-cancel-btn");
+        const saveBtn = document.getElementById("modal-password-save-btn");
 
-// Terapkan data yang tersimpan
-tampilkanProfil();
+        if (!modal) return;
 
-// Awalnya tampilkan dua jadwal saja
-if (daftarJadwal) {
-    Array.from(daftarJadwal.children).forEach((item, index) => {
-        if (index >= 2) {
-            item.classList.add("hidden");
+        const closeModal = () => modal.classList.add("hidden");
+
+        if (closeBtn) closeBtn.onclick = closeModal;
+        if (cancelBtn) cancelBtn.onclick = closeModal;
+        
+        modal.onclick = (e) => {
+            if (e.target === modal) closeModal();
+        };
+
+        // Tutup modal dengan tombol Escape
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape" && !modal.classList.contains("hidden")) {
+                closeModal();
+            }
+        });
+
+        // Toggle tampil / sembunyi password pada ikon mata
+        document.querySelectorAll(".toggle-password").forEach(btn => {
+            btn.onclick = () => {
+                const targetId = btn.getAttribute("data-target");
+                const inputEl = document.getElementById(targetId);
+                if (inputEl) {
+                    inputEl.type = inputEl.type === "password" ? "text" : "password";
+                }
+            };
+        });
+
+        // Aksi simpan password baru
+        if (saveBtn) {
+            saveBtn.onclick = (e) => {
+                e.preventDefault();
+                alert("Kata sandi berhasil diperbarui!");
+                modal.classList.add("hidden");
+            };
         }
-    });
-}
+    }
 
+    if (btnEditPassword) {
+        btnEditPassword.addEventListener("click", async () => {
+            await loadModalHtml();
+            const modal = document.getElementById("modal-ubah-password");
+            if (modal) {
+                modal.classList.remove("hidden");
+            }
+        });
+    }
 }

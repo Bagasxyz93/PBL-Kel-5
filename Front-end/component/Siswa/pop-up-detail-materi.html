@@ -1,0 +1,105 @@
+<!-- Modal Pop-up Detail Materi Pembelajaran -->
+<div id="modal-detail-materi" class="fixed inset-0 z-50 flex items-center justify-center bg-black/55 backdrop-blur-sm hidden p-4">
+    <div class="bg-white rounded-3xl w-full max-w-2xl p-6 shadow-2xl border border-slate-100 relative max-h-[90vh] overflow-y-auto">
+        
+        <!-- Tombol Tutup (X) Pojok Kanan Atas -->
+        <button id="modal-materi-close-btn" type="button" class="absolute top-6 right-6 text-slate-400 hover:text-slate-600 w-8 h-8 rounded-full bg-slate-50 hover:bg-slate-100 flex items-center justify-center font-bold text-lg transition z-10">
+            ×
+        </button>
+
+        <!-- Header Modal -->
+        <div class="flex items-start justify-between mb-4 pr-8">
+            <div>
+                <h3 class="text-base font-extrabold text-slate-900">Detail Materi Pembelajaran</h3>
+                <p class="text-xs text-slate-500 mt-0.5">Pelajari materi yang telah diberikan oleh mentor kelas Anda.</p>
+            </div>
+        </div>
+
+        <!-- Badges Kategori & Status (Dinamis) -->
+        <div id="modal-materi-badges" class="flex flex-wrap items-center gap-2 mb-5">
+            <!-- Disuntikkan via JS -->
+        </div>
+
+        <!-- Judul Modul Utama -->
+        <div class="mb-5 pb-4 border-b border-slate-100">
+            <h2 id="modal-materi-judul" class="text-lg font-extrabold text-slate-900">
+                <!-- Disuntikkan via JS -->
+            </h2>
+            
+            <!-- Info Pengajar -->
+            <div class="flex flex-wrap items-center justify-between gap-3 mt-3">
+                <div class="flex items-center gap-2.5">
+                    <div id="modal-pengajar-inisial" class="w-8 h-8 rounded-full bg-indigo-600 text-white font-bold text-xs flex items-center justify-center shadow-sm">
+                        RD
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-1.5">
+                            <span id="modal-pengajar-nama" class="text-xs font-bold text-slate-800">Bapak Rendi</span>
+                            <span class="px-1.5 py-0.2 rounded bg-indigo-50 text-indigo-600 font-bold text-[9px]">Mentor</span>
+                        </div>
+                        <p id="modal-pengajar-peran" class="text-[10px] text-slate-400">Mentor Web Development Inkubasi</p>
+                    </div>
+                </div>
+
+                <div class="text-right">
+                    <span id="modal-tanggal" class="block text-[11px] font-semibold text-slate-600">📅 14 November 2026</span>
+                    <span id="modal-kelas" class="block text-[10px] text-slate-400">Kelas 1 Inkubasi</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Deskripsi & Tujuan Pembelajaran -->
+        <div class="mb-5 space-y-2">
+            <h4 class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Deskripsi & Tujuan Pembelajaran</h4>
+            <div id="modal-deskripsi" class="p-4 rounded-2xl bg-slate-50 border border-slate-100 text-xs text-slate-600 leading-relaxed space-y-2">
+                <!-- Disuntikkan via JS -->
+            </div>
+        </div>
+
+        <!-- File Materi dari Mentor -->
+        <div class="mb-5 space-y-2">
+            <div class="flex items-center justify-between">
+                <h4 class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">File Materi dari Mentor</h4>
+                <span class="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full">1 Berkas Lampiran</span>
+            </div>
+
+            <div class="p-3.5 rounded-2xl border border-slate-100 bg-white shadow-sm flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3 min-w-0">
+                    <div class="w-9 h-9 rounded-xl bg-red-50 text-red-500 flex items-center justify-center font-bold shrink-0">
+                        📄
+                    </div>
+                    <div class="min-w-0">
+                        <p id="modal-berkas-nama" class="text-xs font-bold text-slate-800 truncate">Modul_1_HTML5_Semantic.pdf</p>
+                        <p id="modal-berkas-info" class="text-[10px] text-slate-400">Format: PDF • Ukuran: 4.8 MB</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                    <button type="button" class="px-3 py-1.5 rounded-xl border border-slate-200 text-slate-600 font-semibold text-xs hover:bg-slate-50 transition">
+                        Lihat File
+                    </button>
+                    <button type="button" class="px-3 py-1.5 rounded-xl bg-indigo-600 text-white font-semibold text-xs shadow-sm hover:bg-indigo-700 transition flex items-center gap-1.5">
+                        <span>Unduh</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Banner Petunjuk Pembelajaran -->
+        <div class="p-3.5 rounded-2xl bg-indigo-50/60 border border-indigo-100/80 flex items-start gap-3 mb-5">
+            <svg class="w-4 h-4 text-indigo-600 mt-0.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            <div class="text-[11px] text-indigo-900 leading-relaxed">
+                <span class="font-bold">Petunjuk Pembelajaran</span><br>
+                <span id="modal-petunjuk">Materi ini disusun langsung oleh mentor kelas. Silakan baca dan pelajari modul di atas sebelum sesi tatap muka mentoring dimulai.</span>
+            </div>
+        </div>
+
+        <!-- Footer Modal -->
+        <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+            <span class="text-[11px] text-slate-400 font-medium">Akses materi terbuka untuk seluruh siswa aktif inkubasi.</span>
+            <button id="modal-materi-ok-btn" type="button" class="px-5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition">
+                Tutup
+            </button>
+        </div>
+
+    </div>
+</div>

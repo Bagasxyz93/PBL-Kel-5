@@ -68,7 +68,8 @@ const roleConfig = {
             { label: "Dashboard", icon: "dashboard", href: "/pages/Admin/Dashboard.html", active: ["dashboard.html"] },
             { label: "Data Siswa", icon: "siswa", href: "/pages/Admin/Siswa.html", active: ["siswa.html"] },
             { label: "Data Mentor", icon: "mentor", href: "/pages/Admin/Mentor.html", active: ["mentor.html"] },
-            { label: "Program Inkubasi", icon: "program", href: "/pages/Admin/Program.html", active: ["program.html"] }
+            { label: "Program Inkubasi", icon: "program", href: "/pages/Admin/Program.html", active: ["program.html"] },
+            { label: "Daftar RFID", icon: "rfid", href: "/pages/Admin/rfid.html", active: ["rfid.html"] }
         ]
     }
 };
@@ -86,7 +87,8 @@ const menuIcons = {
     profil: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>`,
     siswa: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M20 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
     mentor: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="7" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/><path d="M9 14h6"/></svg>`,
-    program: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 2v4M16 2v4M3 9h18M8 13h3M8 16h7"/></svg>`
+    program: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 2v4M16 2v4M3 9h18M8 13h3M8 16h7"/></svg>`,
+    rfid: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="3"/><text x="7" y="16" font-size="9" font-weight="bold" fill="currentColor" stroke="none">123</text></svg>`
 };
 
 /* =========================================================
@@ -297,7 +299,6 @@ async function renderNotifikasiView(userRole) {
     
     if (!mainContainer) return;
 
-    // Ambil file notifikasi.html melalui fetch
     const possiblePaths = [
         "/component/Notifikasi/notifikasi.html",
         "/Component/Notifikasi/notifikasi.html",
@@ -318,11 +319,9 @@ async function renderNotifikasiView(userRole) {
         }
     }
 
-    // Jika file HTML berhasil dimuat, masukkan ke kontainer
     if (htmlContent) {
         mainContainer.innerHTML = htmlContent;
     } else {
-        // Fallback jika fetch gagal
         mainContainer.innerHTML = `
         <div class="space-y-6">
             <div class="flex flex-wrap items-center justify-between gap-4">
@@ -338,7 +337,6 @@ async function renderNotifikasiView(userRole) {
         </div>`;
     }
 
-    // PROSES MENGISI DATA SESUAI ROLE AKTIF
     populateNotifikasiData(userRole);
     setupNotifikasiInteractions();
 }
@@ -347,10 +345,8 @@ function populateNotifikasiData(userRole) {
     const listContainer = document.getElementById("notifikasi-list-container");
     if (!listContainer) return;
 
-    // Ambil data spesifik berdasarkan role (peserta, mentor, atau admin)
     const listData = notifikasiPerRole[userRole] || notifikasiPerRole.peserta;
 
-    // Render ulang artikel notifikasi berdasarkan data role tersebut
     listContainer.innerHTML = listData.map(item => `
         <article class="notif-item rounded-2xl border border-slate-100 bg-white p-5 shadow-sm transition hover:border-slate-200 relative" data-category="${item.kategori}" data-unread="${item.unread}">
             <div class="flex items-start justify-between gap-4">
@@ -372,7 +368,6 @@ function populateNotifikasiData(userRole) {
         </article>
     `).join("");
 
-    // Update jumlah badge angka pada tab jika ada
     const badgeSemua = document.querySelector('[data-filter="semua"] span');
     if (badgeSemua) badgeSemua.textContent = listData.length;
 

@@ -1,6 +1,5 @@
-
 /* =========================================================
-   LOGIKA HALAMAN PROFIL MENTOR
+    LOGIKA HALAMAN PROFIL MENTOR
 ========================================================= */
 
 export function initMentorProfil() {
@@ -48,7 +47,6 @@ export function initMentorProfil() {
             // Menampilkan status akun
             if (statusEl) {
                 const status = mentor.status_akun || "-";
-
                 statusEl.textContent = status.toUpperCase();
 
                 if (status === "aktif") {
@@ -67,12 +65,9 @@ export function initMentorProfil() {
                 if (mentor.program && mentor.program.length > 0) {
                     mentor.program.forEach((program) => {
                         const badge = document.createElement("span");
-
                         badge.className =
                             "px-3 py-1 rounded-full bg-slate-100 text-slate-700 font-bold text-[11px]";
-
                         badge.textContent = program.nama_program;
-
                         programEl.appendChild(badge);
                     });
                 } else {
@@ -82,9 +77,7 @@ export function initMentorProfil() {
 
         } catch (error) {
             console.error("Gagal mengambil profil mentor:", error);
-
             const nameEl = document.getElementById("profile-name");
-
             if (nameEl) {
                 nameEl.textContent = "Gagal memuat profil";
             }
@@ -94,12 +87,84 @@ export function initMentorProfil() {
     // Memanggil data profil
     loadProfilMentor();
 
-    // Interaksi tombol Edit Profil
+    // Inisialisasi Pop-up Ubah Password
+    setupPasswordModal();
+}
+
+/* =========================================================
+    LOGIKA POP-UP UBAH PASSWORD
+========================================================= */
+
+async function setupPasswordModal() {
     const editBtn = document.getElementById("btn-edit-profil");
+    let modalContainer = document.getElementById("password-modal-container");
+
+    if (!modalContainer) {
+        modalContainer = document.createElement("div");
+        modalContainer.id = "password-modal-container";
+        document.body.appendChild(modalContainer);
+    }
+
+    async function loadModalHtml() {
+        if (!modalContainer.innerHTML.trim()) {
+            try {
+                const response = await fetch('/component/Password/pop-up-ubah-password.html');
+                if (response.ok) {
+                    modalContainer.innerHTML = await response.text();
+                    initModalEvents();
+                } else {
+                    console.error("Gagal mengambil file pop-up ubah password.");
+                }
+            } catch (err) {
+                console.error("Terjadi kesalahan jaringan:", err);
+            }
+        }
+    }
+
+    function initModalEvents() {
+        const modal = document.getElementById("modal-ubah-password");
+        const closeBtn = document.getElementById("modal-password-close-btn");
+        const cancelBtn = document.getElementById("modal-password-cancel-btn");
+        const saveBtn = document.getElementById("modal-password-save-btn");
+
+        if (!modal) return;
+
+        const closeModal = () => modal.classList.add("hidden");
+
+        if (closeBtn) closeBtn.onclick = closeModal;
+        if (cancelBtn) cancelBtn.onclick = closeModal;
+        modal.onclick = (e) => {
+            if (e.target === modal) closeModal();
+        };
+
+        // Toggle tampil / sembunyi password pada ikon mata
+        document.querySelectorAll(".toggle-password").forEach(btn => {
+            btn.onclick = () => {
+                const targetId = btn.getAttribute("data-target");
+                const inputEl = document.getElementById(targetId);
+                if (inputEl) {
+                    inputEl.type = inputEl.type === "password" ? "text" : "password";
+                }
+            };
+        });
+
+        // Aksi simpan password baru
+        if (saveBtn) {
+            saveBtn.onclick = (e) => {
+                e.preventDefault();
+                alert("Kata sandi berhasil diperbarui!");
+                modal.classList.add("hidden");
+            };
+        }
+    }
 
     if (editBtn) {
-        editBtn.addEventListener("click", () => {
-            alert("Fitur edit profil mentor akan segera dibuka.");
+        editBtn.addEventListener("click", async () => {
+            await loadModalHtml();
+            const modal = document.getElementById("modal-ubah-password");
+            if (modal) {
+                modal.classList.remove("hidden");
+            }
         });
     }
 }
