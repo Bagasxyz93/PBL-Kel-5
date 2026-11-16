@@ -1,0 +1,49 @@
+<!-- Modal Pop-up Edit Daftar RFID Siswa -->
+<div id="modal-edit-rfid" class="fixed inset-0 z-50 flex items-center justify-center bg-black/55 backdrop-blur-sm hidden">
+    <div class="bg-white rounded-3xl w-full max-w-xl p-6 shadow-2xl border border-slate-100 relative max-h-[90vh] overflow-y-auto">
+        
+        <!-- Tombol Tutup (X) Pojok Kanan Atas -->
+        <button id="modal-rfid-close-btn" type="button" class="absolute top-6 right-6 text-slate-400 hover:text-slate-600 w-8 h-8 rounded-full bg-slate-50 hover:bg-slate-100 flex items-center justify-center font-bold text-lg transition z-10">
+            ×
+        </button>
+
+        <!-- Header Modal -->
+        <div class="mb-5 pr-10">
+            <h3 class="text-base font-extrabold text-slate-900">Detail RFID Siswa</h3>
+            <p class="text-xs text-slate-500 mt-0.5">Informasi Data RFID Siswa</p>
+        </div>
+
+        <!-- Konten / Form Modal -->
+        <div class="space-y-4">
+            
+            <!-- Kartu Profil Singkat Siswa -->
+            <div class="flex items-center gap-3.5 p-3.5 rounded-2xl bg-slate-50 border border-slate-200/70">
+                <div id="modal-rfid-initial" class="w-12 h-12 rounded-2xl bg-indigo-600 text-white font-extrabold flex items-center justify-center text-sm tracking-wide shadow-sm shrink-0">
+                    AF
+                </div>
+                <div>
+                    <h4 id="modal-rfid-nama" class="font-bold text-slate-900 text-sm">Bagaskara</h4>
+                    <div class="flex flex-wrap items-center gap-2 mt-1">
+                        <span id="modal-rfid-program" class="px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-600 text-[10px] font-bold border border-indigo-100">Web Development</span>
+                        <span id="modal-rfid-nisn" class="text-[11px] text-slate-500 font-medium">NISN: 1234567801</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input ID RFID Siswa -->
+            <div class="space-y-1.5">
+                <label class="text-[11px] font-bold text-slate-700 uppercase tracking-wider block">ID RFID SISWA</label>
+                <input type="text" id="input-edit-id-rfid" placeholder="masukkan id rfid" class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-800 focus:outline-none focus:border-red-600 transition shadow-sm">
+            </div>
+
+        </div>
+
+        <!-- Footer Modal / Tombol Simpan -->
+        <div class="flex items-center justify-end pt-5 mt-5 border-t border-slate-100">
+            <button id="modal-rfid-save-btn" type="button" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md shadow-emerald-600/20 transition">
+                SIMPAN
+            </button>
+        </div>
+
+    </div>
+</div>

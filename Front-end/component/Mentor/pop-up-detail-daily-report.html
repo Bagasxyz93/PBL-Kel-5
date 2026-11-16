@@ -12,7 +12,7 @@
         <!-- ========================================== -->
         <div id="modal-view-riwayat" class="space-y-5">
             <!-- Header Modal -->
-            <div>
+            <div class="pr-10">
                 <h3 class="text-base font-extrabold text-slate-900">Detail Daily Report Siswa</h3>
                 <p class="text-xs text-slate-500 mt-0.5">Riwayat pengumpulan dan perkembangan laporan harian siswa.</p>
             </div>
@@ -108,14 +108,14 @@
         <!-- VIEW 2: DETAIL SPESIFIK & EVALUASI MENTOR -->
         <!-- ========================================== -->
         <div id="modal-view-detail" class="space-y-5 hidden">
-            <!-- Header Sub-View -->
-            <div class="flex items-center justify-between">
+            <!-- Header Sub-View (Diberi pr-12 agar tidak menabrak tombol silang X) -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pr-12">
                 <div>
                     <h3 class="text-base font-extrabold text-slate-900">Detail Daily Report Siswa</h3>
                     <p class="text-xs text-slate-500 mt-0.5">Tinjau progres, kendala teknis, dan berikan evaluasi pembinaan.</p>
                 </div>
                 <!-- Tombol Kembali ke Daftar Riwayat -->
-                <button type="button" class="btn-kembali-ke-riwayat px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold transition flex items-center gap-1.5">
+                <button type="button" class="btn-kembali-ke-riwayat px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold transition flex items-center gap-1.5 shrink-0 self-start sm:self-auto">
                     ← Kembali ke Riwayat
                 </button>
             </div>
@@ -200,7 +200,7 @@
                         <p class="text-[11px] text-slate-500">Tulis catatan umpan balik mengenai pemecahan kendala gateway, rekomendasi referensi API, atau instruksi revisi tugas.</p>
 
                         <div class="relative">
-                            <textarea rows="4" placeholder="TEXT" class="w-full p-3 rounded-xl bg-white border border-slate-200 text-xs text-slate-800 focus:outline-none focus:border-indigo-600 transition resize-none"></textarea>
+                            <textarea id="evaluasi-textarea" rows="4" placeholder="Tulis catatan evaluasi..." class="w-full p-3 rounded-xl bg-white border border-slate-200 text-xs text-slate-800 focus:outline-none focus:border-indigo-600 transition resize-none"></textarea>
                             <span class="absolute bottom-2.5 right-3 text-[10px] text-slate-400 font-medium">224 karakter</span>
                         </div>
 
@@ -220,10 +220,10 @@
 
                     <!-- Tombol Aksi Evaluasi Bawah -->
                     <div class="flex items-center gap-2 pt-4 mt-4 border-t border-slate-200/60">
-                        <button type="button" class="flex-1 px-3 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-sm transition flex items-center justify-center gap-1">
+                        <button id="btn-tolak-laporan" type="button" class="flex-1 px-3 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-sm transition flex items-center justify-center gap-1">
                             ✕ Tolak / Revisi
                         </button>
-                        <button type="button" class="flex-1 px-3 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md shadow-emerald-600/20 transition flex items-center justify-center gap-1">
+                        <button id="btn-terima-laporan" type="button" class="flex-1 px-3 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md shadow-emerald-600/20 transition flex items-center justify-center gap-1">
                             ✓ Terima Laporan
                         </button>
                     </div>
