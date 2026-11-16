@@ -1,0 +1,106 @@
+<!-- Modal / Pop-up Detail & Riwayat Absensi Siswa -->
+<div id="modal-absensi" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm hidden">
+    <div class="bg-white rounded-3xl w-full max-w-4xl p-6 shadow-2xl border border-slate-100 relative max-h-[90vh] overflow-y-auto">
+        
+        <!-- Tombol Tutup (X) pojok kanan atas -->
+        <button id="modal-absensi-close-btn" type="button" class="absolute top-6 right-6 text-slate-400 hover:text-slate-600 w-8 h-8 rounded-full bg-slate-50 hover:bg-slate-100 flex items-center justify-center font-bold text-lg transition">
+            ×
+        </button>
+
+        <!-- Header Modal -->
+        <div class="mb-5">
+            <h3 class="text-base font-extrabold text-slate-900">Detail Absensi Siswa</h3>
+            <p class="text-xs text-slate-500 mt-0.5">Informasi kehadiran dan status absensi siswa.</p>
+        </div>
+
+        <!-- Kartu Identitas Siswa & Tingkat Keaktifan/Kehadiran -->
+        <div class="flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-200/70 mb-5">
+            <div class="flex items-center gap-3.5">
+                <div class="w-12 h-12 rounded-2xl bg-indigo-600 text-white font-extrabold flex items-center justify-center text-sm tracking-wide shadow-sm" id="modal-absensi-initial">
+                    AF
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h4 class="font-bold text-slate-900 text-sm" id="modal-absensi-nama">Ahmad Fauzi</h4>
+                        <span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-bold border border-emerald-200">Aktif</span>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-0.5" id="modal-absensi-info">NISN: 1234567801 • <span class="text-indigo-600 font-semibold">Web Development</span></p>
+                </div>
+            </div>
+            <div class="text-right">
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Tingkat Kehadiran</span>
+                <span class="text-xs font-extrabold text-emerald-600" id="modal-absensi-persentase">92% | Batch 2 Inkubasi</span>
+            </div>
+        </div>
+
+        <!-- Statistik Ringkasan Absensi (4 Kolom Card) -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6 text-xs">
+            <!-- Tanggal -->
+            <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/70 flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">📅</div>
+                <div>
+                    <span class="text-[10px] font-bold text-slate-400 block uppercase">Tanggal</span>
+                    <span class="font-extrabold text-slate-800 text-xs" id="stat-absensi-tanggal">20 Oktober 2025</span>
+                </div>
+            </div>
+            <!-- Jam Masuk -->
+            <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/70 flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">🕒</div>
+                <div>
+                    <span class="text-[10px] font-bold text-slate-400 block uppercase">Jam Masuk</span>
+                    <span class="font-extrabold text-slate-800 text-xs" id="stat-absensi-masuk">07:48 WIB</span>
+                </div>
+            </div>
+            <!-- Jam Keluar -->
+            <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/70 flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold">🕒</div>
+                <div>
+                    <span class="text-[10px] font-bold text-slate-400 block uppercase">Jam Keluar</span>
+                    <span class="font-extrabold text-slate-800 text-xs" id="stat-absensi-keluar">16:02 WIB</span>
+                </div>
+            </div>
+            <!-- Status Absensi -->
+            <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/70 flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">📌</div>
+                <div>
+                    <span class="text-[10px] font-bold text-slate-400 block uppercase">Status Absensi</span>
+                    <span class="font-extrabold text-emerald-600 text-xs" id="stat-absensi-status">● Hadir</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bagian Tabel Riwayat Kehadiran (5 Hari Terakhir) -->
+        <div class="space-y-3">
+            <div class="flex items-center justify-between">
+                <h4 class="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Riwayat Kehadiran (5 Hari Terakhir)</h4>
+                <span class="text-[11px] text-slate-400" id="modal-riwayat-info-count">Menampilkan 5 catatan</span>
+            </div>
+
+            <div class="border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-sm">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50 border-b border-slate-200 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
+                            <th class="py-3 px-4">No</th>
+                            <th class="py-3 px-4">Tanggal</th>
+                            <th class="py-3 px-4">Jam Masuk</th>
+                            <th class="py-3 px-4">Jam Keluar</th>
+                            <th class="py-3 px-4">Status Absensi</th>
+                            <th class="py-3 px-4">Keterangan</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 text-xs text-slate-600" id="modal-riwayat-absensi-tbody">
+                        <!-- Data dimasukkan otomatis oleh JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Footer Modal -->
+        <div class="flex items-center justify-end pt-4 mt-4 border-t border-slate-100 text-xs">
+            <button id="modal-absensi-close-footer-btn" type="button" class="px-5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 font-bold text-slate-600 transition">
+                Tutup
+            </button>
+        </div>
+
+    </div>
+</div>
