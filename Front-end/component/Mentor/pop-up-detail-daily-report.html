@@ -1,0 +1,236 @@
+<!-- Modal Utama Kelola Daily Report Mentor (Gabungan Riwayat & Detail) -->
+<div id="modal-detail-daily-report" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm hidden">
+    <div class="bg-white rounded-3xl w-full max-w-4xl p-6 shadow-2xl border border-slate-100 relative max-h-[90vh] overflow-y-auto">
+        
+        <!-- Tombol Tutup (X) Pojok Kanan Atas -->
+        <button id="modal-close-btn" type="button" class="absolute top-6 right-6 text-slate-400 hover:text-slate-600 w-8 h-8 rounded-full bg-slate-50 hover:bg-slate-100 flex items-center justify-center font-bold text-lg transition z-10">
+            ×
+        </button>
+
+        <!-- ========================================== -->
+        <!-- VIEW 1: DAFTAR RIWAYAT DAILY REPORT SISWA -->
+        <!-- ========================================== -->
+        <div id="modal-view-riwayat" class="space-y-5">
+            <!-- Header Modal -->
+            <div>
+                <h3 class="text-base font-extrabold text-slate-900">Detail Daily Report Siswa</h3>
+                <p class="text-xs text-slate-500 mt-0.5">Riwayat pengumpulan dan perkembangan laporan harian siswa.</p>
+            </div>
+
+            <!-- Kartu Profil Singkat Siswa -->
+            <div class="flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-200/70">
+                <div class="flex items-center gap-3.5">
+                    <div id="modal-siswa-initial" class="w-12 h-12 rounded-2xl bg-indigo-600 text-white font-extrabold flex items-center justify-center text-sm tracking-wide shadow-sm">
+                        AF
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h4 id="modal-siswa-nama" class="font-bold text-slate-900 text-sm">Ahmad Fauzi</h4>
+                            <span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-bold border border-emerald-200">Aktif</span>
+                        </div>
+                        <p id="modal-siswa-info" class="text-xs text-slate-500 mt-0.5">NIS: 1234567801 • <span class="text-indigo-600 font-semibold">Web Development</span></p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Tingkat Keaktifan</span>
+                    <span id="modal-siswa-keaktifan" class="text-xs font-extrabold text-emerald-600">96% Sangat Rajin</span>
+                </div>
+            </div>
+
+            <!-- Statistik Kartu (4 Kolom) -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+                <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/70 flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">📋</div>
+                    <div>
+                        <span class="text-[10px] font-bold text-slate-400 block uppercase">Total Laporan</span>
+                        <span id="stat-total-laporan" class="font-extrabold text-slate-800 text-sm">15</span>
+                    </div>
+                </div>
+                <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/70 flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">✓</div>
+                    <div>
+                        <span class="text-[10px] font-bold text-slate-400 block uppercase">Diterima</span>
+                        <span id="stat-diterima" class="font-extrabold text-emerald-600 text-sm">10</span>
+                    </div>
+                </div>
+                <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/70 flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">⏱</div>
+                    <div>
+                        <span class="text-[10px] font-bold text-slate-400 block uppercase">Menunggu</span>
+                        <span id="stat-menunggu" class="font-extrabold text-amber-600 text-sm">4</span>
+                    </div>
+                </div>
+                <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/70 flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center font-bold">⚠</div>
+                    <div>
+                        <span class="text-[10px] font-bold text-slate-400 block uppercase">Minta Revisi</span>
+                        <span id="stat-revisi" class="font-extrabold text-rose-600 text-sm">1</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabel Riwayat -->
+            <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                    <h4 class="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Riwayat Daily Report</h4>
+                    <span class="text-[11px] text-slate-400">Klik tombol aksi untuk melihat isi kegiatan</span>
+                </div>
+
+                <div class="border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-sm">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 border-b border-slate-200 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
+                                <th class="py-3 px-4 w-12">No</th>
+                                <th class="py-3 px-4 w-32">Tanggal</th>
+                                <th class="py-3 px-4">Topik & Judul</th>
+                                <th class="py-3 px-4 w-28">Lampiran</th>
+                                <th class="py-3 px-4 w-28">Status</th>
+                                <th class="py-3 px-4 w-24 text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="modal-riwayat-tbody" class="divide-y divide-slate-100 text-xs text-slate-600">
+                            <!-- Diisi otomatis oleh JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Footer View Riwayat -->
+            <div class="flex items-center justify-between pt-4 mt-4 border-t border-slate-100 text-xs">
+                <span id="modal-footer-info" class="text-slate-400">Menampilkan laporan harian siswa</span>
+                <button id="modal-close-footer-btn" type="button" class="px-5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 font-bold text-slate-600 transition">
+                    Tutup
+                </button>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- VIEW 2: DETAIL SPESIFIK & EVALUASI MENTOR -->
+        <!-- ========================================== -->
+        <div id="modal-view-detail" class="space-y-5 hidden">
+            <!-- Header Sub-View -->
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-base font-extrabold text-slate-900">Detail Daily Report Siswa</h3>
+                    <p class="text-xs text-slate-500 mt-0.5">Tinjau progres, kendala teknis, dan berikan evaluasi pembinaan.</p>
+                </div>
+                <!-- Tombol Kembali ke Daftar Riwayat -->
+                <button type="button" class="btn-kembali-ke-riwayat px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold transition flex items-center gap-1.5">
+                    ← Kembali ke Riwayat
+                </button>
+            </div>
+
+            <!-- Profil Lengkap Siswa -->
+            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/70 flex items-center justify-between">
+                <div class="flex items-center gap-3.5">
+                    <div class="w-12 h-12 rounded-2xl bg-indigo-600 text-white font-extrabold flex items-center justify-center text-sm shadow-sm">
+                        AF
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h4 id="detail-nama-siswa" class="font-bold text-slate-900 text-sm">Ahmad Fauzi</h4>
+                            <span class="px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 text-[10px] font-bold border border-blue-200">Siswa Binaan</span>
+                        </div>
+                        <p id="detail-info-siswa" class="text-xs text-slate-500 mt-0.5">Web Development • NIS: 1234567801 • Pembimbing: Ibu Sari Lestari</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Layout 2 Kolom: Kiri (Isi Laporan), Kanan (Form Evaluasi Mentor) -->
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-5">
+                
+                <!-- Kolom Kiri: Informasi Laporan Siswa -->
+                <div class="md:col-span-7 space-y-4">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="p-3 rounded-xl bg-slate-50 border border-slate-200/70">
+                            <span class="text-[10px] font-bold text-slate-400 block uppercase">Tanggal Laporan</span>
+                            <span id="detail-tanggal" class="font-bold text-slate-800 text-xs">17 Oktober 2026</span>
+                        </div>
+                        <div class="p-3 rounded-xl bg-slate-50 border border-slate-200/70">
+                            <span class="text-[10px] font-bold text-slate-400 block uppercase">Status Saat Ini</span>
+                            <span id="detail-status" class="font-bold text-amber-600 text-xs flex items-center mt-0.5">
+                                <span class="w-2 h-2 rounded-full bg-amber-500 mr-1.5"></span>Menunggu Tinjauan Mentor
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Judul / Fokus Kegiatan -->
+                    <div>
+                        <label class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block mb-1">Judul Laporan / Fokus Kegiatan</label>
+                        <div id="detail-judul" class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/70 font-bold text-slate-800 text-xs">
+                            Mengerjakan rancangan prototype dan alur checkout
+                        </div>
+                    </div>
+
+                    <!-- Uraian Progres & Kendala -->
+                    <div>
+                        <label class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block mb-1">Uraian Progres & Kendala Lapangan</label>
+                        <div id="detail-deskripsi" class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/70 text-slate-700 text-xs leading-relaxed min-h-[90px]">
+                            Hari ini saya mengerjakan bagian UI pada project MVP inkubasi. Modul katalog sudah selesai, namun kendala masih bingung dengan integrasi payment gateway sandbox.
+                        </div>
+                    </div>
+
+                    <!-- Lampiran Pendukung -->
+                    <div>
+                        <label class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block mb-1">Lampiran Pendukung Laporan</label>
+                        <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/70 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-lg bg-rose-50 text-rose-500 flex items-center justify-center font-bold text-sm">📄</div>
+                                <div>
+                                    <h5 id="detail-lampiran-nama" class="font-bold text-slate-800 text-xs">Dokumentasi_Progress_Checkout.pdf</h5>
+                                    <p id="detail-lampiran-info" class="text-[10px] text-slate-400">Format Dokumen PDF • 2.4 MB</p>
+                                </div>
+                            </div>
+                            <button type="button" class="px-3 py-1.5 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-slate-600 text-[11px] font-bold shadow-sm transition">
+                                Lihat Preview ↗
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kolom Kanan: Form Catatan / Evaluasi Mentor -->
+                <div class="md:col-span-5 flex flex-col justify-between p-4 rounded-2xl bg-slate-50 border border-slate-200/70">
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <label class="text-xs font-extrabold text-slate-800 flex items-center gap-1.5">
+                                💬 Catatan Guru / Evaluasi Mentor
+                            </label>
+                            <span class="text-[10px] font-bold text-rose-500 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-100">Wajib Diisi</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500">Tulis catatan umpan balik mengenai pemecahan kendala gateway, rekomendasi referensi API, atau instruksi revisi tugas.</p>
+
+                        <div class="relative">
+                            <textarea rows="4" placeholder="TEXT" class="w-full p-3 rounded-xl bg-white border border-slate-200 text-xs text-slate-800 focus:outline-none focus:border-indigo-600 transition resize-none"></textarea>
+                            <span class="absolute bottom-2.5 right-3 text-[10px] text-slate-400 font-medium">224 karakter</span>
+                        </div>
+
+                        <!-- Template Cepat -->
+                        <div>
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Gunakan template cepat:</span>
+                            <div class="flex flex-wrap gap-1.5">
+                                <button type="button" class="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-[10px] font-semibold text-slate-600 transition">
+                                    + Progres Memuaskan
+                                </button>
+                                <button type="button" class="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-[10px] font-semibold text-slate-600 transition">
+                                    + Minta Akses Figma
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tombol Aksi Evaluasi Bawah -->
+                    <div class="flex items-center gap-2 pt-4 mt-4 border-t border-slate-200/60">
+                        <button type="button" class="flex-1 px-3 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-sm transition flex items-center justify-center gap-1">
+                            ✕ Tolak / Revisi
+                        </button>
+                        <button type="button" class="flex-1 px-3 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md shadow-emerald-600/20 transition flex items-center justify-center gap-1">
+                            ✓ Terima Laporan
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
