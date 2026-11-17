@@ -37,37 +37,64 @@
                 </div>
             </div>
 
-            <!-- Statistik Kartu (4 Kolom) -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
-                <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/70 flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">📋</div>
-                    <div>
-                        <span class="text-[10px] font-bold text-slate-400 block uppercase">Total Laporan</span>
-                        <span id="stat-total-laporan" class="font-extrabold text-slate-800 text-sm">15</span>
-                    </div>
+            
+        <!-- Statistik Kartu (4 Kolom) -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+        
+            <!-- Total Laporan -->
+            <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/70 flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
+                    📋
                 </div>
-                <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/70 flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">✓</div>
-                    <div>
-                        <span class="text-[10px] font-bold text-slate-400 block uppercase">Diterima</span>
-                        <span id="stat-diterima" class="font-extrabold text-emerald-600 text-sm">10</span>
-                    </div>
-                </div>
-                <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/70 flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">⏱</div>
-                    <div>
-                        <span class="text-[10px] font-bold text-slate-400 block uppercase">Menunggu</span>
-                        <span id="stat-menunggu" class="font-extrabold text-amber-600 text-sm">4</span>
-                    </div>
-                </div>
-                <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/70 flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center font-bold">⚠</div>
-                    <div>
-                        <span class="text-[10px] font-bold text-slate-400 block uppercase">Minta Revisi</span>
-                        <span id="stat-revisi" class="font-extrabold text-rose-600 text-sm">1</span>
-                    </div>
+                <div>
+                    <span class="text-[10px] font-bold text-slate-400 block uppercase">
+                        Total Laporan
+                    </span>
+                    <span id="modal-stat-total-laporan" class="font-extrabold text-slate-800 text-sm">0</span>
                 </div>
             </div>
+        
+            <!-- Diterima -->
+            <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/70 flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+                    ✓
+                </div>
+                <div>
+                    <span class="text-[10px] font-bold text-slate-400 block uppercase">
+                        Diterima
+                    </span>
+                    <span id="modal-stat-diterima" class="font-extrabold text-emerald-600 text-sm">0</span>
+                </div>
+            </div>
+        
+            <!-- Menunggu -->
+            <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/70 flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+                    ⏱
+                </div>
+                <div>
+                    <span class="text-[10px] font-bold text-slate-400 block uppercase">
+                        Menunggu
+                    </span>
+                    <span id="modal-stat-menunggu" class="font-extrabold text-amber-600 text-sm">0</span>
+                </div>
+            </div>
+        
+            <!-- Minta Revisi -->
+            <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/70 flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center font-bold">
+                    ⚠
+                </div>
+                <div>
+                    <span class="text-[10px] font-bold text-slate-400 block uppercase">
+                        Minta Revisi
+                    </span>
+                    <span id="modal-stat-revisi" class="font-extrabold text-rose-600 text-sm">0</span>
+                </div>
+            </div>
+        
+        </div>
+
 
             <!-- Tabel Riwayat -->
             <div class="space-y-3">
