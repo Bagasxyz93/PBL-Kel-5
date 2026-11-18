@@ -53,56 +53,73 @@
                     </div>
                 </div>
 
+
                 <!-- 4 Kartu Statistik Ringkasan -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <!-- Kartu 1 -->
+                
+                    <!-- Kartu 1: Laporan Masuk -->
                     <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
                         <div class="space-y-1">
                             <p class="text-[11px] font-semibold text-slate-400">Laporan Masuk</p>
-                            <h3 class="text-3xl font-extrabold text-slate-900">15 / 15</h3>
+                            <h3 id="stat-total-masuk" class="text-3xl font-extrabold text-slate-900">0 / 0</h3>
                         </div>
                         <div class="p-3 rounded-xl bg-blue-50 text-blue-600 flex flex-col items-center justify-center">
-                            <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5H2v7h7V5Z"/><path d="M22 5h-7v7h7V5Z"/><path d="M9 14H2v7h7v-7Z"/><path d="M22 14h-7v7h7v-7Z"/></svg>
-                            <span class="text-[10px] font-bold">100%</span>
+                            <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path d="M9 5H2v7h7V5Z"/>
+                                <path d="M22 5h-7v7h7V5Z"/>
+                                <path d="M9 14H2v7h7v-7Z"/>
+                                <path d="M22 14h-7v7h7v-7Z"/>
+                            </svg>
+                            <span id="stat-persentase-masuk" class="text-[10px] font-bold">0%</span>
                         </div>
                     </div>
-
-                    <!-- Kartu 2 -->
+                
+                    <!-- Kartu 2: Perlu Diperiksa -->
                     <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
                         <div class="space-y-1">
                             <p class="text-[11px] font-semibold text-slate-400">Perlu Diperiksa</p>
-                            <h3 class="text-3xl font-extrabold text-slate-900">4</h3>
+                            <h3 id="stat-perlu-diperiksa" class="text-3xl font-extrabold text-slate-900">0</h3>
                         </div>
                         <div class="p-3 rounded-xl bg-indigo-50 text-indigo-600 flex flex-col items-center justify-center">
-                            <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                            <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <polyline points="14 2 14 8 20 8"/>
+                            </svg>
                             <span class="text-[9px] font-bold">Prioritas</span>
                         </div>
                     </div>
-
-                    <!-- Kartu 3 -->
+                
+                    <!-- Kartu 3: Disetujui -->
                     <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
                         <div class="space-y-1">
                             <p class="text-[11px] font-semibold text-slate-400">Disetujui / Selesai</p>
-                            <h3 class="text-3xl font-extrabold text-slate-900">10</h3>
-                            <p class="text-[10px] text-emerald-600 font-medium">Hari ini</p>
+                            <h3 id="stat-diterima" class="text-3xl font-extrabold text-slate-900">0</h3>
+                            <p class="text-[10px] text-emerald-600 font-medium">Laporan diterima</p>
                         </div>
                         <div class="p-3 rounded-xl bg-emerald-50 text-emerald-600 flex flex-col items-center justify-center">
-                            <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                            <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                <polyline points="22 4 12 14.01 9 11.01"/>
+                            </svg>
                         </div>
                     </div>
-
-                    <!-- Kartu 4 -->
+                
+                    <!-- Kartu 4: Ditolak -->
                     <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
                         <div class="space-y-1">
                             <p class="text-[11px] font-semibold text-slate-400">Minta Revisi</p>
-                            <h3 class="text-3xl font-extrabold text-slate-900">1</h3>
+                            <h3 id="stat-ditolak" class="text-3xl font-extrabold text-slate-900">0</h3>
                         </div>
                         <div class="p-3 rounded-xl bg-rose-50 text-rose-500 flex flex-col items-center justify-center">
-                            <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                            <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                            </svg>
                             <span class="text-[9px] font-bold">Tindak Lanjut</span>
                         </div>
                     </div>
+                
                 </div>
+
 
                 <!-- Bagian Filter & Tab Navigasi Status -->
                 <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col lg:flex-row items-center justify-between gap-4">
@@ -112,19 +129,12 @@
                             <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                             </span>
-                            <input type="text" id="input-search-report" placeholder="Cari siswa atau materi inkubasi..." class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:border-[#00b09b] transition">
+                            <input type="text" id="input-search-report" placeholder="Cari nama siswa atau NISN..." class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:border-[#00b09b] transition">
                         </div>
                         <!-- Dropdown Program -->
                         <select id="filter-program" class="bg-slate-50 border border-slate-200 text-slate-700 text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-[#00b09b] transition">
                             <option value="">Semua Program</option>
                             <option value="Web Development">Web Development</option>
-                        </select>
-                        <!-- Dropdown Status -->
-                        <select id="filter-status" class="bg-slate-50 border border-slate-200 text-slate-700 text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-[#00b09b] transition">
-                            <option value="">Semua Status</option>
-                            <option value="Menunggu">Menunggu</option>
-                            <option value="Diterima">Diterima</option>
-                            <option value="Ditolak">Ditolak</option>
                         </select>
                     </div>
 
@@ -159,15 +169,9 @@
                     </div>
 
                     <!-- Pagination Bawah Tabel -->
-                    <div class="p-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
-                        <span id="pagination-info">Menampilkan 1 - 4 dari 15 laporan harian siswa</span>
-                        <div class="flex items-center gap-1.5" id="pagination-buttons">
-                            <button class="w-8 h-8 rounded-lg border border-slate-200 flex items-center justify-center text-slate-400 hover:bg-slate-50 transition">&lt;</button>
-                            <button class="w-8 h-8 rounded-lg bg-[#00b09b] text-white font-bold flex items-center justify-center shadow-sm shadow-emerald-500/20">1</button>
-                            <button class="w-8 h-8 rounded-lg border border-slate-200 flex items-center justify-center font-medium text-slate-600 hover:bg-slate-50 transition">2</button>
-                            <button class="w-8 h-8 rounded-lg border border-slate-200 flex items-center justify-center font-medium text-slate-600 hover:bg-slate-50 transition">3</button>
-                            <button class="w-8 h-8 rounded-lg border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-50 transition">&gt;</button>
-                        </div>
+                    <div
+                        id="pagination-report"
+                        class="p-4 border-t border-slate-100 w-full">
                     </div>
                 </div>
 
