@@ -256,12 +256,12 @@ export function initMentorDailyReport() {
             }
 
             else if (tab === "belum-dinilai") {
-                btn.textContent = `Belum Dinilai (${menunggu})`;
+                btn.textContent = `Belum Dinilai (${menunggu + ditolak})`;
             }
 
             else if (tab === "selesai") {
                 btn.textContent =
-                    `Selesai Diperiksa (${diterima + ditolak})`;
+                    `Selesai Diperiksa (${diterima})`;
             }
 
         });
@@ -547,14 +547,18 @@ export function initMentorDailyReport() {
 
         if (!container) return;
 
+        // Deklarasi buttons dipindahkan ke atas
+        // agar tidak digunakan sebelum dideklarasikan.
+        let buttons = "";
+
         if (totalData === 0) {
 
             container.innerHTML = `
                 <div class="flex flex-col sm:flex-row items-center justify-between gap-4 w-full">
 
                     <p class="text-xs text-slate-500">
-                        Menampilkan ${startIndex + 1} - ${endIndex}
-                        dari ${totalData} laporan harian siswa
+                        Menampilkan 0 - 0
+                        dari 0 laporan harian siswa
                     </p>
 
                     <div class="flex items-center gap-1.5">
@@ -562,7 +566,7 @@ export function initMentorDailyReport() {
                         <button
                             type="button"
                             id="pagination-prev"
-                            ${currentPage === 1 ? "disabled" : ""}
+                            disabled
                             class="w-8 h-8 rounded-lg border border-slate-200
                             flex items-center justify-center text-slate-400
                             hover:bg-slate-50 transition disabled:opacity-40
@@ -570,12 +574,10 @@ export function initMentorDailyReport() {
                             &lt;
                         </button>
 
-                        ${buttons}
-
                         <button
                             type="button"
                             id="pagination-next"
-                            ${currentPage === totalPages ? "disabled" : ""}
+                            disabled
                             class="w-8 h-8 rounded-lg border border-slate-200
                             flex items-center justify-center text-slate-600
                             hover:bg-slate-50 transition disabled:opacity-40
@@ -592,8 +594,6 @@ export function initMentorDailyReport() {
 
         }
 
-
-        let buttons = "";
 
         for (let i = 1; i <= totalPages; i++) {
 
@@ -745,15 +745,17 @@ export function initMentorDailyReport() {
 
             if (activeTab === "belum-dinilai") {
 
-                matchTab = item.status === "menunggu";
+                // Menampilkan laporan menunggu dan ditolak
+                matchTab =
+                    item.status === "menunggu" ||
+                    item.status === "ditolak";
 
             }
 
             else if (activeTab === "selesai") {
 
-                matchTab =
-                    item.status === "diterima" ||
-                    item.status === "ditolak";
+                // Laporan yang sudah selesai diperiksa adalah diterima
+                matchTab = item.status === "diterima";
 
             }
 
@@ -785,7 +787,7 @@ export function initMentorDailyReport() {
         filterProgram.addEventListener("change", applyFilters);
     }
 
-    
+
     /* =====================================================
        12. TAB FILTER
     ===================================================== */
@@ -877,6 +879,31 @@ export function initMentorDailyReport() {
 
     }
 
+    /* =====================================================
+       MENGHITUNG TINGKAT KEAKTIFAN SISWA
+    ===================================================== */
+
+    function hitungTingkatKeaktifan(riwayat) {
+
+        const totalDiterima = riwayat.filter(
+            item => item.status === "diterima"
+        ).length;
+
+        if (totalDiterima >= 15) {
+            return "Sangat Aktif";
+        }
+
+        if (totalDiterima >= 10) {
+            return "Aktif";
+        }
+
+        if (totalDiterima >= 5) {
+            return "Cukup Aktif";
+        }
+
+        return "Kurang Aktif";
+    }
+
 
     /* =====================================================
        14. MODAL RIWAYAT DAILY REPORT SISWA
@@ -956,9 +983,9 @@ export function initMentorDailyReport() {
         const keaktifan = document.getElementById(
             "modal-siswa-keaktifan"
         );
-
+        
         if (keaktifan) {
-            keaktifan.textContent = "-";
+            keaktifan.textContent = hitungTingkatKeaktifan(riwayat);
         }
 
 

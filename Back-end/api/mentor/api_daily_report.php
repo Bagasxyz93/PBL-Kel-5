@@ -1,3 +1,4 @@
+
 <?php
 
 session_set_cookie_params([
@@ -92,6 +93,8 @@ try {
             $sql .= " AND dr.id = ?";
         }
 
+        // Urutan terbaru di atas.
+        // Tidak ada batas semester atau tahun.
         $sql .= "
             ORDER BY dr.created_at DESC, dr.id DESC
         ";
