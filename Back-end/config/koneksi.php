@@ -4,7 +4,7 @@ $host = "localhost";
 $port = "5432";
 $dbname = "pbl_kelompok5";
 $username = "postgres";
-$password = "postgres123";
+$password = "Nera12345!";
 
 try {
     $pdo = new PDO(

@@ -8,6 +8,7 @@ import { initProfil } from "./Siswa/profil.js";
 // Import tambahan untuk halaman Mentor:
 import { initMentorDashboard } from "./Mentor/dashboard.js";
 import { initMentorProfil } from "./Mentor/profil.js";
+import { initMentorIzin } from "./Mentor/izin.js";
 
 /* =========================================================
 KONFIGURASI MENU & TEMA BERDASARKAN ROLE
@@ -467,6 +468,8 @@ function initMentorPage(path) {
         initMentorDashboard();
     } else if (path.endsWith("/profil.html")) {
         initMentorProfil();
+    } else if (path.endsWith("/izin.html")) {
+        initMentorIzin();
     }
 }
 
