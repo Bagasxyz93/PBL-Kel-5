@@ -1,10 +1,29 @@
+
+function getAuthHeaders() {
+    const token = sessionStorage.getItem("authToken");
+
+    if (!token) {
+        throw new Error("Token login tidak ditemukan. Silakan login kembali.");
+    }
+
+    return {
+        "Authorization": `Bearer ${token}`
+    };
+}
+
 async function loadProgramMentor(selectedProgramIds = []) {
     const container = document.getElementById("daftarProgramMentor");
 
     if (!container) return;
 
     try {
-        const response = await fetch("http://localhost:8000/api/admin/api_program.php");
+        const response = await fetch(
+            "http://localhost:8000/api/admin/api_program.php",
+            {
+                headers: getAuthHeaders()
+            }
+        );
+
         const result = await response.json();
 
         if (!result.success) {
@@ -151,18 +170,18 @@ export async function initAdminTambahMentor(onSuccess, mentor = null) {
 
     // Memperbarui pratinjau setelah data form dan program dimuat
     updatePreviewMentor();
-    
+
     // Preview berubah saat nama atau NIP diketik
     document.getElementById("namaMentor").addEventListener(
         "input",
         updatePreviewMentor
     );
-    
+
     document.getElementById("nipMentor").addEventListener(
         "input",
         updatePreviewMentor
     );
-    
+
     // Preview berubah saat program dicentang atau dilepas
     document.getElementById("daftarProgramMentor").addEventListener(
         "change",
@@ -262,7 +281,8 @@ export async function initAdminTambahMentor(onSuccess, mentor = null) {
                 const response = await fetch(url, {
                     method: "POST",
                     headers: {
-                        "Content-Type": "application/json"
+                        "Content-Type": "application/json",
+                        ...getAuthHeaders()
                     },
                     body: JSON.stringify(dataMentor)
                 });

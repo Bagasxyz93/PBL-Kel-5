@@ -1,15 +1,22 @@
+
 <?php
 
-// Pengaturan CORS
+// ==================================================
+// PENGATURAN CORS
+// ==================================================
+
 $allowedOrigin = 'http://localhost:5173';
 
-if (isset($_SERVER['HTTP_ORIGIN']) && $_SERVER['HTTP_ORIGIN'] === $allowedOrigin) {
+if (
+    isset($_SERVER['HTTP_ORIGIN']) &&
+    $_SERVER['HTTP_ORIGIN'] === $allowedOrigin
+) {
     header("Access-Control-Allow-Origin: $allowedOrigin");
 }
 
-header("Access-Control-Allow-Credentials: true");
 header("Access-Control-Allow-Methods: GET, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type, Accept");
+header("Access-Control-Allow-Headers: Content-Type, Accept, Authorization");
+header("Content-Type: application/json; charset=UTF-8");
 
 // Menangani preflight request
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
@@ -29,26 +36,13 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     exit;
 }
 
-session_set_cookie_params([
-    'lifetime' => 0,
-    'path' => '/',
-    'domain' => 'localhost',
-    'secure' => false,
-    'httponly' => true,
-    'samesite' => 'Lax'
-]);
 
-session_start();
-
-
-/* =========================================================
-   KONEKSI DATABASE
-========================================================= */
-
-// Lokasi file: Back-end/api/mentor/api_absensi_mentor.php
-// File koneksi: Back-end/config/koneksi.php
+// ==================================================
+// KONEKSI DATABASE DAN AUTENTIKASI TOKEN
+// ==================================================
 
 require_once dirname(__DIR__, 2) . '/config/koneksi.php';
+require_once dirname(__DIR__, 2) . '/config/tab_auth.php';
 
 $pdo = $pdo ?? ($conn ?? ($koneksi ?? null));
 
@@ -63,14 +57,13 @@ if (!$pdo instanceof PDO) {
     exit;
 }
 
+// Validasi token mentor
+$userToken = ambilUserToken();
 
-/* =========================================================
-   IDENTITAS DAN HAK AKSES MENTOR
-========================================================= */
-
-$mentorId = $_SESSION['user_id'] ?? null;
-
-if (!$mentorId || ($_SESSION['role'] ?? '') !== 'mentor') {
+if (
+    !$userToken ||
+    $userToken['role'] !== 'mentor'
+) {
     http_response_code(401);
 
     echo json_encode([
@@ -81,10 +74,12 @@ if (!$mentorId || ($_SESSION['role'] ?? '') !== 'mentor') {
     exit;
 }
 
+$mentorId = (int) $userToken['user_id'];
 
-/* =========================================================
-   PROSES API
-========================================================= */
+
+// ==================================================
+// PROSES API
+// ==================================================
 
 try {
 
@@ -94,230 +89,218 @@ try {
     /* =====================================================
        1. REKAP ABSENSI PESERTA BERDASARKAN TANGGAL
     ===================================================== */
-    
+
     if ($aksi === 'rekap') {
-    
-        // Mengambil tanggal dari filter
-        // Jika belum ada tanggal yang dikirim, gunakan hari ini
+
         $tanggal = $_GET['tanggal'] ?? '';
-    
+
         $zonaWaktu = new DateTimeZone('Asia/Jakarta');
-    
+
         if ($tanggal === '') {
             $tanggal = (new DateTimeImmutable(
                 'now',
                 $zonaWaktu
             ))->format('Y-m-d');
         }
-    
+
         // Validasi format tanggal
         $date = DateTime::createFromFormat('!Y-m-d', $tanggal);
-    
+
         if (!$date || $date->format('Y-m-d') !== $tanggal) {
             http_response_code(400);
-    
+
             echo json_encode([
                 'success' => false,
                 'message' => 'Format tanggal tidak valid.'
             ]);
-    
+
             exit;
         }
-    
+
         // Tanggal tidak boleh melebihi hari ini
         $hariIni = new DateTimeImmutable('now', $zonaWaktu);
         $tanggalHariIni = $hariIni->format('Y-m-d');
-    
+
         if ($tanggal > $tanggalHariIni) {
             http_response_code(400);
-    
+
             echo json_encode([
                 'success' => false,
                 'message' => 'Tanggal tidak boleh melebihi hari ini.'
             ]);
-    
+
             exit;
         }
-    
-    
+
         $sql = "
             SELECT
                 u.id AS peserta_id,
                 u.nama,
                 u.nisn,
-    
+
                 p.id AS program_id,
                 p.nama_program AS program,
-    
+
                 a.status::text AS status_absen,
                 a.tanggal,
                 a.waktu_masuk,
                 a.waktu_keluar,
-    
+
                 latest_report.status::text AS status_report,
-    
+
                 COALESCE(statistik.total_absensi, 0) AS total_absensi,
                 COALESCE(statistik.total_hadir, 0) AS total_hadir,
-    
+
                 CASE
                     WHEN COALESCE(statistik.total_absensi, 0) = 0
                     THEN 0
-    
+
                     ELSE ROUND(
                         statistik.total_hadir * 100.0 /
                         statistik.total_absensi
                     )
                 END AS persentase_kehadiran
-    
+
             FROM mentor_program mp
-    
+
             JOIN program p
                 ON p.id = mp.program_id
-    
+
             JOIN peserta_program pp
                 ON pp.program_id = p.id
                 AND LOWER(pp.status) = 'aktif'
-    
+
             JOIN users u
                 ON u.id = pp.peserta_id
-    
-            -- Absensi hanya berdasarkan tanggal yang dipilih
+
             LEFT JOIN absensi a
                 ON a.peserta_id = u.id
                 AND a.program_id = p.id
                 AND a.tanggal = :tanggal_absensi
-    
-            -- Daily Report berdasarkan tanggal yang dipilih
+
             LEFT JOIN LATERAL (
                 SELECT
                     dr.status
-    
+
                 FROM daily_report dr
-    
+
                 JOIN materi m
                     ON m.id = dr.materi_id
-    
+
                 WHERE dr.peserta_id = u.id
                     AND m.program_id = p.id
                     AND m.mentor_id = mp.mentor_id
                     AND dr.tanggal = :tanggal_report
-    
+
                 ORDER BY dr.id DESC
-    
+
                 LIMIT 1
-    
+
             ) latest_report ON TRUE
-    
-            -- Statistik keseluruhan peserta tetap dipertahankan
+
             LEFT JOIN LATERAL (
                 SELECT
                     COUNT(*) AS total_absensi,
-    
+
                     COUNT(*) FILTER (
                         WHERE ab.status::text = 'hadir'
                     ) AS total_hadir
-    
+
                 FROM absensi ab
-    
+
                 WHERE ab.peserta_id = u.id
                     AND ab.program_id = p.id
-    
+
             ) statistik ON TRUE
-    
+
             WHERE mp.mentor_id = :mentor_id
-    
+
             ORDER BY u.nama ASC
         ";
-    
+
         $stmt = $pdo->prepare($sql);
-    
+
         $stmt->execute([
             ':tanggal_absensi' => $tanggal,
             ':tanggal_report' => $tanggal,
             ':mentor_id' => $mentorId
         ]);
-    
+
         $hasil = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
+
         $data = [];
-    
+
         foreach ($hasil as $row) {
-    
-            // Status absensi pada tanggal pilihan
+
             $status = $row['status_absen']
                 ? ucfirst($row['status_absen'])
                 : 'Belum ada';
-    
-            // Status Daily Report pada tanggal pilihan
+
             $statusReport = $row['status_report']
                 ? ucfirst($row['status_report'])
                 : 'Belum ada';
-    
-            // Format waktu masuk
+
             $jamMasuk = $row['waktu_masuk']
                 ? date('H:i', strtotime($row['waktu_masuk'])) . ' WIB'
                 : '-';
-    
-            // Format waktu keluar
+
             $jamKeluar = $row['waktu_keluar']
                 ? date('H:i', strtotime($row['waktu_keluar'])) . ' WIB'
                 : '-';
-    
-            // Format tanggal absensi
+
             $tanggalAbsen = $row['tanggal']
                 ? date('d-m-Y', strtotime($row['tanggal']))
                 : '-';
-    
+
             $tanggalTerbaru = $row['tanggal']
                 ? date('d F Y', strtotime($row['tanggal']))
                 : '-';
-    
+
             $data[] = [
-    
+
                 'peserta_id' => (int) $row['peserta_id'],
-    
+
                 'nama' => $row['nama'],
-    
+
                 'nis' => $row['nisn'] ?? '-',
-    
+
                 'nisn' => $row['nisn'] ?? '-',
-    
+
                 'sub' => '-',
-    
+
                 'program' => $row['program'],
-    
+
                 'waktu' => $tanggalAbsen,
-    
+
                 'statusAbsen' => $status,
-    
+
                 'statusReport' => $statusReport,
-    
+
                 'persentaseKehadiran' =>
                     $row['persentase_kehadiran'] . '%',
-    
+
                 'tanggalTerbaru' => $tanggalTerbaru,
-    
+
                 'jamMasuk' => $jamMasuk,
-    
+
                 'jamKeluar' => $jamKeluar,
-    
+
                 'statusTerbaru' => '● ' . $status,
-    
+
                 'inisial' => strtoupper(
                     substr($row['nama'], 0, 1)
                 )
             ];
         }
-    
+
         echo json_encode([
             'success' => true,
             'tanggal' => $tanggal,
             'data' => $data
         ], JSON_UNESCAPED_UNICODE);
-    
+
         exit;
     }
-
 
 
     /* =====================================================
@@ -339,7 +322,6 @@ try {
             exit;
         }
 
-        // Tanggal mengikuti zona waktu Indonesia
         $hariIni = new DateTimeImmutable(
             'now',
             new DateTimeZone('Asia/Jakarta')
@@ -348,9 +330,7 @@ try {
         $tanggalHariIni = $hariIni->format('Y-m-d');
 
 
-        /* -------------------------------------------------
-           MEMASTIKAN PESERTA BERADA DI PROGRAM MENTOR
-        ------------------------------------------------- */
+        // Memastikan peserta berada di program mentor
 
         $sqlSiswa = "
             SELECT
@@ -399,12 +379,8 @@ try {
         }
 
 
-        /* -------------------------------------------------
-           RIWAYAT 5 HARI SEBELUM HARI INI
-           HARI INI TIDAK DIMASUKKAN KE RIWAYAT
-        ------------------------------------------------- */
+        // Riwayat 5 hari sebelum hari ini
 
-        
         $sqlRiwayat = "
             SELECT
                 tanggal_hari.tanggal::date AS tanggal,
@@ -438,7 +414,6 @@ try {
 
             LIMIT 5
         ";
-
 
         $stmtRiwayat = $pdo->prepare($sqlRiwayat);
 
@@ -498,10 +473,7 @@ try {
         }
 
 
-        /* -------------------------------------------------
-           DATA ABSENSI HARI INI
-           DIPISAH DARI RIWAYAT
-        ------------------------------------------------- */
+        // Data absensi hari ini
 
         $sqlHariIni = "
             SELECT
@@ -531,35 +503,7 @@ try {
         $hariIniDB = $stmtHariIni->fetch(PDO::FETCH_ASSOC);
 
 
-        /* -------------------------------------------------
-           PERSENTASE KEHADIRAN
-           HANYA MENGHITUNG ABSENSI SAMPAI KEMARIN
-        ------------------------------------------------- */
-
-        
-        $sqlStatistik = "
-            SELECT
-                COUNT(*) AS total,
-
-                COUNT(*) FILTER (
-                    WHERE status::text = 'hadir'
-                ) AS hadir
-
-            FROM absensi
-
-            WHERE peserta_id = :peserta_id
-              AND program_id = :program_id
-              AND tanggal < CAST(:hari_ini AS date)
-              AND EXTRACT(ISODOW FROM tanggal) BETWEEN 1 AND 5
-        ";
-
-
-        $stmtStatistik = $pdo->prepare($sqlStatistik);
-
-        /* -------------------------------------------------
-           PERSENTASE KEHADIRAN BULANAN
-           DARI TANGGAL 1 SAMPAI HARI INI
-        ------------------------------------------------- */
+        // Statistik kehadiran bulanan
 
         $sqlStatistik = "
             SELECT
@@ -613,9 +557,7 @@ try {
             : 0;
 
 
-        /* -------------------------------------------------
-           INFORMASI ABSENSI HARI INI
-        ------------------------------------------------- */
+        // Informasi absensi hari ini
 
         $tanggalTerbaru = date(
             'd F Y',
@@ -635,9 +577,7 @@ try {
             : '● Belum ada data';
 
 
-        /* -------------------------------------------------
-           RESPONS DETAIL PESERTA
-        ------------------------------------------------- */
+        // Respons detail peserta
 
         echo json_encode([
 
@@ -675,7 +615,6 @@ try {
     }
 
 
-
     /* =====================================================
        3. REKAP ABSENSI BERDASARKAN TANGGAL UNTUK PDF
     ===================================================== */
@@ -684,7 +623,6 @@ try {
 
         $tanggal = $_GET['tanggal'] ?? '';
 
-        // Validasi format tanggal
         $date = DateTime::createFromFormat('!Y-m-d', $tanggal);
 
         if (!$date || $date->format('Y-m-d') !== $tanggal) {
@@ -832,10 +770,8 @@ try {
             ];
 
 
-            // Statistik per program
             $programList[$programId]['total_peserta']++;
 
-            // Statistik keseluruhan
             $statistik['total_peserta']++;
 
 
@@ -869,11 +805,8 @@ try {
         }
 
 
-        // Mengubah array program menjadi array biasa
         $dataProgram = array_values($programList);
 
-
-        // Menghitung persentase kehadiran
         $persentase = $statistik['total_peserta'] > 0
             ? round(
                 ($statistik['hadir'] / $statistik['total_peserta']) * 100
@@ -901,7 +834,6 @@ try {
     }
 
 
-
     /* =====================================================
        4. AKSI TIDAK DIKENALI
     ===================================================== */
@@ -918,7 +850,6 @@ try {
 
 } catch (PDOException $e) {
 
-    // Detail error hanya dicatat di log server
     error_log("API Absensi Mentor: " . $e->getMessage());
 
     http_response_code(500);
@@ -930,3 +861,5 @@ try {
 
     exit;
 }
+
+?>

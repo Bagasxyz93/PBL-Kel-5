@@ -41,12 +41,19 @@ function escapeHTML(value) {
 }
 
 
+
 async function ambilDataAPI(url) {
+    const token = sessionStorage.getItem('authToken');
+
+    if (!token) {
+        throw new Error('Token login tidak ditemukan. Silakan login kembali.');
+    }
+
     const response = await fetch(url, {
         method: 'GET',
-        credentials: 'include',
         headers: {
-            'Accept': 'application/json'
+            'Accept': 'application/json',
+            'Authorization': `Bearer ${token}`
         }
     });
 
@@ -60,6 +67,7 @@ async function ambilDataAPI(url) {
 
     return result;
 }
+
 
 
 function tanggalHariIni() {

@@ -5,6 +5,22 @@ const API_PENGAJUAN = `${API_URL}/api_pengajuan_izin.php`;
 const API_RIWAYAT = `${API_URL}/api_riwayat_izin.php`;
 
 // =====================================================
+// TOKEN AUTHENTICATION
+// =====================================================
+
+function getAuthHeaders() {
+    const token = sessionStorage.getItem("authToken");
+
+    if (!token) {
+        throw new Error("Token login tidak ditemukan. Silakan login kembali.");
+    }
+
+    return {
+        "Authorization": `Bearer ${token}`
+    };
+}
+
+// =====================================================
 // ELEMENT HTML
 // =====================================================
 
@@ -69,30 +85,24 @@ function formatStatus(status) {
     const statusLower = String(status || "").toLowerCase();
 
     if (statusLower === "menunggu") {
-
         return {
             teks: "Menunggu",
             warna: "bg-amber-50 text-amber-600 border border-amber-200"
         };
-
     }
 
     if (statusLower === "disetujui") {
-
         return {
             teks: "Disetujui",
             warna: "bg-emerald-50 text-emerald-600 border border-emerald-200"
         };
-
     }
 
     if (statusLower === "ditolak") {
-
         return {
             teks: "Ditolak",
             warna: "bg-rose-50 text-rose-600 border border-rose-200"
         };
-
     }
 
     return {
@@ -122,7 +132,7 @@ async function loadRiwayatIzin() {
 
         const response = await fetch(API_RIWAYAT, {
             method: "GET",
-            credentials: "include"
+            headers: getAuthHeaders()
         });
 
         const result = await response.json();
@@ -134,10 +144,8 @@ async function loadRiwayatIzin() {
         const data = result.data || [];
 
         if (jumlahRiwayat) {
-
             jumlahRiwayat.textContent =
                 `Menampilkan ${data.length} riwayat pengajuan izin.`;
-
         }
 
         if (data.length === 0) {
@@ -145,21 +153,17 @@ async function loadRiwayatIzin() {
             containerRiwayat.innerHTML = `
                 <tr>
                     <td colspan="6" class="py-10 text-center">
-
                         <p class="text-sm font-semibold text-slate-500">
                             Belum ada riwayat izin
                         </p>
-
                         <p class="mt-1 text-xs text-slate-400">
                             Pengajuan izin yang kamu kirim akan muncul di sini.
                         </p>
-
                     </td>
                 </tr>
             `;
 
             return;
-
         }
 
         containerRiwayat.innerHTML = data.map(item => {
@@ -259,24 +263,18 @@ async function submitPengajuanIzin(event) {
     const file = inputBukti.files[0];
 
     if (!tanggal || !alasan) {
-
         tampilkanPesan("Tanggal dan alasan wajib diisi.");
         return;
-
     }
 
     if (alasan.length > 250) {
-
         tampilkanPesan("Alasan maksimal 250 karakter.");
         return;
-
     }
 
     if (file && file.size > 5 * 1024 * 1024) {
-
         tampilkanPesan("Ukuran file maksimal 5 MB.");
         return;
-
     }
 
     const formData = new FormData();
@@ -289,25 +287,22 @@ async function submitPengajuanIzin(event) {
     }
 
     tombolAjukan.disabled = true;
-
     tombolAjukan.textContent = "MENGIRIM...";
 
     try {
 
         const response = await fetch(API_PENGAJUAN, {
             method: "POST",
-            credentials: "include",
+            headers: getAuthHeaders(),
             body: formData
         });
 
         const result = await response.json();
 
         if (!response.ok || !result.success) {
-
             throw new Error(
                 result.message || "Pengajuan gagal dikirim."
             );
-
         }
 
         tampilkanPesan(result.message, true);
@@ -360,10 +355,8 @@ export function initIzin() {
     if (inputAlasan && jumlahKarakter) {
 
         inputAlasan.addEventListener("input", () => {
-
             jumlahKarakter.textContent =
                 `${inputAlasan.value.length} / 250 KARAKTER`;
-
         });
 
     }
@@ -372,16 +365,13 @@ export function initIzin() {
     if (inputBukti && namaFile) {
 
         inputBukti.addEventListener("change", () => {
-
             namaFile.textContent = inputBukti.files.length
                 ? inputBukti.files[0].name
                 : "Belum ada file dipilih";
-
         });
 
     }
 
-    // Ambil riwayat dari database
     loadRiwayatIzin();
 
 }

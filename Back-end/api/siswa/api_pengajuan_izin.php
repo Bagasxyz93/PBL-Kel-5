@@ -6,18 +6,17 @@
 
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Origin: http://localhost:5173");
-header("Access-Control-Allow-Credentials: true");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
 // Menangani preflight request
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
+    http_response_code(204);
     exit;
 }
 
-require_once '../../config/auth_check.php';
 require_once '../../config/koneksi.php';
+require_once '../../config/tab_auth.php';
 
 // Fungsi response JSON
 function responseJSON($success, $message, $code = 200, $data = null)
@@ -34,18 +33,20 @@ function responseJSON($success, $message, $code = 200, $data = null)
 }
 
 // =====================================================
-// 1. CEK LOGIN DAN ROLE
+// 1. CEK TOKEN DAN ROLE
 // =====================================================
 
-if (!isset($_SESSION['user_id'])) {
+$userToken = ambilUserToken();
+
+if (!$userToken) {
     responseJSON(false, 'Silakan login terlebih dahulu.', 401);
 }
 
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'peserta') {
+if ($userToken['role'] !== 'peserta') {
     responseJSON(false, 'Akses hanya untuk siswa.', 403);
 }
 
-$pesertaId = (int) $_SESSION['user_id'];
+$pesertaId = (int) $userToken['user_id'];
 
 // =====================================================
 // 2. CEK METHOD
@@ -85,9 +86,10 @@ if (strlen($alasan) > 5000) {
 $namaFileDatabase = null;
 $lokasiFile = null;
 
-if (isset($_FILES['bukti_file']) &&
-    $_FILES['bukti_file']['error'] !== UPLOAD_ERR_NO_FILE) {
-
+if (
+    isset($_FILES['bukti_file']) &&
+    $_FILES['bukti_file']['error'] !== UPLOAD_ERR_NO_FILE
+) {
     $file = $_FILES['bukti_file'];
 
     if ($file['error'] !== UPLOAD_ERR_OK) {
@@ -126,7 +128,7 @@ if (isset($_FILES['bukti_file']) &&
         }
     }
 
-    // Nama file acak agar tidak bentrok
+    // Nama file acak
     $namaBaru = bin2hex(random_bytes(16))
         . '.' . $allowedTypes[$mimeType];
 
@@ -167,8 +169,7 @@ try {
         throw new Exception('Program siswa tidak ditemukan.');
     }
 
-    // Buat absensi alpha jika belum ada.
-    // Jika sudah ada, data absensi tidak diubah.
+    // Buat absensi alpha jika belum ada
     $queryAbsensi = "
         INSERT INTO absensi (
             peserta_id,
@@ -199,12 +200,10 @@ try {
         ':tanggal' => $tanggalIzin
     ]);
 
-    // Ambil ID absensi
     $absensiId = $stmtAbsensi->fetchColumn();
 
     if (!$absensiId) {
 
-        // Jika absensi sudah ada, ambil data yang sudah tersimpan
         $queryCekAbsensi = "
             SELECT id, status
             FROM absensi
@@ -230,7 +229,6 @@ try {
 
         $absensiId = $dataAbsensi['id'];
 
-        // Jangan mengubah absensi yang sudah diproses
         if ($dataAbsensi['status'] !== 'alpha') {
             throw new Exception(
                 'Pengajuan tidak dapat dilakukan karena absensi pada tanggal tersebut sudah tercatat.'
@@ -290,8 +288,10 @@ try {
 
     $pengajuanId = $stmtPengajuan->fetchColumn();
 
-    // Semua berhasil
     $pdo->commit();
+
+    // File sudah berhasil disimpan bersama data pengajuan
+    $lokasiFile = null;
 
     responseJSON(
         true,
@@ -303,19 +303,6 @@ try {
             'status' => 'menunggu'
         ]
     );
-
-} catch (Exception $e) {
-
-    if ($pdo->inTransaction()) {
-        $pdo->rollBack();
-    }
-
-    // Hapus file jika penyimpanan database gagal
-    if ($lokasiFile && file_exists($lokasiFile)) {
-        unlink($lokasiFile);
-    }
-
-    responseJSON(false, $e->getMessage(), 400);
 
 } catch (PDOException $e) {
 
@@ -334,4 +321,18 @@ try {
         'Terjadi kesalahan saat menyimpan pengajuan.',
         500
     );
+
+} catch (Exception $e) {
+
+    if ($pdo->inTransaction()) {
+        $pdo->rollBack();
+    }
+
+    if ($lokasiFile && file_exists($lokasiFile)) {
+        unlink($lokasiFile);
+    }
+
+    responseJSON(false, $e->getMessage(), 400);
 }
+
+?>

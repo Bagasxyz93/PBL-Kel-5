@@ -1,7 +1,26 @@
 
 document.addEventListener("DOMContentLoaded", () => {
 
-    // Menampilkan tanggal dan jam saat ini
+    // =====================================================
+    // TOKEN AUTHENTICATION
+    // =====================================================
+
+    function getAuthHeaders() {
+        const token = sessionStorage.getItem("authToken");
+
+        if (!token) {
+            throw new Error("Token login tidak ditemukan. Silakan login kembali.");
+        }
+
+        return {
+            "Authorization": `Bearer ${token}`
+        };
+    }
+
+    // =====================================================
+    // MENAMPILKAN TANGGAL DAN JAM
+    // =====================================================
+
     function updateTanggalJam() {
         const sekarang = new Date();
 
@@ -31,29 +50,44 @@ document.addEventListener("DOMContentLoaded", () => {
     updateTanggalJam();
     setInterval(updateTanggalJam, 1000);
 
-    // Mengambil ringkasan data dashboard dari database
+    // =====================================================
+    // MENGAMBIL RINGKASAN DATA DASHBOARD
+    // =====================================================
+
     async function loadDataDashboard() {
         try {
-            const response = await fetch("http://localhost:8000/api/admin/api_dashboard.php");
+            const response = await fetch(
+                "http://localhost:8000/api/admin/api_dashboard.php",
+                {
+                    method: "GET",
+                    headers: getAuthHeaders()
+                }
+            );
+
             const result = await response.json();
 
-            if (result.success) {
-                document.getElementById("totalSiswa").textContent =
-                    result.data.total_siswa;
-
-                document.getElementById("totalMentor").textContent =
-                    result.data.total_mentor;
-
-                document.getElementById("totalProgram").textContent =
-                    result.data.total_program;
+            if (!response.ok || !result.success) {
+                throw new Error(result.message || "Gagal mengambil data dashboard.");
             }
+
+            document.getElementById("totalSiswa").textContent =
+                result.data.total_siswa;
+
+            document.getElementById("totalMentor").textContent =
+                result.data.total_mentor;
+
+            document.getElementById("totalProgram").textContent =
+                result.data.total_program;
+
         } catch (error) {
             console.error("Gagal mengambil data dashboard:", error);
         }
     }
 
+    // =====================================================
+    // MENGAMBIL DAFTAR PROGRAM
+    // =====================================================
 
-    // Mengambil daftar program dari database
     async function loadProgramDashboard() {
         const daftarProgram = document.getElementById("daftarProgramDashboard");
         const jumlahProgram = document.getElementById("jumlahProgramDashboard");
@@ -61,11 +95,18 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!daftarProgram || !jumlahProgram) return;
 
         try {
-            const response = await fetch("http://localhost:8000/api/admin/api_program.php");
+            const response = await fetch(
+                "http://localhost:8000/api/admin/api_program.php",
+                {
+                    method: "GET",
+                    headers: getAuthHeaders()
+                }
+            );
+
             const result = await response.json();
 
-            if (!result.success) {
-                throw new Error("Gagal mengambil data program.");
+            if (!response.ok || !result.success) {
+                throw new Error(result.message || "Gagal mengambil data program.");
             }
 
             const dataProgram = result.data;
@@ -123,8 +164,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    // =====================================================
+    // MENGAMBIL AKTIVITAS 7 HARI TERAKHIR
+    // =====================================================
 
-    // Mengambil aktivitas program selama 7 hari terakhir
     async function loadAktivitasDashboard() {
         const grafik = document.getElementById("grafikAktivitasDashboard");
         const totalAktivitas = document.getElementById("totalAktivitasDashboard");
@@ -132,16 +175,22 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!grafik || !totalAktivitas) return;
 
         try {
-            const response = await fetch("http://localhost:8000/api/admin/api_aktivitas_dashboard.php");
+            const response = await fetch(
+                "http://localhost:8000/api/admin/api_aktivitas_dashboard.php",
+                {
+                    method: "GET",
+                    headers: getAuthHeaders()
+                }
+            );
+
             const result = await response.json();
 
-            if (!result.success) {
-                throw new Error("Gagal mengambil data aktivitas.");
+            if (!response.ok || !result.success) {
+                throw new Error(result.message || "Gagal mengambil data aktivitas.");
             }
 
             const dataAktivitas = result.data;
 
-            // Menghitung total seluruh aktivitas
             const total = dataAktivitas.reduce((jumlah, item) => {
                 return jumlah + Number(item.total);
             }, 0);
@@ -149,7 +198,6 @@ document.addEventListener("DOMContentLoaded", () => {
             totalAktivitas.textContent =
                 `Total ${total} aktivitas selama 7 hari terakhir.`;
 
-            // Mencari nilai aktivitas tertinggi
             const nilaiMaksimal = Math.max(
                 ...dataAktivitas.map(item => Number(item.total)),
                 1
@@ -164,7 +212,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            // Menampilkan grafik batang
             grafik.innerHTML = dataAktivitas.map(item => {
                 const jumlah = Number(item.total);
 
@@ -206,10 +253,12 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    // =====================================================
+    // ESCAPE HTML
+    // =====================================================
 
-    // Mengamankan teks sebelum ditampilkan ke HTML
     function escapeHTML(teks) {
-        return String(teks).replace(/[&<>"']/g, karakter => ({
+        return String(teks ?? "").replace(/[&<>"']/g, karakter => ({
             "&": "&amp;",
             "<": "&lt;",
             ">": "&gt;",
@@ -218,24 +267,28 @@ document.addEventListener("DOMContentLoaded", () => {
         })[karakter]);
     }
 
+    // =====================================================
+    // JALANKAN DASHBOARD
+    // =====================================================
 
-    // Memanggil seluruh fungsi dashboard
     loadDataDashboard();
     loadProgramDashboard();
     loadAktivitasDashboard();
 
+    // =====================================================
+    // LOGOUT
+    // =====================================================
 
-    // Tombol keluar
     const logoutBtn = document.getElementById("logoutBtn");
 
-    if (!logoutBtn) return;
+    if (logoutBtn) {
+        logoutBtn.addEventListener("click", async () => {
+            const konfirmasi = confirm("Apakah Anda yakin ingin keluar?");
 
-    logoutBtn.addEventListener("click", async () => {
-        const konfirmasi = confirm("Apakah Anda yakin ingin keluar?");
+            if (!konfirmasi) return;
 
-        if (!konfirmasi) return;
+            sessionStorage.removeItem("authToken");
 
-        try {
             localStorage.removeItem("userRole");
             localStorage.removeItem("userName");
             localStorage.removeItem("userId");
@@ -243,10 +296,7 @@ document.addEventListener("DOMContentLoaded", () => {
             await supabase.auth.signOut().catch(() => {});
 
             window.location.replace("/");
-        } catch (error) {
-            console.error("Gagal logout:", error);
-            alert("Gagal keluar. Silakan coba lagi.");
-        }
-    });
+        });
+    }
 
 });

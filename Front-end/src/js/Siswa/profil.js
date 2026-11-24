@@ -1,3 +1,4 @@
+
 /* =========================================================
     LOGIKA HALAMAN PROFIL SISWA
 ========================================================= */
@@ -32,6 +33,7 @@ export function initProfil() {
     function bacaProfil() {
         try {
             const dataTersimpan = localStorage.getItem(STORAGE_KEY);
+
             if (dataTersimpan) {
                 return {
                     ...dataAwal,
@@ -41,6 +43,7 @@ export function initProfil() {
         } catch (error) {
             console.error("Gagal membaca data profil:", error);
         }
+
         return { ...dataAwal };
     }
 
@@ -55,6 +58,7 @@ export function initProfil() {
 
     // Notifikasi Toast sederhana
     let toastTimer;
+
     function tampilkanToast(pesan) {
         if (!toast) return;
 
@@ -62,6 +66,7 @@ export function initProfil() {
         toast.classList.remove("hidden");
 
         clearTimeout(toastTimer);
+
         toastTimer = setTimeout(() => {
             toast.classList.add("hidden");
         }, 2500);
@@ -85,7 +90,10 @@ export function initProfil() {
 
         Array.from(jadwal).forEach((item, index) => {
             if (index >= 2) {
-                item.classList.toggle("hidden", !semuaJadwalDitampilkan);
+                item.classList.toggle(
+                    "hidden",
+                    !semuaJadwalDitampilkan
+                );
             }
         });
 
@@ -106,17 +114,24 @@ export function initProfil() {
         });
     }
 
-    // Inisialisasi Pop-up Ubah Password Terpusat
+    // Inisialisasi Pop-up Ubah Password
     setupPasswordModal();
 }
 
+
 /* =========================================================
-    LOGIKA POP-UP UBAH PASSWORD (CHANGE PASSWORD)
+    LOGIKA POP-UP UBAH PASSWORD
 ========================================================= */
 
 async function setupPasswordModal() {
-    const btnEditPassword = document.getElementById("btn-edit-profil");
-    let modalContainer = document.getElementById("password-modal-container");
+    const editBtn = document.getElementById("btn-edit-profil");
+
+    const API_PASSWORD =
+        "http://localhost:8000/api/password/api_ubah_password.php";
+
+    let modalContainer = document.getElementById(
+        "password-modal-container"
+    );
 
     if (!modalContainer) {
         modalContainer = document.createElement("div");
@@ -124,71 +139,240 @@ async function setupPasswordModal() {
         document.body.appendChild(modalContainer);
     }
 
+    // Memuat HTML modal
     async function loadModalHtml() {
         if (!modalContainer.innerHTML.trim()) {
             try {
-                const response = await fetch('/component/Password/pop-up-ubah-password.html');
-                if (response.ok) {
-                    modalContainer.innerHTML = await response.text();
-                    initModalEvents();
-                } else {
-                    console.error("Gagal memuat file pop-up ubah password.");
+                const response = await fetch(
+                    "/component/Password/pop-up-ubah-password.html"
+                );
+
+                if (!response.ok) {
+                    throw new Error("Gagal memuat modal ubah password.");
                 }
-            } catch (err) {
-                console.error("Terjadi kesalahan jaringan:", err);
+
+                modalContainer.innerHTML = await response.text();
+
+                initModalEvents();
+
+            } catch (error) {
+                console.error("Gagal memuat modal:", error);
+                alert("Gagal memuat pop-up ubah password.");
             }
         }
     }
 
+    // Mengatur event modal
     function initModalEvents() {
         const modal = document.getElementById("modal-ubah-password");
-        const closeBtn = document.getElementById("modal-password-close-btn");
-        const cancelBtn = document.getElementById("modal-password-cancel-btn");
-        const saveBtn = document.getElementById("modal-password-save-btn");
+        const form = document.getElementById("form-ubah-password");
 
-        if (!modal) return;
+        const closeBtn = document.getElementById(
+            "modal-password-close-btn"
+        );
 
-        const closeModal = () => modal.classList.add("hidden");
+        const cancelBtn = document.getElementById(
+            "modal-password-cancel-btn"
+        );
 
-        if (closeBtn) closeBtn.onclick = closeModal;
-        if (cancelBtn) cancelBtn.onclick = closeModal;
-        
+        const saveBtn = document.getElementById(
+            "modal-password-save-btn"
+        );
+
+        const passwordLama = document.getElementById("current-password");
+        const passwordBaru = document.getElementById("new-password");
+        const konfirmasiPassword = document.getElementById("confirm-password");
+
+        const statusCocok = document.getElementById(
+            "password-match-status"
+        );
+
+        if (
+            !modal ||
+            !form ||
+            !closeBtn ||
+            !cancelBtn ||
+            !saveBtn ||
+            !passwordLama ||
+            !passwordBaru ||
+            !konfirmasiPassword ||
+            !statusCocok
+        ) {
+            console.error("Elemen modal password tidak lengkap.");
+            return;
+        }
+
+        // Mengosongkan form
+        function resetForm() {
+            form.reset();
+
+            statusCocok.textContent = "";
+            statusCocok.classList.add("hidden");
+
+            saveBtn.disabled = false;
+            saveBtn.textContent = "Simpan Kata Sandi Baru";
+        }
+
+        // Menutup modal
+        function closeModal() {
+            modal.classList.add("hidden");
+            resetForm();
+        }
+
+        closeBtn.onclick = closeModal;
+        cancelBtn.onclick = closeModal;
+
+        // Tutup ketika klik area luar modal
         modal.onclick = (e) => {
-            if (e.target === modal) closeModal();
-        };
-
-        // Tutup modal dengan tombol Escape
-        document.addEventListener("keydown", (e) => {
-            if (e.key === "Escape" && !modal.classList.contains("hidden")) {
+            if (e.target === modal) {
                 closeModal();
             }
-        });
+        };
 
-        // Toggle tampil / sembunyi password pada ikon mata
-        document.querySelectorAll(".toggle-password").forEach(btn => {
+        // Tutup menggunakan tombol Escape
+        modal.onkeydown = (e) => {
+            if (e.key === "Escape") {
+                closeModal();
+            }
+        };
+
+        // Toggle tampil atau sembunyikan password
+        modal.querySelectorAll(".toggle-password").forEach((btn) => {
             btn.onclick = () => {
                 const targetId = btn.getAttribute("data-target");
-                const inputEl = document.getElementById(targetId);
-                if (inputEl) {
-                    inputEl.type = inputEl.type === "password" ? "text" : "password";
+                const input = document.getElementById(targetId);
+
+                if (input) {
+                    input.type =
+                        input.type === "password" ? "text" : "password";
                 }
             };
         });
 
-        // Aksi simpan password baru
-        if (saveBtn) {
-            saveBtn.onclick = (e) => {
-                e.preventDefault();
-                alert("Kata sandi berhasil diperbarui!");
-                modal.classList.add("hidden");
-            };
+        // Memeriksa kecocokan password baru
+        function cekKecocokanPassword() {
+            const baru = passwordBaru.value;
+            const konfirmasi = konfirmasiPassword.value;
+
+            if (!baru && !konfirmasi) {
+                statusCocok.textContent = "";
+                statusCocok.classList.add("hidden");
+                return;
+            }
+
+            statusCocok.classList.remove("hidden");
+
+            if (baru === konfirmasi) {
+                statusCocok.textContent = "✓ Kata sandi cocok";
+                statusCocok.className =
+                    "text-[11px] font-semibold text-emerald-600 mt-1";
+            } else {
+                statusCocok.textContent =
+                    "✕ Kata sandi belum cocok";
+
+                statusCocok.className =
+                    "text-[11px] font-semibold text-red-600 mt-1";
+            }
         }
+
+        passwordBaru.addEventListener(
+            "input",
+            cekKecocokanPassword
+        );
+
+        konfirmasiPassword.addEventListener(
+            "input",
+            cekKecocokanPassword
+        );
+
+        // Proses menyimpan password baru
+        saveBtn.onclick = async (e) => {
+            e.preventDefault();
+
+            const lama = passwordLama.value;
+            const baru = passwordBaru.value;
+            const konfirmasi = konfirmasiPassword.value;
+
+            if (!lama || !baru || !konfirmasi) {
+                alert("Semua kolom password wajib diisi.");
+                return;
+            }
+
+            if (baru !== konfirmasi) {
+                alert("Konfirmasi password baru tidak sesuai.");
+                return;
+            }
+
+            const polaPassword =
+                /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/;
+
+            if (!polaPassword.test(baru)) {
+                alert(
+                    "Password minimal 8 karakter dan harus mengandung huruf besar, huruf kecil, angka, serta simbol."
+                );
+                return;
+            }
+
+            const token = sessionStorage.getItem("authToken");
+
+            if (!token) {
+                alert(
+                    "Sesi login tidak ditemukan. Silakan login kembali."
+                );
+                return;
+            }
+
+            try {
+                saveBtn.disabled = true;
+                saveBtn.textContent = "Menyimpan...";
+
+                const response = await fetch(API_PASSWORD, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        password_lama: lama,
+                        password_baru: baru,
+                        konfirmasi_password: konfirmasi
+                    })
+                });
+
+                const result = await response.json();
+
+                if (!response.ok || !result.success) {
+                    throw new Error(
+                        result.message ||
+                        "Gagal memperbarui password."
+                    );
+                }
+
+                alert(result.message);
+                closeModal();
+
+            } catch (error) {
+                console.error("Gagal mengubah password:", error);
+
+                alert(
+                    error.message ||
+                    "Terjadi kesalahan saat mengubah password."
+                );
+
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.textContent = "Simpan Kata Sandi Baru";
+            }
+        };
     }
 
-    if (btnEditPassword) {
-        btnEditPassword.addEventListener("click", async () => {
+    // Membuka modal ketika tombol diklik
+    if (editBtn) {
+        editBtn.addEventListener("click", async () => {
             await loadModalHtml();
+
             const modal = document.getElementById("modal-ubah-password");
+
             if (modal) {
                 modal.classList.remove("hidden");
             }

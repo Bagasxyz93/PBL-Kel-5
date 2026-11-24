@@ -1,6 +1,13 @@
 
 const API_MENTOR = "http://localhost:8000/api/mentor";
 
+// Mengambil token khusus tab yang sedang digunakan
+function getAuthHeaders() {
+    return {
+        "Authorization": `Bearer ${sessionStorage.getItem("authToken")}`
+    };
+}
+
 export function initMentorDashboard() {
     console.log("Dashboard Mentor berhasil dimuat.");
 
@@ -38,7 +45,7 @@ async function loadProfilMentor() {
             `${API_MENTOR}/api_profil_mentor.php`,
             {
                 method: "GET",
-                credentials: "include"
+                headers: getAuthHeaders()
             }
         );
 
@@ -118,7 +125,7 @@ async function loadDataSiswa() {
             `${API_MENTOR}/api_total_siswa_bimbingan.php`,
             {
                 method: "GET",
-                credentials: "include"
+                headers: getAuthHeaders()
             }
         );
 
@@ -157,6 +164,7 @@ async function loadDataSiswa() {
         setText("persentaseKehadiran", `${persentase}%`);
 
         setText("grafikPersentase", `${persentase}%`);
+        updateDiagramKehadiran(persentase);
 
         setText("jumlahHadir", totalHadir);
         setText("jumlahIzin", totalIzin);
@@ -183,8 +191,23 @@ async function loadDataSiswa() {
 }
 
 // ======================================================
-// MENGAMBIL DATA DAILY REPORT DASHBOARD
+// MEMPERBARUI DIAGRAM KEHADIRAN
 // ======================================================
+
+function updateDiagramKehadiran(persentase) {
+    const diagram = document.getElementById("diagramKehadiran");
+
+    if (!diagram) return;
+
+    const nilai = Math.max(0, Math.min(100, Number(persentase) || 0));
+
+    diagram.style.background = `
+        conic-gradient(
+            #2864ed 0% ${nilai}%,
+            #e2ecff ${nilai}% 100%
+        )
+    `;
+}
 
 // ======================================================
 // MENGAMBIL DATA DAILY REPORT
@@ -196,7 +219,7 @@ async function loadDataDailyReport() {
             `${API_MENTOR}/api_daily_report.php`,
             {
                 method: "GET",
-                credentials: "include"
+                headers: getAuthHeaders()
             }
         );
 
@@ -214,10 +237,8 @@ async function loadDataDailyReport() {
             ? result.data
             : [];
 
-        // Total seluruh laporan
         setText("totalReportMentor", daftarLaporan.length);
 
-        // Total laporan yang masih menunggu pemeriksaan
         const totalMenunggu = daftarLaporan.filter(
             item => item.status === "menunggu"
         ).length;
@@ -230,8 +251,6 @@ async function loadDataDailyReport() {
             result.statistik || {}
         );
 
-        // Urutkan berdasarkan tanggal dan waktu terbaru.
-        // Tampilkan maksimal 5 laporan.
         const laporanTerbaru = [...daftarLaporan].sort((a, b) => {
             return new Date(b.created_at) - new Date(a.created_at);
         }).slice(0, 5);
@@ -289,7 +308,6 @@ function tampilkanLaporanTerbaru(daftarLaporan) {
 
         const status = item.status || "menunggu";
 
-        // Tanggal asli laporan
         const tanggal = item.tanggal
             ? new Date(`${item.tanggal}T00:00:00+07:00`)
                 .toLocaleDateString("id-ID", {

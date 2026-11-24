@@ -1,6 +1,19 @@
-
 export function initFormUnggahMateri(onSelesaiPublikasi = null) {
     console.log("Modul Form Tambah Materi berhasil dimuat.");
+
+    const API_MATERI = "http://localhost:8000/api/mentor/api_materi.php";
+
+    function getAuthHeaders() {
+        const token = sessionStorage.getItem("authToken");
+
+        if (!token) {
+            throw new Error("Token login tidak ditemukan. Silakan login kembali.");
+        }
+
+        return {
+            "Authorization": `Bearer ${token}`
+        };
+    }
 
     const btnReset = document.getElementById("btn-reset-form");
     const btnPublikasikan = document.getElementById("btn-publikasikan-materi");
@@ -9,13 +22,11 @@ export function initFormUnggahMateri(onSelesaiPublikasi = null) {
     const namaFile = document.getElementById("nama-file-materi");
     const selectProgram = document.getElementById("program-materi");
 
-    // EDITOR DESKRIPSI
     const editor = document.getElementById("editor-deskripsi");
     const deskripsi = document.getElementById("deskripsi-materi");
 
     const tombolToolbar = document.querySelectorAll("[data-command]");
 
-    
     let rangeEditor = null;
 
     // Simpan posisi kursor sebelum tombol toolbar diklik
@@ -35,7 +46,6 @@ export function initFormUnggahMateri(onSelesaiPublikasi = null) {
 
             editor.focus();
 
-            // Kembalikan posisi kursor
             if (rangeEditor) {
                 const selection = window.getSelection();
                 selection.removeAllRanges();
@@ -56,7 +66,6 @@ export function initFormUnggahMateri(onSelesaiPublikasi = null) {
 
             deskripsi.value = editor.innerHTML;
 
-            // Simpan posisi kursor terbaru
             const selection = window.getSelection();
 
             if (selection.rangeCount > 0) {
@@ -65,8 +74,6 @@ export function initFormUnggahMateri(onSelesaiPublikasi = null) {
         });
     });
 
-
-    
     if (editor && deskripsi) {
         editor.addEventListener("input", () => {
             deskripsi.value = editor.innerHTML;
@@ -78,7 +85,11 @@ export function initFormUnggahMateri(onSelesaiPublikasi = null) {
 
             const selection = window.getSelection();
 
-            if (!selection || !selection.isCollapsed || selection.rangeCount === 0) {
+            if (
+                !selection ||
+                !selection.isCollapsed ||
+                selection.rangeCount === 0
+            ) {
                 return;
             }
 
@@ -98,7 +109,6 @@ export function initFormUnggahMateri(onSelesaiPublikasi = null) {
 
             if (!listItem) return;
 
-            // Pastikan baris bullet benar-benar kosong
             if (listItem.textContent.trim() !== "") return;
 
             event.preventDefault();
@@ -110,12 +120,10 @@ export function initFormUnggahMateri(onSelesaiPublikasi = null) {
 
             listItem.replaceWith(paragraph);
 
-            // Hapus daftar jika sudah tidak memiliki item
             if (list.children.length === 0) {
                 list.remove();
             }
 
-            // Pindahkan kursor ke paragraf biasa
             paragraph.focus?.();
 
             const newRange = document.createRange();
@@ -131,7 +139,6 @@ export function initFormUnggahMateri(onSelesaiPublikasi = null) {
         });
     }
 
-
     const batasUkuran = 50 * 1024 * 1024;
 
     const formatDiizinkan = [
@@ -145,13 +152,10 @@ export function initFormUnggahMateri(onSelesaiPublikasi = null) {
     // Mengambil program yang ditugaskan kepada mentor
     async function loadProgramMateri() {
         try {
-            const response = await fetch(
-                "http://localhost:8000/api/mentor/api_materi.php",
-                {
-                    method: "GET",
-                    credentials: "include"
-                }
-            );
+            const response = await fetch(API_MATERI, {
+                method: "GET",
+                headers: getAuthHeaders()
+            });
 
             const result = await response.json();
 
@@ -173,7 +177,7 @@ export function initFormUnggahMateri(onSelesaiPublikasi = null) {
 
         } catch (error) {
             console.error("Gagal memuat program:", error);
-            alert("Program gagal dimuat. Silakan periksa koneksi backend.");
+            alert(error.message || "Program gagal dimuat. Periksa koneksi backend.");
         }
     }
 
@@ -199,7 +203,6 @@ export function initFormUnggahMateri(onSelesaiPublikasi = null) {
                 .pop()
                 .toLowerCase();
 
-            // Validasi format file
             if (!formatDiizinkan.includes(ekstensi)) {
                 alert("Format file tidak didukung!");
 
@@ -208,7 +211,6 @@ export function initFormUnggahMateri(onSelesaiPublikasi = null) {
                 return;
             }
 
-            // Validasi ukuran file
             if (file.size > batasUkuran) {
                 alert("Ukuran file maksimal adalah 50 MB!");
 
@@ -257,22 +259,23 @@ export function initFormUnggahMateri(onSelesaiPublikasi = null) {
         btnReset.addEventListener("click", () => {
             const judul = document.getElementById("judul-materi");
             const durasi = document.getElementById("durasi-materi");
-        
+
             if (judul) judul.value = "";
             if (deskripsi) deskripsi.value = "";
             if (editor) editor.innerHTML = "";
             if (durasi) durasi.value = "";
-        
+
             if (selectProgram) selectProgram.selectedIndex = 0;
             if (inputFile) inputFile.value = "";
-        
+
             if (namaFile) {
                 namaFile.textContent = "Belum ada file dipilih";
             }
-        
+
             alert("Formulir berhasil di-reset.");
         });
     }
+
     if (selectProgram) {
         loadProgramMateri();
     }
@@ -284,12 +287,10 @@ export function initFormUnggahMateri(onSelesaiPublikasi = null) {
             const judul = document.getElementById("judul-materi");
             const durasi = document.getElementById("durasi-materi");
 
-            // Sinkronisasi isi editor ke textarea
             if (editor && deskripsi) {
                 deskripsi.value = editor.innerHTML;
             }
 
-            // Validasi input wajib
             if (!judul.value.trim()) {
                 alert("Judul materi wajib diisi.");
                 judul.focus();
@@ -302,14 +303,12 @@ export function initFormUnggahMateri(onSelesaiPublikasi = null) {
                 return;
             }
 
-            // Menyiapkan data yang akan dikirim
             const formData = new FormData();
 
             formData.append("judul", judul.value.trim());
             formData.append("program_id", selectProgram.value);
             formData.append("konten_materi", deskripsi.value);
 
-            // File bersifat opsional
             if (inputFile && inputFile.files.length > 0) {
                 formData.append("file_materi", inputFile.files[0]);
             }
@@ -318,46 +317,42 @@ export function initFormUnggahMateri(onSelesaiPublikasi = null) {
                 btnPublikasikan.disabled = true;
                 btnPublikasikan.textContent = "Menyimpan...";
 
-                const response = await fetch(
-                    "http://localhost:8000/api/mentor/api_materi.php",
-                    {
-                        method: "POST",
-                        credentials: "include",
-                        body: formData
-                    }
-                );
+                const response = await fetch(API_MATERI, {
+                    method: "POST",
+                    headers: getAuthHeaders(),
+                    body: formData
+                });
 
                 const result = await response.json();
 
                 if (!response.ok || !result.success) {
-                    throw new Error(result.message || "Gagal mempublikasikan materi.");
+                    throw new Error(
+                        result.message || "Gagal mempublikasikan materi."
+                    );
                 }
 
-                
                 alert("Materi berhasil dipublikasikan!");
-                            
+
                 // Kosongkan formulir setelah berhasil
                 judul.value = "";
-                            
+
                 if (deskripsi) deskripsi.value = "";
                 if (editor) editor.innerHTML = "";
-                            
+
                 if (durasi) durasi.value = "";
-                            
+
                 selectProgram.selectedIndex = 0;
-                            
+
                 if (inputFile) inputFile.value = "";
-                            
+
                 if (namaFile) {
                     namaFile.textContent = "Belum ada file dipilih";
                 }
-                
-                // Jalankan callback setelah formulir dikosongkan
+
                 if (onSelesaiPublikasi) {
                     await onSelesaiPublikasi();
                     return;
                 }
-                
 
             } catch (error) {
                 console.error("Gagal mempublikasikan materi:", error);
@@ -369,5 +364,4 @@ export function initFormUnggahMateri(onSelesaiPublikasi = null) {
             }
         });
     }
-
 }

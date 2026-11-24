@@ -1,16 +1,13 @@
 
 <?php
 
-session_start();
-
 // ==================================================
 // PENGATURAN CORS
 // ==================================================
 
 header("Access-Control-Allow-Origin: http://localhost:5173");
 header("Access-Control-Allow-Methods: GET, PUT, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type");
-header("Access-Control-Allow-Credentials: true");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Content-Type: application/json; charset=UTF-8");
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
@@ -19,31 +16,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 // ==================================================
-// KONEKSI DATABASE
+// KONEKSI DATABASE DAN AUTENTIKASI TOKEN
 // ==================================================
 
 require_once __DIR__ . '/../../config/koneksi.php';
+require_once __DIR__ . '/../../config/tab_auth.php';
 
-// ==================================================
-// VALIDASI LOGIN MENTOR
-// ==================================================
+// Memastikan token mentor valid
+$userToken = ambilUserToken();
 
 if (
-    !isset($_SESSION['user_id']) ||
-    !isset($_SESSION['role']) ||
-    $_SESSION['role'] !== 'mentor'
+    !$userToken ||
+    $userToken['role'] !== 'mentor'
 ) {
     http_response_code(401);
 
     echo json_encode([
         "success" => false,
-        "message" => "Sesi mentor tidak ditemukan."
+        "message" => "Token mentor tidak valid atau sudah kedaluwarsa."
     ]);
 
     exit;
 }
 
-$mentor_id = $_SESSION['user_id'];
+$mentor_id = $userToken['user_id'];
 
 try {
 
@@ -174,15 +170,12 @@ try {
 
         if ($modeDetail) {
 
-            // Mengambil satu laporan berdasarkan ID
             $sql .= " AND dr.id = :report_id";
 
             $params[':report_id'] = (int) $_GET['id'];
 
         } else {
 
-            // Dashboard dan halaman Kelola Daily Report
-            // menggunakan filter tanggal
             $sql .= " AND dr.tanggal = :tanggal";
 
             $params[':tanggal'] = $tanggalDipilih;
@@ -278,7 +271,6 @@ try {
 
         // ==================================================
         // MENGHITUNG PESERTA YANG SUDAH MELAPOR
-        // PADA TANGGAL PILIHAN
         // ==================================================
 
         $daftarPesertaSudahLapor = array_unique(

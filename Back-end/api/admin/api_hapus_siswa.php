@@ -1,8 +1,10 @@
+
 <?php
+
 header("Access-Control-Allow-Origin: http://localhost:5173");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type");
-header("Content-Type: application/json");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
+header("Content-Type: application/json; charset=UTF-8");
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(204);
@@ -10,7 +12,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 require_once '../../config/koneksi.php';
+require_once '../../config/tab_auth.php';
 
+// Validasi token Admin
+$userToken = ambilUserToken();
+
+if (!$userToken || $userToken['role'] !== 'admin') {
+    http_response_code(401);
+    echo json_encode([
+        "success" => false,
+        "message" => "Akses ditolak. Silakan login sebagai Admin."
+    ]);
+    exit;
+}
+
+// Validasi method
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
     echo json_encode([
@@ -40,6 +56,7 @@ try {
         SELECT id FROM users
         WHERE id = ? AND role = 'peserta'
     ");
+
     $cek->execute([$id]);
 
     if (!$cek->fetch()) {
@@ -51,6 +68,7 @@ try {
         DELETE FROM peserta_program
         WHERE peserta_id = ?
     ");
+
     $hapusProgram->execute([$id]);
 
     // Menghapus akun siswa
@@ -58,6 +76,7 @@ try {
         DELETE FROM users
         WHERE id = ? AND role = 'peserta'
     ");
+
     $hapusSiswa->execute([$id]);
 
     $pdo->commit();
@@ -71,6 +90,8 @@ try {
     if ($pdo->inTransaction()) {
         $pdo->rollBack();
     }
+
+    error_log($e->getMessage());
 
     http_response_code(400);
 
@@ -91,4 +112,5 @@ try {
         "message" => $e->getMessage()
     ]);
 }
+
 ?>

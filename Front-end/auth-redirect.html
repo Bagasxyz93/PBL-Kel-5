@@ -1,0 +1,34 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Memproses Login</title>
+</head>
+<body>
+    <p>Memproses login...</p>
+
+    <script>
+        const params = new URLSearchParams(
+            window.location.hash.substring(1)
+        );
+
+        const token = params.get("token");
+        const tujuan = params.get("tujuan");
+
+        const halamanDiizinkan = [
+            "/pages/Admin/Dashboard.html",
+            "/pages/Mentor/Dashboard.html",
+            "/pages/Siswa/Dashboard.html"
+        ];
+
+        if (token && halamanDiizinkan.includes(tujuan)) {
+            sessionStorage.setItem("authToken", token);
+
+            window.location.replace(tujuan);
+        } else {
+            window.location.replace("/?error=login");
+        }
+    </script>
+</body>
+</html>

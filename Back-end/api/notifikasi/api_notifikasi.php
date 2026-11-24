@@ -1,12 +1,11 @@
 
 <?php
 
-session_start();
+date_default_timezone_set('Asia/Jakarta');
 
 header("Access-Control-Allow-Origin: http://localhost:5173");
 header("Access-Control-Allow-Methods: GET, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type");
-header("Access-Control-Allow-Credentials: true");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Content-Type: application/json; charset=UTF-8");
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
@@ -15,8 +14,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 require_once __DIR__ . '/../../config/koneksi.php';
+require_once __DIR__ . '/../../config/tab_auth.php';
 
-if (!isset($_SESSION['user_id']) || !isset($_SESSION['role'])) {
+$userToken = ambilUserToken();
+
+if (!$userToken) {
     http_response_code(401);
     echo json_encode([
         "success" => false,
@@ -25,10 +27,11 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['role'])) {
     exit;
 }
 
-$userId = (int) $_SESSION['user_id'];
-$role = $_SESSION['role'];
+$userId = (int) $userToken['user_id'];
+$role = $userToken['role'];
 
 try {
+
     $notifikasi = [];
 
     /*
@@ -262,14 +265,12 @@ try {
         }
     }
 
-
     /*
     =====================================================
     5. NOTIFIKASI PENAMBAHAN PROGRAM MENTOR
     =====================================================
     */
 
-    // Notifikasi untuk Admin dan Mentor
     if ($role === 'admin' || $role === 'mentor') {
 
         $queryProgram = "
@@ -282,12 +283,10 @@ try {
             FROM mentor_program mp
             JOIN users u ON mp.mentor_id = u.id
             JOIN program p ON mp.program_id = p.id
-            WHERE mp.created_at >= CURRENT_TIMESTAMP - INTERVAL '1 day'
         ";
 
-        // Mentor hanya melihat perubahan program miliknya
         if ($role === 'mentor') {
-            $queryProgram .= " AND mp.mentor_id = :mentor_id";
+            $queryProgram .= " WHERE mp.mentor_id = :mentor_id";
         }
 
         $queryProgram .= " ORDER BY mp.created_at DESC";
@@ -316,10 +315,34 @@ try {
         }
     }
 
+    /*
+    =====================================================
+    6. FILTER NOTIFIKASI HARI INI
+    =====================================================
+    */
+
+    $tanggalHariIni = date('Y-m-d');
+
+    $notifikasi = array_filter($notifikasi, function ($item) use ($tanggalHariIni) {
+
+        if (empty($item['waktu'])) {
+            return false;
+        }
+
+        $timestamp = strtotime($item['waktu']);
+
+        if ($timestamp === false) {
+            return false;
+        }
+
+        return date('Y-m-d', $timestamp) === $tanggalHariIni;
+    });
+
+    $notifikasi = array_values($notifikasi);
 
     /*
     =====================================================
-    6. URUTKAN BERDASARKAN WAKTU TERBARU
+    7. URUTKAN BERDASARKAN WAKTU TERBARU
     =====================================================
     */
 
@@ -335,10 +358,23 @@ try {
 
 } catch (PDOException $e) {
 
+    error_log("Error API Notifikasi: " . $e->getMessage());
+
     http_response_code(500);
 
     echo json_encode([
         "success" => false,
         "message" => "Gagal mengambil data notifikasi."
+    ]);
+
+} catch (Exception $e) {
+
+    error_log("Error API Notifikasi: " . $e->getMessage());
+
+    http_response_code(500);
+
+    echo json_encode([
+        "success" => false,
+        "message" => "Terjadi kesalahan pada server."
     ]);
 }

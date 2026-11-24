@@ -1,9 +1,10 @@
 
 <?php
+
 header("Access-Control-Allow-Origin: http://localhost:5173");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type");
-header("Content-Type: application/json");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
+header("Content-Type: application/json; charset=UTF-8");
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(204);
@@ -11,8 +12,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 require_once '../../config/koneksi.php';
+require_once '../../config/tab_auth.php';
+
+// Validasi token Admin
+$userToken = ambilUserToken();
+
+if (!$userToken || $userToken['role'] !== 'admin') {
+    http_response_code(401);
+    echo json_encode([
+        "success" => false,
+        "message" => "Akses ditolak. Silakan login sebagai Admin."
+    ]);
+    exit;
+}
+
+// Validasi method
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    echo json_encode([
+        "success" => false,
+        "message" => "Method tidak diizinkan."
+    ]);
+    exit;
+}
 
 $data = json_decode(file_get_contents("php://input"), true);
+
+if (!is_array($data)) {
+    http_response_code(400);
+    echo json_encode([
+        "success" => false,
+        "message" => "Format data tidak valid."
+    ]);
+    exit;
+}
 
 $nama = trim($data['nama'] ?? '');
 $nisn = trim($data['nisn'] ?? '');
@@ -24,6 +57,7 @@ $jenis_kelamin = $data['jenis_kelamin'] ?? '';
 $program_id = $data['program_id'] ?? null;
 $status = strtolower($data['status'] ?? 'aktif');
 
+// Validasi data
 if (
     $nama === '' || $nisn === '' || $no_hp === '' ||
     $email === '' || $username === '' || $password === '' ||
@@ -37,6 +71,33 @@ if (
     exit;
 }
 
+if (!in_array($jenis_kelamin, ['Laki-laki', 'Perempuan'])) {
+    http_response_code(400);
+    echo json_encode([
+        "success" => false,
+        "message" => "Jenis kelamin tidak valid."
+    ]);
+    exit;
+}
+
+if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    http_response_code(400);
+    echo json_encode([
+        "success" => false,
+        "message" => "Format email tidak valid."
+    ]);
+    exit;
+}
+
+if (strlen($password) < 8) {
+    http_response_code(400);
+    echo json_encode([
+        "success" => false,
+        "message" => "Kata sandi minimal 8 karakter."
+    ]);
+    exit;
+}
+
 if (!in_array($status, ['aktif', 'non-aktif'])) {
     $status = 'aktif';
 }
@@ -44,6 +105,7 @@ if (!in_array($status, ['aktif', 'non-aktif'])) {
 try {
     $pdo->beginTransaction();
 
+    // Memeriksa username, email, dan NISN
     $cek = $pdo->prepare("
         SELECT id FROM users
         WHERE username = :username
@@ -58,9 +120,12 @@ try {
     ]);
 
     if ($cek->fetch()) {
-        throw new Exception("Username, email, atau NISN sudah digunakan.");
+        throw new Exception(
+            "Username, email, atau NISN sudah digunakan."
+        );
     }
 
+    // Menyimpan data siswa
     $stmt = $pdo->prepare("
         INSERT INTO users (
             nama, nisn, no_hp, email, username,
@@ -86,6 +151,7 @@ try {
 
     $peserta_id = $stmt->fetchColumn();
 
+    // Menyimpan program siswa
     $stmtProgram = $pdo->prepare("
         INSERT INTO peserta_program (
             peserta_id, program_id, tanggal_daftar, status
@@ -120,4 +186,5 @@ try {
         "message" => $e->getMessage()
     ]);
 }
+
 ?>

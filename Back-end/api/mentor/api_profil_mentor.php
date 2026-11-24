@@ -1,12 +1,10 @@
-<?php
 
-session_start();
+<?php
 
 // Pengaturan CORS
 header("Access-Control-Allow-Origin: http://localhost:5173");
 header("Access-Control-Allow-Methods: GET, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type");
-header("Access-Control-Allow-Credentials: true");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Content-Type: application/json; charset=UTF-8");
 
 // Menangani preflight request
@@ -18,35 +16,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 // Hanya menerima GET
 if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     http_response_code(405);
-
     echo json_encode([
         "success" => false,
         "message" => "Method tidak diizinkan."
     ]);
-
     exit;
 }
 
-// Koneksi database
+// Koneksi dan autentikasi token
 require_once __DIR__ . '/../../config/koneksi.php';
+require_once __DIR__ . '/../../config/tab_auth.php';
 
-// Memastikan mentor sudah login
-if (
-    !isset($_SESSION['user_id']) ||
-    !isset($_SESSION['role']) ||
-    $_SESSION['role'] !== 'mentor'
-) {
+// Memastikan token mentor valid
+$userToken = ambilUserToken();
+
+if (!$userToken || $userToken['role'] !== 'mentor') {
     http_response_code(401);
-
     echo json_encode([
         "success" => false,
-        "message" => "Sesi mentor tidak ditemukan."
+        "message" => "Token mentor tidak valid."
     ]);
-
     exit;
 }
 
-$mentor_id = $_SESSION['user_id'];
+$mentor_id = $userToken['user_id'];
 
 try {
 
@@ -75,15 +68,12 @@ try {
 
     $mentor = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // Memastikan data mentor tersedia
     if (!$mentor) {
         http_response_code(404);
-
         echo json_encode([
             "success" => false,
             "message" => "Data mentor tidak ditemukan."
         ]);
-
         exit;
     }
 
@@ -128,7 +118,6 @@ try {
         "success" => false,
         "message" => "Gagal mengambil profil mentor."
     ]);
-
 }
 
 ?>

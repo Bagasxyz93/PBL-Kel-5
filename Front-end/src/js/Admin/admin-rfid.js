@@ -11,10 +11,34 @@ let currentPage = 1;
 const rowsPerPage = 5;
 let dataRfidTampil = [];
 
+// ==================================================
+// AUTH TOKEN
+// ==================================================
+
+function getAuthHeaders() {
+    const token = sessionStorage.getItem("authToken");
+
+    if (!token) {
+        throw new Error("Token login tidak ditemukan. Silakan login kembali.");
+    }
+
+    return {
+        Authorization: `Bearer ${token}`
+    };
+}
+
+// ==================================================
+// INISIALISASI HALAMAN
+// ==================================================
+
 export function initAdminRfid() {
     console.log("Modul Kelola Daftar RFID Admin berhasil dimuat.");
     renderRfidView();
 }
+
+// ==================================================
+// MENGAMBIL DATA RFID
+// ==================================================
 
 async function fetchRfidData() {
     const tbody = document.getElementById("table-rfid-body");
@@ -30,7 +54,10 @@ async function fetchRfidData() {
             `;
         }
 
-        const response = await fetch(API_RFID);
+        const response = await fetch(API_RFID, {
+            headers: getAuthHeaders()
+        });
+
         const result = await response.json();
 
         if (!response.ok || !result.success) {
@@ -45,8 +72,8 @@ async function fetchRfidData() {
             rfid: item.id_rfid || "",
             status: item.id_rfid ? "Terdaftar" : "Belum Terdaftar",
             assignedAt: item.rfid_assigned_at
-            ? new Date(item.rfid_assigned_at).toLocaleString("id-ID")
-            : "-"
+                ? new Date(item.rfid_assigned_at).toLocaleString("id-ID")
+                : "-"
         }));
 
         populateRfidTable(dataRfidSiswa);
@@ -90,6 +117,10 @@ async function fetchRfidData() {
     }
 }
 
+// ==================================================
+// TAMPILAN HALAMAN RFID
+// ==================================================
+
 function renderRfidView() {
     const mainArea = document.getElementById("main-content-area");
     if (!mainArea) return;
@@ -122,7 +153,7 @@ function renderRfidView() {
                         class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:border-red-600 transition"
                     >
                 </div>
-                
+
                 <!-- Dropdown Filter Program -->
                 <select id="filter-program" class="bg-slate-50 border border-slate-200 text-slate-700 text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-red-600 transition">
                     <option value="">Semua Program</option>
@@ -136,7 +167,6 @@ function renderRfidView() {
                     <option value="belum">Belum Ada RFID</option>
                 </select>
             </div>
-
         </div>
 
         <!-- Tabel Daftar RFID -->
@@ -155,7 +185,6 @@ function renderRfidView() {
                         </tr>
                     </thead>
                     <tbody id="table-rfid-body" class="divide-y divide-slate-100 text-xs font-medium text-slate-600">
-                        <!-- Data dirender dinamis via JS -->
                     </tbody>
                 </table>
             </div>
@@ -163,12 +192,11 @@ function renderRfidView() {
             <!-- Pagination Bawah Tabel -->
             <div class="p-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
                 <span id="pagination-info">Memuat data siswa...</span>
-
                 <div class="flex items-center gap-1.5" id="pagination-buttons"></div>
             </div>
         </div>
 
-        <!-- Container untuk memuat Modal Pop-up Edit RFID -->
+        <!-- Container Modal Pop-up Edit RFID -->
         <div id="rfid-modal-container"></div>
     `;
 
@@ -176,6 +204,9 @@ function renderRfidView() {
     setupRfidInteractions();
 }
 
+// ==================================================
+// MENAMPILKAN DATA RFID KE TABEL
+// ==================================================
 
 function populateRfidTable(data) {
     const tbody = document.getElementById("table-rfid-body");
@@ -341,6 +372,10 @@ function populateRfidTable(data) {
     }
 }
 
+// ==================================================
+// MEMUAT MODAL RFID
+// ==================================================
+
 async function ensureRfidModalLoaded() {
     const container = document.getElementById("rfid-modal-container");
     if (!container) return false;
@@ -350,6 +385,7 @@ async function ensureRfidModalLoaded() {
             const response = await fetch('/component/Admin/pop-up-edit-rfid.html');
 
             console.log("Status modal:", response.status);
+
             if (response.ok) {
                 container.innerHTML = await response.text();
                 setupRfidModalEvents();
@@ -357,13 +393,19 @@ async function ensureRfidModalLoaded() {
                 console.error("Gagal memuat file pop-up edit RFID.");
                 return false;
             }
+
         } catch (err) {
             console.error("Kesalahan jaringan saat memuat pop-up:", err);
             return false;
         }
     }
+
     return true;
 }
+
+// ==================================================
+// MEMBUKA MODAL EDIT RFID
+// ==================================================
 
 window.openEditRfidModal = async (idSiswa) => {
     const loaded = await ensureRfidModalLoaded();
@@ -396,17 +438,28 @@ window.openEditRfidModal = async (idSiswa) => {
     document.getElementById("modal-edit-rfid").classList.remove("hidden");
 };
 
+// ==================================================
+// EVENT MODAL RFID
+// ==================================================
+
 function setupRfidModalEvents() {
     const modalEl = document.getElementById("modal-edit-rfid");
     const closeBtn = document.getElementById("modal-rfid-close-btn");
     const saveBtn = document.getElementById("modal-rfid-save-btn");
 
     if (closeBtn && modalEl) {
-        closeBtn.onclick = (e) => { e.preventDefault(); modalEl.classList.add("hidden"); };
+        closeBtn.onclick = (e) => {
+            e.preventDefault();
+            modalEl.classList.add("hidden");
+        };
     }
 
     if (modalEl) {
-        modalEl.onclick = (e) => { if (e.target === modalEl) modalEl.classList.add("hidden"); };
+        modalEl.onclick = (e) => {
+            if (e.target === modalEl) {
+                modalEl.classList.add("hidden");
+            }
+        };
     }
 
     if (saveBtn) {
@@ -425,7 +478,8 @@ function setupRfidModalEvents() {
                 const response = await fetch(API_RFID, {
                     method: "POST",
                     headers: {
-                        "Content-Type": "application/json"
+                        "Content-Type": "application/json",
+                        ...getAuthHeaders()
                     },
                     body: JSON.stringify({
                         user_id: activeRfidId,
@@ -456,6 +510,10 @@ function setupRfidModalEvents() {
         };
     }
 }
+
+// ==================================================
+// EVENT PENCARIAN, FILTER, DAN PAGINATION
+// ==================================================
 
 function setupRfidInteractions() {
     const searchInput = document.getElementById("input-search-rfid");
@@ -489,7 +547,7 @@ function setupRfidInteractions() {
             } else if (rfidVal === "belum") {
                 matchRfid = item.rfid === "";
             }
-        
+
             return matchKeyword && matchProg && matchRfid;
         });
 
@@ -497,9 +555,17 @@ function setupRfidInteractions() {
         populateRfidTable(filtered);
     }
 
-    if (searchInput) searchInput.addEventListener("input", applyFilter);
-    if (filterProgram) filterProgram.addEventListener("change", applyFilter);
-    if (filterRfid) filterRfid.addEventListener("change", applyFilter);
+    if (searchInput) {
+        searchInput.addEventListener("input", applyFilter);
+    }
+
+    if (filterProgram) {
+        filterProgram.addEventListener("change", applyFilter);
+    }
+
+    if (filterRfid) {
+        filterRfid.addEventListener("change", applyFilter);
+    }
 
     // Event tombol pagination
     const paginationButtons = document.getElementById("pagination-buttons");
@@ -518,19 +584,19 @@ function setupRfidInteractions() {
 
     // Event Delegation tombol edit RFID
     const tbody = document.getElementById("table-rfid-body");
-    
+
     if (tbody) {
         tbody.addEventListener("click", (e) => {
             const editBtn = e.target.closest(".btn-edit-rfid");
-        
+
             if (!editBtn) return;
-        
+
             e.preventDefault();
-        
+
             const id = editBtn.dataset.id;
-        
+
             console.log("Tombol edit diklik, ID peserta:", id);
-        
+
             if (id) {
                 window.openEditRfidModal(id);
             }
@@ -538,7 +604,10 @@ function setupRfidInteractions() {
     }
 }
 
-// Auto Inisialisasi saat DOM sudah siap
+// ==================================================
+// AUTO INISIALISASI SAAT DOM SIAP
+// ==================================================
+
 document.addEventListener("DOMContentLoaded", () => {
     initAdminRfid();
 });

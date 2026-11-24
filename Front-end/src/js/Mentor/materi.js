@@ -1,5 +1,19 @@
 import { initFormUnggahMateri } from './form-tambah-materi.js';
 
+const API_MATERI = "http://localhost:8000/api/mentor/api_materi.php";
+
+function getAuthHeaders() {
+    const token = sessionStorage.getItem("authToken");
+
+    if (!token) {
+        throw new Error("Token login tidak ditemukan. Silakan login kembali.");
+    }
+
+    return {
+        "Authorization": `Bearer ${token}`
+    };
+}
+
 export function initMentorMateri() {
     console.log("Modul Kelola Materi Mentor berhasil dimuat.");
 
@@ -39,7 +53,6 @@ export function initMentorMateri() {
             item => item.format === "PPT" || item.format === "Link"
         ).length;
 
-        // Menghitung materi yang diunggah bulan ini
         const sekarang = new Date();
 
         const bulanSekarang =
@@ -49,7 +62,6 @@ export function initMentorMateri() {
             String(item.tanggal_publikasi || "").startsWith(bulanSekarang)
         ).length;
 
-        // Menghitung persentase PDF
         const persentasePDF = totalMateri > 0
             ? Math.round((totalPDF / totalMateri) * 100)
             : 0;
@@ -66,7 +78,7 @@ export function initMentorMateri() {
         document.getElementById("total-ppt-link").textContent = totalPPTLink;
     }
 
-    // Mencegah teks dari database dianggap sebagai HTML
+    // Mencegah teks database dianggap sebagai HTML
     function escapeHTML(value) {
         return String(value ?? "").replace(/[&<>"']/g, char => ({
             "&": "&amp;",
@@ -77,7 +89,7 @@ export function initMentorMateri() {
         })[char]);
     }
 
-    // Membersihkan HTML deskripsi dan mempertahankan format yang diizinkan
+    // Membersihkan HTML deskripsi
     function sanitizeDescription(html) {
         const parser = new DOMParser();
         const doc = parser.parseFromString(String(html ?? ""), "text/html");
@@ -99,12 +111,10 @@ export function initMentorMateri() {
 
             const tag = node.tagName;
 
-            // Hilangkan elemen yang berpotensi berbahaya
             if (["SCRIPT", "STYLE", "IFRAME", "OBJECT", "SVG"].includes(tag)) {
                 return document.createDocumentFragment();
             }
 
-            // Tag yang tidak diizinkan dibuang, tetapi teks anaknya dipertahankan
             if (!tagDiizinkan.includes(tag)) {
                 const fragment = document.createDocumentFragment();
 
@@ -117,7 +127,6 @@ export function initMentorMateri() {
 
             const elemenBaru = document.createElement(tag.toLowerCase());
 
-            // Khusus link, hanya izinkan URL HTTP dan HTTPS
             if (tag === "A") {
                 try {
                     const url = new URL(node.getAttribute("href") || "");
@@ -148,9 +157,8 @@ export function initMentorMateri() {
         return hasil.innerHTML;
     }
 
-    // Mengenali format berdasarkan file atau tautan
+    // Mengenali format materi
     function getFormat(file, konten) {
-        // Jika ada file yang diunggah, periksa format filenya
         if (file) {
             const value = String(file).trim().toLowerCase();
 
@@ -164,15 +172,10 @@ export function initMentorMateri() {
             return "Lainnya";
         }
 
-        // Jika tidak ada file, periksa URL di deskripsi materi
         if (konten) {
             const parser = new DOMParser();
-            const doc = parser.parseFromString(
-                String(konten),
-                "text/html"
-            );
+            const doc = parser.parseFromString(String(konten), "text/html");
 
-            // Periksa tautan dari tombol/link editor
             const linkHTML = Array.from(
                 doc.querySelectorAll("a[href]")
             ).some(link => {
@@ -185,7 +188,6 @@ export function initMentorMateri() {
                 }
             });
 
-            // Periksa URL yang ditulis langsung sebagai teks
             const linkTeks = /https?:\/\/[^\s<>"']+/i.test(
                 doc.body.textContent
             );
@@ -197,7 +199,6 @@ export function initMentorMateri() {
 
         return "-";
     }
-
 
     function formatTanggal(tanggal) {
         if (!tanggal) return "-";
@@ -216,10 +217,10 @@ export function initMentorMateri() {
     // Mengambil materi dan program dari database
     async function loadDataMateri() {
         try {
-            const response = await fetch(
-                "http://localhost:8000/api/mentor/api_materi.php",
-                { credentials: "include" }
-            );
+            const response = await fetch(API_MATERI, {
+                method: "GET",
+                headers: getAuthHeaders()
+            });
 
             const result = await response.json();
 
@@ -247,7 +248,9 @@ export function initMentorMateri() {
                 tableBody.innerHTML = `
                     <tr>
                         <td colspan="7" class="py-12 text-center text-red-500">
-                            Gagal mengambil data materi. Periksa koneksi backend dan login mentor.
+                            Gagal mengambil data materi.
+                            <br>
+                            <span class="text-xs">${escapeHTML(error.message)}</span>
                         </td>
                     </tr>
                 `;
@@ -263,7 +266,7 @@ export function initMentorMateri() {
         }
     }
 
-    // Mengisi pilihan program berdasarkan program mentor
+    // Mengisi pilihan program
     function renderFilterProgram() {
         if (!filterProgram) return;
 
@@ -277,7 +280,7 @@ export function initMentorMateri() {
         `;
     }
 
-    // Berpindah antara halaman daftar dan form
+    // Berpindah antara daftar dan form
     async function switchView(target) {
         if (!viewList || !viewForm) return;
 
@@ -323,7 +326,7 @@ export function initMentorMateri() {
         window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-    // Mengatur tombol kembali ke daftar materi
+    // Tombol kembali ke daftar materi
     function setupFormListeners() {
         const btnBackToList = document.getElementById("btn-back-to-list");
         const breadcrumbBack = document.getElementById("breadcrumb-back-list");
@@ -337,12 +340,11 @@ export function initMentorMateri() {
         }
     }
 
-    // Tombol unggah materi
     if (btnUnggahHeader) {
         btnUnggahHeader.addEventListener("click", () => switchView("form"));
     }
 
-    // Menampilkan daftar materi sesuai halaman aktif
+    // Menampilkan daftar materi
     function renderTable(data) {
         if (!tableBody) return;
 
@@ -359,14 +361,12 @@ export function initMentorMateri() {
         const endIndex = Math.min(startIndex + itemsPerPage, totalData);
         const dataHalaman = data.slice(startIndex, endIndex);
 
-        // Informasi jumlah data
         if (paginationInfo) {
             paginationInfo.textContent = totalData === 0
                 ? "Menampilkan 0 dari 0 materi"
                 : `Menampilkan ${startIndex + 1} - ${endIndex} dari ${totalData} materi`;
         }
 
-        // Jika tidak ada data
         if (totalData === 0) {
             tableBody.innerHTML = `
                 <tr>
@@ -380,7 +380,6 @@ export function initMentorMateri() {
             return;
         }
 
-        // Menampilkan data sesuai halaman
         tableBody.innerHTML = dataHalaman.map((item, index) => {
             let formatClass = "bg-slate-100 text-slate-600";
 
@@ -422,7 +421,7 @@ export function initMentorMateri() {
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     class="inline-flex items-center gap-1.5 mt-2 text-xs font-semibold text-sky-600 hover:text-sky-700">
-                                                        
+
                                     <i class="fas fa-external-link-alt"></i>
                                     Lihat File Materi
                                 </a>
@@ -546,7 +545,10 @@ export function initMentorMateri() {
 
             const halaman = Number(tombol.dataset.page);
 
-            if (halaman < 1 || halaman > Math.ceil(filteredMateri.length / itemsPerPage)) {
+            if (
+                halaman < 1 ||
+                halaman > Math.ceil(filteredMateri.length / itemsPerPage)
+            ) {
                 return;
             }
 
@@ -555,7 +557,7 @@ export function initMentorMateri() {
         });
     }
 
-    // Menghapus materi dari database
+    // Menghapus materi
     async function hapusMateri(id) {
         const konfirmasi = confirm(
             "Apakah kamu yakin ingin menghapus materi ini?"
@@ -564,17 +566,14 @@ export function initMentorMateri() {
         if (!konfirmasi) return;
 
         try {
-            const response = await fetch(
-                "http://localhost:8000/api/mentor/api_materi.php",
-                {
-                    method: "DELETE",
-                    credentials: "include",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({ id: id })
-                }
-            );
+            const response = await fetch(API_MATERI, {
+                method: "DELETE",
+                headers: {
+                    ...getAuthHeaders(),
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ id: id })
+            });
 
             const result = await response.json();
 
@@ -586,17 +585,15 @@ export function initMentorMateri() {
 
             alert("Materi berhasil dihapus.");
 
-            // Memuat ulang daftar materi
             await loadDataMateri();
 
         } catch (error) {
             console.error("Gagal menghapus materi:", error);
-
             alert(error.message || "Terjadi kesalahan saat menghapus materi.");
         }
     }
 
-    // Event tombol hapus materi
+    // Event tombol hapus
     if (tableBody) {
         tableBody.addEventListener("click", async (event) => {
             const tombolHapus = event.target.closest("[data-hapus-materi]");
@@ -635,22 +632,18 @@ export function initMentorMateri() {
         renderTable(filteredMateri);
     }
 
-    // Event pencarian
     if (searchInput) {
         searchInput.addEventListener("input", applyFilters);
     }
 
-    // Event filter format
     if (filterFormat) {
         filterFormat.addEventListener("change", applyFilters);
     }
 
-    // Event filter program
     if (filterProgram) {
         filterProgram.addEventListener("change", applyFilters);
     }
 
-    // Reset filter
     if (btnReset) {
         btnReset.addEventListener("click", () => {
             if (searchInput) searchInput.value = "";

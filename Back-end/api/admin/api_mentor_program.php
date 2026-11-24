@@ -1,8 +1,10 @@
+
 <?php
+
 header("Access-Control-Allow-Origin: http://localhost:5173");
 header("Access-Control-Allow-Methods: GET, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type");
-header("Content-Type: application/json");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
+header("Content-Type: application/json; charset=UTF-8");
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(204);
@@ -10,18 +12,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 require_once '../../config/koneksi.php';
+require_once '../../config/tab_auth.php';
+
+// ==================================================
+// VALIDASI TOKEN ADMIN
+// ==================================================
+
+$userToken = ambilUserToken();
+
+if (!$userToken || $userToken['role'] !== 'admin') {
+    http_response_code(401);
+
+    echo json_encode([
+        "success" => false,
+        "message" => "Akses ditolak. Silakan login sebagai Admin."
+    ]);
+
+    exit;
+}
+
+// ==================================================
+// AMBIL ID PROGRAM
+// ==================================================
 
 $program_id = $_GET['program_id'] ?? '';
 
 if (!$program_id) {
+    http_response_code(400);
+
     echo json_encode([
         "success" => false,
         "message" => "ID program wajib diisi."
     ]);
+
     exit;
 }
 
+// ==================================================
+// AMBIL DATA MENTOR BERDASARKAN PROGRAM
+// ==================================================
+
 try {
+
     $stmt = $pdo->prepare("
         SELECT u.id, u.nama, u.nip
         FROM mentor_program mp
@@ -42,10 +74,16 @@ try {
     ]);
 
 } catch (PDOException $e) {
+
+    error_log($e->getMessage());
+
     http_response_code(500);
+
     echo json_encode([
         "success" => false,
         "message" => "Gagal mengambil data mentor."
     ]);
+
 }
+
 ?>
