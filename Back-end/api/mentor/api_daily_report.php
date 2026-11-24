@@ -1,31 +1,33 @@
 
 <?php
 
-session_set_cookie_params([
-    'lifetime' => 0,
-    'path' => '/',
-    'domain' => 'localhost',
-    'secure' => false,
-    'httponly' => true,
-    'samesite' => 'Lax'
-]);
-
 session_start();
+
+// ==================================================
+// PENGATURAN CORS
+// ==================================================
 
 header("Access-Control-Allow-Origin: http://localhost:5173");
 header("Access-Control-Allow-Methods: GET, PUT, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 header("Access-Control-Allow-Credentials: true");
-header("Content-Type: application/json");
+header("Content-Type: application/json; charset=UTF-8");
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(204);
     exit;
 }
 
+// ==================================================
+// KONEKSI DATABASE
+// ==================================================
+
 require_once __DIR__ . '/../../config/koneksi.php';
 
-// Pastikan mentor sudah login.
+// ==================================================
+// VALIDASI LOGIN MENTOR
+// ==================================================
+
 if (
     !isset($_SESSION['user_id']) ||
     !isset($_SESSION['role']) ||
@@ -46,10 +48,25 @@ $mentor_id = $_SESSION['user_id'];
 try {
 
     // ==================================================
-    // METHOD GET: Mengambil Daily Report
+    // METHOD GET: MENGAMBIL DAILY REPORT
     // ==================================================
 
     if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+
+        $modeDashboard = ($_GET['mode'] ?? '') === 'dashboard';
+        $modeDetail = isset($_GET['id']);
+
+        // Zona waktu Indonesia
+        $zonaWaktu = new DateTimeZone('Asia/Jakarta');
+
+        $tanggalHariIni = new DateTimeImmutable('now', $zonaWaktu);
+        $tanggalKemarin = $tanggalHariIni->modify('-1 day');
+
+        $tanggalDipilih = $tanggalHariIni->format('Y-m-d');
+
+        // ==================================================
+        // QUERY UTAMA
+        // ==================================================
 
         $sql = "
             SELECT
@@ -72,52 +89,101 @@ try {
 
             FROM daily_report dr
 
-            JOIN users u
+            INNER JOIN users u
                 ON dr.peserta_id = u.id
 
-            JOIN materi m
+            INNER JOIN materi m
                 ON dr.materi_id = m.id
 
-            JOIN program p
+            INNER JOIN program p
                 ON m.program_id = p.id
 
-            JOIN mentor_program mp
+            INNER JOIN mentor_program mp
                 ON mp.program_id = p.id
 
-            WHERE mp.mentor_id = ?
+            WHERE mp.mentor_id = :mentor_id
               AND u.role = 'peserta'
         ";
 
-        // Jika ada parameter ID, ambil satu laporan saja.
-        if (isset($_GET['id'])) {
-            $sql .= " AND dr.id = ?";
+        $params = [
+            ':mentor_id' => $mentor_id
+        ];
+
+        // ==================================================
+        // FILTER DETAIL LAPORAN
+        // ==================================================
+
+        if ($modeDetail) {
+
+            if (
+                !filter_var($_GET['id'], FILTER_VALIDATE_INT) ||
+                (int) $_GET['id'] <= 0
+            ) {
+                http_response_code(400);
+
+                echo json_encode([
+                    "success" => false,
+                    "message" => "ID Daily Report tidak valid."
+                ]);
+
+                exit;
+            }
+
+            $sql .= " AND dr.id = :report_id";
+
+            $params[':report_id'] = (int) $_GET['id'];
+
+        } else {
+
+            // ==================================================
+            // FILTER TANGGAL HARI INI
+            // ==================================================
+
+            $sql .= " AND dr.tanggal = :tanggal";
+
+            $params[':tanggal'] = $tanggalDipilih;
         }
 
-        // Urutan terbaru di atas.
-        // Tidak ada batas semester atau tahun.
+        // ==================================================
+        // URUTAN DATA
+        // ==================================================
+
         $sql .= "
             ORDER BY dr.created_at DESC, dr.id DESC
         ";
 
-        $stmt = $pdo->prepare($sql);
-
-        if (isset($_GET['id'])) {
-
-            $stmt->execute([
-                $mentor_id,
-                $_GET['id']
-            ]);
-
-        } else {
-
-            $stmt->execute([$mentor_id]);
-
+        // Maksimal 5 laporan untuk Dashboard Mentor
+        if (!$modeDetail && $modeDashboard) {
+            $sql .= " LIMIT 5";
         }
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
 
         $laporan = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Jika mengambil detail satu laporan.
-        if (isset($_GET['id'])) {
+        // ==================================================
+        // DASHBOARD: JIKA HARI INI KOSONG, AMBIL KEMARIN
+        // ==================================================
+
+        if (
+            !$modeDetail &&
+            $modeDashboard &&
+            empty($laporan)
+        ) {
+
+            $params[':tanggal'] = $tanggalKemarin->format('Y-m-d');
+
+            $stmt->execute($params);
+
+            $laporan = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        // ==================================================
+        // DETAIL SATU DAILY REPORT
+        // ==================================================
+
+        if ($modeDetail) {
 
             if (empty($laporan)) {
 
@@ -129,43 +195,44 @@ try {
                 ]);
 
                 exit;
-
             }
 
             echo json_encode([
                 "success" => true,
                 "message" => "Detail Daily Report berhasil diambil.",
                 "data" => $laporan[0]
-            ]);
+            ], JSON_UNESCAPED_UNICODE);
 
             exit;
-
         }
 
         // ==================================================
-        // MENGHITUNG TOTAL SISWA BIMBINGAN MENTOR
+        // MENGHITUNG TOTAL SISWA BIMBINGAN
         // ==================================================
 
         $stmtTotal = $pdo->prepare("
             SELECT COUNT(DISTINCT pp.peserta_id)
+
             FROM peserta_program pp
 
-            JOIN mentor_program mp
+            INNER JOIN mentor_program mp
                 ON mp.program_id = pp.program_id
 
-            JOIN users u
+            INNER JOIN users u
                 ON u.id = pp.peserta_id
 
-            WHERE mp.mentor_id = ?
+            WHERE mp.mentor_id = :mentor_id
               AND u.role = 'peserta'
         ");
 
-        $stmtTotal->execute([$mentor_id]);
+        $stmtTotal->execute([
+            ':mentor_id' => $mentor_id
+        ]);
 
         $totalPeserta = (int) $stmtTotal->fetchColumn();
 
         // ==================================================
-        // MENGHITUNG SISWA YANG SUDAH MENGIRIM LAPORAN
+        // MENGHITUNG SISWA YANG SUDAH MELAPOR
         // ==================================================
 
         $daftarPesertaSudahLapor = array_unique(
@@ -175,7 +242,7 @@ try {
         $siswaSudahLapor = count($daftarPesertaSudahLapor);
 
         // ==================================================
-        // MENGHITUNG PERSENTASE LAPORAN MASUK
+        // PERSENTASE LAPORAN MASUK
         // ==================================================
 
         $persentaseMasuk = $totalPeserta > 0
@@ -183,12 +250,14 @@ try {
             : 0;
 
         // ==================================================
-        // RESPONSE SELURUH DAILY REPORT DAN STATISTIK
+        // RESPONSE
         // ==================================================
 
         echo json_encode([
             "success" => true,
             "message" => "Data Daily Report berhasil diambil.",
+
+            "tanggal" => $tanggalDipilih,
 
             "data" => $laporan,
 
@@ -197,20 +266,18 @@ try {
                 "siswa_sudah_lapor" => $siswaSudahLapor,
                 "persentase_masuk" => $persentaseMasuk
             ]
-        ]);
+
+        ], JSON_UNESCAPED_UNICODE);
 
         exit;
-
     }
 
-
     // ==================================================
-    // METHOD PUT: Memperbarui Status Daily Report
+    // METHOD PUT: MEMPERBARUI STATUS DAILY REPORT
     // ==================================================
 
     if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
 
-        // Ambil data JSON dari frontend.
         $input = json_decode(
             file_get_contents("php://input"),
             true
@@ -226,14 +293,13 @@ try {
             ]);
 
             exit;
-
         }
 
         $report_id = $input['id'] ?? null;
         $status = $input['status'] ?? null;
         $catatan = $input['catatan_mentor'] ?? null;
 
-        // Validasi ID.
+        // Validasi ID
         if (
             !filter_var($report_id, FILTER_VALIDATE_INT) ||
             (int) $report_id <= 0
@@ -247,11 +313,13 @@ try {
             ]);
 
             exit;
-
         }
 
-        // Validasi status.
-        $status_valid = ['diterima', 'ditolak'];
+        // Validasi status
+        $status_valid = [
+            'diterima',
+            'ditolak'
+        ];
 
         if (!in_array($status, $status_valid, true)) {
 
@@ -263,10 +331,9 @@ try {
             ]);
 
             exit;
-
         }
 
-        // Validasi catatan mentor.
+        // Validasi catatan
         if ($catatan !== null && !is_string($catatan)) {
 
             http_response_code(400);
@@ -277,10 +344,12 @@ try {
             ]);
 
             exit;
-
         }
 
-        // Pastikan laporan merupakan tanggung jawab mentor.
+        // ==================================================
+        // MEMASTIKAN LAPORAN MILIK MENTOR
+        // ==================================================
+
         $stmt = $pdo->prepare("
             UPDATE daily_report dr
 
@@ -326,8 +395,11 @@ try {
             ]);
 
             exit;
-
         }
+
+        // ==================================================
+        // RESPONSE PEMBARUAN
+        // ==================================================
 
         echo json_encode([
             "success" => true,
@@ -338,12 +410,10 @@ try {
                 "status" => $status,
                 "catatan_mentor" => $catatan
             ]
-        ]);
+        ], JSON_UNESCAPED_UNICODE);
 
         exit;
-
     }
-
 
     // ==================================================
     // METHOD SELAIN GET DAN PUT

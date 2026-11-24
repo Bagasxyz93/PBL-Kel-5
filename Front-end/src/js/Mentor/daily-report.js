@@ -25,6 +25,31 @@ const API_REKAP_DAILY_REPORT =
 
 const DATA_PER_PAGE = 10;
 
+// =========================================================
+// MENGAMBIL TANGGAL HARI INI BERDASARKAN WIB
+// =========================================================
+
+function getTanggalHariIniWIB() {
+    const sekarang = new Date();
+
+    const tahun = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Asia/Jakarta",
+        year: "numeric"
+    }).format(sekarang);
+
+    const bulan = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Asia/Jakarta",
+        month: "2-digit"
+    }).format(sekarang);
+
+    const hari = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Asia/Jakarta",
+        day: "2-digit"
+    }).format(sekarang);
+
+    return `${tahun}-${bulan}-${hari}`;
+}
+
 
 /* =========================================================
    1. INISIALISASI HALAMAN
@@ -398,6 +423,17 @@ export function initMentorDailyReport() {
             currentPage = 1;
 
             applyFilters();
+
+            // ==========================================
+            // OTOMATIS MEMBUKA DETAIL DARI DASHBOARD
+            // ==========================================
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const reportId = urlParams.get("id");
+
+            if (reportId) {
+                await window.openDetailLaporanModal(reportId);
+            }
 
         } catch (error) {
 
