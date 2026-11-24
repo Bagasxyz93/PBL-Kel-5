@@ -1,3 +1,4 @@
+
 <?php
 header("Access-Control-Allow-Origin: http://localhost:5173");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
@@ -33,7 +34,8 @@ $status = strtolower($data['status'] ?? '');
 $programIds = $data['program_ids'] ?? [];
 
 if (
-    !$id || $nama === '' || $nip === '' ||
+    !$id || !is_numeric($id) ||
+    $nama === '' || $nip === '' ||
     $email === '' || $username === '' ||
     $jenis_kelamin === '' ||
     !in_array($jenis_kelamin, ['Laki-laki', 'Perempuan']) ||
@@ -64,6 +66,7 @@ try {
     $cekMentor = $pdo->prepare("
         SELECT id FROM users
         WHERE id = ? AND role = 'mentor'
+        FOR UPDATE
     ");
     $cekMentor->execute([$id]);
 
@@ -92,7 +95,7 @@ try {
             updated_at = CURRENT_TIMESTAMP
         WHERE id = ? AND role = 'mentor'
     ");
-    
+
     $stmt->execute([
         $nama,
         $nip,
@@ -104,20 +107,67 @@ try {
         $id
     ]);
 
-    // Perbarui program mentor
-    $hapusProgram = $pdo->prepare("
-        DELETE FROM mentor_program
+    // Ambil program mentor yang sudah tersimpan
+    $cekProgram = $pdo->prepare("
+        SELECT program_id
+        FROM mentor_program
         WHERE mentor_id = ?
     ");
-    $hapusProgram->execute([$id]);
+    $cekProgram->execute([$id]);
 
-    $tambahProgram = $pdo->prepare("
-        INSERT INTO mentor_program (mentor_id, program_id)
-        VALUES (?, ?)
+    $programLama = array_map(
+        'intval',
+        $cekProgram->fetchAll(PDO::FETCH_COLUMN)
+    );
+
+    // Pastikan ID program valid dan tidak duplikat
+    $programBaru = array_values(array_unique(
+        array_map('intval', $programIds)
+    ));
+
+    if (count($programBaru) !== count($programIds) ||
+        in_array(0, $programBaru, true)) {
+        throw new Exception("Daftar program tidak valid.");
+    }
+
+    $cekProgramValid = $pdo->prepare("
+        SELECT id FROM program WHERE id = ?
     ");
 
-    foreach ($programIds as $programId) {
-        $tambahProgram->execute([$id, $programId]);
+    foreach ($programBaru as $programId) {
+        $cekProgramValid->execute([$programId]);
+
+        if (!$cekProgramValid->fetch()) {
+            throw new Exception("Program yang dipilih tidak ditemukan.");
+        }
+    }
+
+    // Cari program yang dilepas
+    $programDihapus = array_diff($programLama, $programBaru);
+
+    if (!empty($programDihapus)) {
+        $hapusProgram = $pdo->prepare("
+            DELETE FROM mentor_program
+            WHERE mentor_id = ? AND program_id = ?
+        ");
+
+        foreach ($programDihapus as $programId) {
+            $hapusProgram->execute([$id, $programId]);
+        }
+    }
+
+    // Cari program yang benar-benar baru ditambahkan
+    $programDitambahkan = array_diff($programBaru, $programLama);
+
+    if (!empty($programDitambahkan)) {
+        $tambahProgram = $pdo->prepare("
+            INSERT INTO mentor_program (mentor_id, program_id)
+            VALUES (?, ?)
+        ");
+
+        foreach ($programDitambahkan as $programId) {
+            $tambahProgram->execute([$id, $programId]);
+        }
     }
 
     $pdo->commit();
@@ -133,6 +183,7 @@ try {
     }
 
     http_response_code(400);
+
     echo json_encode([
         "success" => false,
         "message" => $e->getMessage()

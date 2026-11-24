@@ -62,7 +62,66 @@ try {
         $tanggalHariIni = new DateTimeImmutable('now', $zonaWaktu);
         $tanggalKemarin = $tanggalHariIni->modify('-1 day');
 
+        // Default tanggal adalah hari ini
         $tanggalDipilih = $tanggalHariIni->format('Y-m-d');
+
+        // ==================================================
+        // VALIDASI TANGGAL PILIHAN
+        // ==================================================
+
+        if (
+            !$modeDashboard &&
+            !$modeDetail &&
+            isset($_GET['tanggal'])
+        ) {
+
+            $tanggalInput = $_GET['tanggal'];
+
+            $tanggalValid = DateTimeImmutable::createFromFormat(
+                '!Y-m-d',
+                $tanggalInput,
+                $zonaWaktu
+            );
+
+            if (
+                !$tanggalValid ||
+                $tanggalValid->format('Y-m-d') !== $tanggalInput
+            ) {
+
+                http_response_code(400);
+
+                echo json_encode([
+                    "success" => false,
+                    "message" => "Format tanggal tidak valid."
+                ]);
+
+                exit;
+            }
+
+            $tanggalDipilih = $tanggalInput;
+        }
+
+        // ==================================================
+        // VALIDASI ID DETAIL
+        // ==================================================
+
+        if ($modeDetail) {
+
+            if (
+                !filter_var($_GET['id'], FILTER_VALIDATE_INT) ||
+                (int) $_GET['id'] <= 0
+            ) {
+
+                http_response_code(400);
+
+                echo json_encode([
+                    "success" => false,
+                    "message" => "ID Daily Report tidak valid."
+                ]);
+
+                exit;
+            }
+        }
 
         // ==================================================
         // QUERY UTAMA
@@ -110,35 +169,20 @@ try {
         ];
 
         // ==================================================
-        // FILTER DETAIL LAPORAN
+        // FILTER DATA
         // ==================================================
 
         if ($modeDetail) {
 
-            if (
-                !filter_var($_GET['id'], FILTER_VALIDATE_INT) ||
-                (int) $_GET['id'] <= 0
-            ) {
-                http_response_code(400);
-
-                echo json_encode([
-                    "success" => false,
-                    "message" => "ID Daily Report tidak valid."
-                ]);
-
-                exit;
-            }
-
+            // Mengambil satu laporan berdasarkan ID
             $sql .= " AND dr.id = :report_id";
 
             $params[':report_id'] = (int) $_GET['id'];
 
         } else {
 
-            // ==================================================
-            // FILTER TANGGAL HARI INI
-            // ==================================================
-
+            // Dashboard dan halaman Kelola Daily Report
+            // menggunakan filter tanggal
             $sql .= " AND dr.tanggal = :tanggal";
 
             $params[':tanggal'] = $tanggalDipilih;
@@ -163,7 +207,8 @@ try {
         $laporan = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         // ==================================================
-        // DASHBOARD: JIKA HARI INI KOSONG, AMBIL KEMARIN
+        // DASHBOARD:
+        // JIKA HARI INI KOSONG, AMBIL LAPORAN KEMARIN
         // ==================================================
 
         if (
@@ -207,7 +252,7 @@ try {
         }
 
         // ==================================================
-        // MENGHITUNG TOTAL SISWA BIMBINGAN
+        // MENGHITUNG TOTAL PESERTA BIMBINGAN MENTOR
         // ==================================================
 
         $stmtTotal = $pdo->prepare("
@@ -232,7 +277,8 @@ try {
         $totalPeserta = (int) $stmtTotal->fetchColumn();
 
         // ==================================================
-        // MENGHITUNG SISWA YANG SUDAH MELAPOR
+        // MENGHITUNG PESERTA YANG SUDAH MELAPOR
+        // PADA TANGGAL PILIHAN
         // ==================================================
 
         $daftarPesertaSudahLapor = array_unique(
@@ -240,6 +286,15 @@ try {
         );
 
         $siswaSudahLapor = count($daftarPesertaSudahLapor);
+
+        // ==================================================
+        // MENGHITUNG PESERTA YANG BELUM MELAPOR
+        // ==================================================
+
+        $siswaBelumLapor = max(
+            0,
+            $totalPeserta - $siswaSudahLapor
+        );
 
         // ==================================================
         // PERSENTASE LAPORAN MASUK
@@ -254,7 +309,9 @@ try {
         // ==================================================
 
         echo json_encode([
+
             "success" => true,
+
             "message" => "Data Daily Report berhasil diambil.",
 
             "tanggal" => $tanggalDipilih,
@@ -264,6 +321,7 @@ try {
             "statistik" => [
                 "total_peserta" => $totalPeserta,
                 "siswa_sudah_lapor" => $siswaSudahLapor,
+                "siswa_belum_lapor" => $siswaBelumLapor,
                 "persentase_masuk" => $persentaseMasuk
             ]
 
@@ -299,7 +357,10 @@ try {
         $status = $input['status'] ?? null;
         $catatan = $input['catatan_mentor'] ?? null;
 
-        // Validasi ID
+        // ==================================================
+        // VALIDASI ID
+        // ==================================================
+
         if (
             !filter_var($report_id, FILTER_VALIDATE_INT) ||
             (int) $report_id <= 0
@@ -315,7 +376,10 @@ try {
             exit;
         }
 
-        // Validasi status
+        // ==================================================
+        // VALIDASI STATUS
+        // ==================================================
+
         $status_valid = [
             'diterima',
             'ditolak'
@@ -333,7 +397,10 @@ try {
             exit;
         }
 
-        // Validasi catatan
+        // ==================================================
+        // VALIDASI CATATAN
+        // ==================================================
+
         if ($catatan !== null && !is_string($catatan)) {
 
             http_response_code(400);
@@ -351,6 +418,7 @@ try {
         // ==================================================
 
         $stmt = $pdo->prepare("
+
             UPDATE daily_report dr
 
             SET
@@ -374,6 +442,7 @@ try {
               AND u.role = 'peserta'
 
             RETURNING dr.id
+
         ");
 
         $stmt->execute([
@@ -402,7 +471,9 @@ try {
         // ==================================================
 
         echo json_encode([
+
             "success" => true,
+
             "message" => "Penilaian Daily Report berhasil disimpan.",
 
             "data" => [
@@ -410,6 +481,7 @@ try {
                 "status" => $status,
                 "catatan_mentor" => $catatan
             ]
+
         ], JSON_UNESCAPED_UNICODE);
 
         exit;

@@ -1,3 +1,4 @@
+
 import { initDashboard } from "./Siswa/dashboard.js";
 import { initAbsensi } from "./Siswa/absensi.js";
 import { initIzin } from "./Siswa/izin.js";
@@ -5,13 +6,13 @@ import { initDailyReport } from "./Siswa/daily-report.js";
 import { initMateri } from "./Siswa/materi.js";
 import { initProfil } from "./Siswa/profil.js";
 
-// Import tambahan untuk halaman Mentor:
+// Import halaman Mentor
 import { initMentorDashboard } from "./Mentor/dashboard.js";
 import { initMentorProfil } from "./Mentor/profil.js";
 import { initMentorIzin } from "./Mentor/izin.js";
 
 /* =========================================================
-KONFIGURASI MENU & TEMA BERDASARKAN ROLE
+   KONFIGURASI MENU & TEMA BERDASARKAN ROLE
 ========================================================= */
 
 const roleConfig = {
@@ -76,31 +77,42 @@ const roleConfig = {
 };
 
 /* =========================================================
-IKON MENU
+   IKON MENU
 ========================================================= */
 
 const menuIcons = {
     dashboard: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>`,
+
     absensi: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/><path d="m8 15 2 2 5-5"/></svg>`,
+
     izin: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg>`,
+
     "daily-report": `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 3h16v18H4z"/><path d="M8 7h8M8 11h8M8 15h5"/></svg>`,
-    materi: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 7v14"/><path d="M3 5a2 2 0 0 1 2-2h5a2 2 0 0 1 2 2v16a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2z"/><path d="M21 5a2 2 0 0 0-2-2h-5a2 2 0 0 0-2 2v16a2 2 0 0 1 2-2h5a2 2 0 0 1 2 2z"/></svg>`,
+
+    materi: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 7v14"/><path d="M3 5a2 2 0 0 1 2-2h5a2 2 0 0 1 2 2v16a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2z"/><path d="M21 5a2 2 0 0 0-2-2h-5a2 2 0 0 0-2 2v16a2 2 0 0 1 2-2h5a2 2 0 0 0 2 2z"/></svg>`,
+
     profil: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>`,
+
     siswa: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M20 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
+
     mentor: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="7" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/><path d="M9 14h6"/></svg>`,
+
     program: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 2v4M16 2v4M3 9h18M8 13h3M8 16h7"/></svg>`,
+
     rfid: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="3"/><text x="7" y="16" font-size="9" font-weight="bold" fill="currentColor" stroke="none">123</text></svg>`
 };
 
 /* =========================================================
-MEMUAT KOMPONEN HTML
+   MEMUAT KOMPONEN HTML
 ========================================================= */
 
 async function loadComponent(elementId, filePath) {
     const container = document.getElementById(elementId);
+
     if (!container) return;
 
     const response = await fetch(filePath);
+
     if (!response.ok) {
         throw new Error(`Gagal memuat "${filePath}". HTTP ${response.status}`);
     }
@@ -113,7 +125,7 @@ async function loadComponent(elementId, filePath) {
 }
 
 /* =========================================================
-MENGAMBIL PROFIL MENTOR UNTUK HEADER
+   MENGAMBIL PROFIL MENTOR UNTUK HEADER
 ========================================================= */
 
 async function loadHeaderMentorProfile() {
@@ -124,41 +136,56 @@ async function loadHeaderMentorProfile() {
         );
 
         const result = await response.json();
+
         if (!response.ok || !result.success) return;
 
         const mentor = result.data;
+
         const headerUserName = document.getElementById("header-user-name");
         const headerUserRoleBadge = document.getElementById("header-user-role-badge");
         const headerUserAvatar = document.getElementById("header-user-avatar");
 
-        if (headerUserName) headerUserName.textContent = mentor.nama;
+        if (headerUserName) {
+            headerUserName.textContent = mentor.nama;
+        }
 
         if (headerUserRoleBadge) {
             const daftarProgram = mentor.program || [];
+
             const namaProgram = daftarProgram.length > 0
                 ? daftarProgram.map(item => item.nama_program).join(", ")
                 : "Belum ada program";
+
             headerUserRoleBadge.textContent = "Mentor " + namaProgram;
         }
 
         if (headerUserAvatar) {
-            const inisial = mentor.nama.trim().split(/\s+/).slice(0, 2).map(kata => kata[0]).join("").toUpperCase();
+            const inisial = mentor.nama
+                .trim()
+                .split(/\s+/)
+                .slice(0, 2)
+                .map(kata => kata[0])
+                .join("")
+                .toUpperCase();
+
             headerUserAvatar.textContent = inisial || "GM";
         }
+
     } catch (error) {
         console.error("Gagal memuat profil header mentor:", error);
     }
 }
 
 /* =========================================================
-RENDER LAYOUT DINAMIS (Sidebar, Header, Footer)
+   RENDER LAYOUT DINAMIS
 ========================================================= */
 
 function setupDynamicLayout(role) {
     const config = roleConfig[role] || roleConfig.peserta;
     const currentPath = window.location.pathname.toLowerCase();
-    
+
     let defaultName = "Pengguna";
+
     if (role === "admin") defaultName = "Administrator";
     else if (role === "mentor") defaultName = "Guru Mentor";
     else defaultName = "Peserta";
@@ -174,21 +201,39 @@ function setupDynamicLayout(role) {
         sidebarWrapper.className = `flex h-full w-60 flex-col ${config.bgClass} text-slate-300 transition-colors duration-300`;
         sidebarWrapper.dataset.role = role;
     }
+
     if (sidebarLogoBox) {
         sidebarLogoBox.className = `flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${config.logoBg} text-sm font-bold text-white shadow-md`;
         sidebarLogoBox.textContent = config.title;
     }
-    if (sidebarRoleSubtitle) sidebarRoleSubtitle.textContent = config.subtitle;
-    
+
+    if (sidebarRoleSubtitle) {
+        sidebarRoleSubtitle.textContent = config.subtitle;
+    }
+
     if (sidebarNavContainer) {
         sidebarNavContainer.innerHTML = config.menus.map(menu => {
-            const isActive = menu.active.some(file => currentPath.endsWith(file.toLowerCase()));
-            const activeClasses = isActive ? config.activeColor : "text-slate-400 hover:bg-white/5 hover:text-white";
+            const isActive = menu.active.some(file =>
+                currentPath.endsWith(file.toLowerCase())
+            );
+
+            const activeClasses = isActive
+                ? config.activeColor
+                : "text-slate-400 hover:bg-white/5 hover:text-white";
 
             return `
-                <a href="${menu.href}" class="sidebar-menu-item flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition-all duration-200 ${activeClasses}" ${isActive ? 'aria-current="page"' : ""}>
-                    <span class="sidebar-menu-icon h-5 w-5 shrink-0">${menuIcons[menu.icon] || ""}</span>
-                    <span class="sidebar-menu-label">${menu.label}</span>
+                <a
+                    href="${menu.href}"
+                    class="sidebar-menu-item flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition-all duration-200 ${activeClasses}"
+                    ${isActive ? 'aria-current="page"' : ""}
+                >
+                    <span class="sidebar-menu-icon h-5 w-5 shrink-0">
+                        ${menuIcons[menu.icon] || ""}
+                    </span>
+
+                    <span class="sidebar-menu-label">
+                        ${menu.label}
+                    </span>
                 </a>
             `;
         }).join("");
@@ -198,107 +243,217 @@ function setupDynamicLayout(role) {
     const headerUserRoleBadge = document.getElementById("header-user-role-badge");
     const headerUserAvatar = document.getElementById("header-user-avatar");
 
-    if (headerUserName) headerUserName.textContent = role === "mentor" ? "Memuat nama..." : userName;
+    if (headerUserName) {
+        headerUserName.textContent = role === "mentor"
+            ? "Memuat nama..."
+            : userName;
+    }
+
     if (headerUserRoleBadge) {
         headerUserRoleBadge.textContent = config.roleBadgeText;
-        headerUserRoleBadge.className = `text-xs font-semibold ${config.roleBadgeColor}`;
+        headerUserRoleBadge.className =
+            `text-xs font-semibold ${config.roleBadgeColor}`;
     }
+
     if (headerUserAvatar) {
-        const initials = userName.split(" ").map(n => n[0]).join("").substring(0, 2).toUpperCase();
+        const initials = userName
+            .split(" ")
+            .map(n => n[0])
+            .join("")
+            .substring(0, 2)
+            .toUpperCase();
+
         headerUserAvatar.textContent = initials || "US";
-        headerUserAvatar.className = `flex h-10 w-10 items-center justify-center rounded-xl ${config.avatarBg} text-xs font-bold text-white shadow-md`;
+
+        headerUserAvatar.className =
+            `flex h-10 w-10 items-center justify-center rounded-xl ${config.avatarBg} text-xs font-bold text-white shadow-md`;
     }
 
     const footerVersion = document.getElementById("footer-version");
-    if (footerVersion) footerVersion.textContent = config.versionText;
+
+    if (footerVersion) {
+        footerVersion.textContent = config.versionText;
+    }
 
     const btnLogout = document.getElementById("btn-logout");
-    if (btnLogout) {
+
+    if (btnLogout && btnLogout.dataset.bound !== "true") {
+        btnLogout.dataset.bound = "true";
+
         btnLogout.addEventListener("click", () => {
             localStorage.removeItem("userName");
             localStorage.removeItem("userRole");
-            window.location.href = "/index.html"; 
+
+            window.location.href = "/index.html";
         });
     }
 }
 
 /* =========================================================
-DATA NOTIFIKASI SPESIFIK BERDASARKAN ROLE
+   NOTIFIKASI - KONFIGURASI
 ========================================================= */
 
-const notifikasiPerRole = {
-    peserta: [
-        {
-            kategori: "laporan",
-            judul: "Laporan Harian Siswa Disetujui",
-            badge: "Disetujui",
-            badgeClass: "bg-emerald-50 text-emerald-600 border border-emerald-200",
-            deskripsi: "Laporan harian magang Anda telah diperiksa dan disetujui oleh Mentor.",
-            waktu: "10 menit yang lalu",
-            unread: true
-        },
-        {
-            kategori: "materi",
-            judul: "Materi Baru: Modul Frontend Web Development",
-            badge: "Materi Baru",
-            badgeClass: "bg-indigo-50 text-indigo-600 border border-indigo-200",
-            deskripsi: "Mentor telah mengunggah modul pembelajaran baru untuk kelas Anda.",
-            waktu: "1 jam yang lalu",
-            unread: true
-        }
-    ],
-    mentor: [
-        {
-            kategori: "laporan",
-            judul: "Persetujuan Daily Report Siswa",
-            badge: "Menunggu Review",
-            badgeClass: "bg-amber-50 text-amber-600 border border-amber-200",
-            deskripsi: "Terdapat 5 laporan harian baru dari siswa bimbingan yang perlu Anda tinjau.",
-            waktu: "15 menit yang lalu",
-            unread: true
-        },
-        {
-            kategori: "materi",
-            judul: "Jadwal Bimbingan Inkubasi",
-            badge: "Agenda",
-            badgeClass: "bg-emerald-50 text-emerald-600 border border-emerald-200",
-            deskripsi: "Sesi bimbingan kelompok dijadwalkan berlangsung pukul 13.00 WIB hari ini.",
-            waktu: "3 jam yang lalu",
-            unread: false
-        }
-    ],
-    admin: [
-        {
-            kategori: "sistem",
-            judul: "Pendaftaran Akun Pengguna Baru",
-            badge: "Sistem Admin",
-            badgeClass: "bg-red-50 text-red-600 border border-red-200",
-            deskripsi: "Sistem mendapati registrasi akun peserta dan mentor baru yang masuk ke database.",
-            waktu: "5 menit yang lalu",
-            unread: true
-        },
-        {
-            kategori: "sistem",
-            judul: "Pemeliharaan Server Portal SI-IN",
-            badge: "Informasi",
-            badgeClass: "bg-slate-100 text-slate-600 border border-slate-200",
-            deskripsi: "Pembaruan server dan database sistem dijadwalkan malam ini pukul 23.00 WIB.",
-            waktu: "Kemarin",
-            unread: false
-        }
-    ]
-};
+const API_NOTIFIKASI =
+    "http://localhost:8000/api/notifikasi/api_notifikasi.php";
+
+let daftarNotifikasi = [];
+let roleNotifikasiAktif = "peserta";
+let filterNotifikasiAktif = "semua";
+let halamanNotifikasiAktif = 1;
+
+const JUMLAH_NOTIFIKASI_PER_HALAMAN = 10;
+
+let intervalNotifikasi = null;
 
 /* =========================================================
-RENDER HALAMAN NOTIFIKASI & MAP DATA KE HTML STATIS
+   NOTIFIKASI - HELPER
+========================================================= */
+
+// Mengamankan teks dari database sebelum ditampilkan
+function escapeHTML(teks) {
+    const elemen = document.createElement("div");
+    elemen.textContent = teks ?? "";
+
+    return elemen.innerHTML;
+}
+
+
+// Format waktu notifikasi
+function formatWaktuNotifikasi(waktu) {
+    if (!waktu) return "-";
+
+    const tanggal = new Date(
+        String(waktu).replace(" ", "T")
+    );
+
+    if (isNaN(tanggal.getTime())) {
+        return waktu;
+    }
+
+    return tanggal.toLocaleString("id-ID", {
+        dateStyle: "medium",
+        timeStyle: "short"
+    });
+}
+
+
+// Key penyimpanan berdasarkan role dan akun
+function getNotificationStorageKey(role) {
+    const userName = localStorage.getItem("userName") || "pengguna";
+
+    return `notifikasi_dibaca_${role}_${userName}`;
+}
+
+
+// Mengambil daftar ID notifikasi yang sudah dibaca
+function getDaftarNotifikasiDibaca(role) {
+    try {
+        const data = JSON.parse(
+            localStorage.getItem(getNotificationStorageKey(role)) || "[]"
+        );
+
+        return Array.isArray(data) ? data.map(String) : [];
+
+    } catch (error) {
+        return [];
+    }
+}
+
+
+// Menyimpan daftar ID notifikasi yang sudah dibaca
+function simpanDaftarNotifikasiDibaca(role, daftar) {
+    localStorage.setItem(
+        getNotificationStorageKey(role),
+        JSON.stringify([...new Set(daftar.map(String))])
+    );
+}
+
+
+// Menentukan status sudah dibaca
+function isNotifikasiDibaca(id, role) {
+    return getDaftarNotifikasiDibaca(role).includes(String(id));
+}
+
+
+// Menentukan label kategori
+function getLabelKategori(kategori) {
+    const labels = {
+        laporan: "Daily Report",
+        materi: "Materi",
+        akun: "Aktivitas Akun",
+        izin: "Pengajuan Izin"
+    };
+
+    return labels[kategori] || "Informasi";
+}
+
+
+// Menentukan warna badge
+function getBadgeClass(kategori, status) {
+    if (kategori === "laporan") {
+        if (status === "diterima") {
+            return "bg-emerald-50 text-emerald-600 border border-emerald-200";
+        }
+
+        if (status === "ditolak") {
+            return "bg-red-50 text-red-600 border border-red-200";
+        }
+
+        return "bg-indigo-50 text-indigo-600 border border-indigo-200";
+    }
+
+    if (kategori === "izin") {
+        if (status === "disetujui") {
+            return "bg-emerald-50 text-emerald-600 border border-emerald-200";
+        }
+
+        if (status === "ditolak") {
+            return "bg-red-50 text-red-600 border border-red-200";
+        }
+
+        return "bg-amber-50 text-amber-600 border border-amber-200";
+    }
+
+    if (kategori === "akun") {
+        return "bg-emerald-50 text-emerald-600 border border-emerald-200";
+    }
+
+    if (kategori === "materi") {
+        return "bg-purple-50 text-purple-600 border border-purple-200";
+    }
+
+    return "bg-slate-100 text-slate-600 border border-slate-200";
+}
+
+
+// Menentukan teks status
+function getLabelStatus(status) {
+    const labels = {
+        diterima: "Diterima",
+        ditolak: "Ditolak",
+        disetujui: "Disetujui",
+        menunggu: "Menunggu",
+        info: "Informasi"
+    };
+
+    return labels[status] || "Informasi";
+}
+
+/* =========================================================
+   NOTIFIKASI - MEMUAT HALAMAN
 ========================================================= */
 
 async function renderNotifikasiView(userRole) {
-    const mainContainer = document.getElementById("main-content-area") || 
-                          document.querySelector("main") || 
-                          document.getElementById("app");
-    
+    const mainContainer =
+        document.getElementById("main-content-area") ||
+        document.querySelector("main") ||
+        document.getElementById("app");
+
     if (!mainContainer) return;
+
+    roleNotifikasiAktif = userRole;
+    halamanNotifikasiAktif = 1;
+    filterNotifikasiAktif = "semua";
 
     const possiblePaths = [
         "/component/Notifikasi/notifikasi.html",
@@ -308,183 +463,690 @@ async function renderNotifikasiView(userRole) {
     ];
 
     let htmlContent = null;
+
     for (const path of possiblePaths) {
         try {
             const response = await fetch(path);
+
             if (response.ok) {
                 htmlContent = await response.text();
                 break;
             }
-        } catch (e) {
-            // Lanjutkan jika path gagal
+
+        } catch (error) {
+            console.warn("Gagal memuat komponen notifikasi:", path);
         }
     }
 
     if (htmlContent) {
         mainContainer.innerHTML = htmlContent;
+
     } else {
         mainContainer.innerHTML = `
-        <div class="space-y-6">
-            <div class="flex flex-wrap items-center justify-between gap-4">
-                <div>
-                    <h1 class="text-xl font-bold tracking-tight text-slate-800">Notifikasi</h1>
-                    <p class="mt-0.5 text-xs text-slate-400">Daftar pemberitahuan sistem Anda.</p>
-                </div>
-                <button type="button" id="btn-mark-all-read" class="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 hover:text-indigo-700 transition">
-                    Tandai Semua Sudah Dibaca
-                </button>
+            <div class="space-y-6">
+                <h1 class="text-xl font-bold text-slate-800">
+                    Notifikasi
+                </h1>
+
+                <div id="notifikasi-list-container"></div>
             </div>
-            <div class="space-y-3" id="notifikasi-list-container"></div>
-        </div>`;
+        `;
     }
 
-    populateNotifikasiData(userRole);
     setupNotifikasiInteractions();
+
+    await populateNotifikasiData(userRole);
 }
 
-function populateNotifikasiData(userRole) {
-    const listContainer = document.getElementById("notifikasi-list-container");
+/* =========================================================
+   NOTIFIKASI - MENGAMBIL DATA API
+========================================================= */
+
+async function populateNotifikasiData(userRole) {
+    const listContainer = document.getElementById(
+        "notifikasi-list-container"
+    );
+
     if (!listContainer) return;
 
-    const listData = notifikasiPerRole[userRole] || notifikasiPerRole.peserta;
+    listContainer.innerHTML = `
+        <div class="rounded-2xl border border-slate-100 bg-white p-8 text-center">
+            <p class="text-sm font-semibold text-slate-600">
+                Memuat notifikasi...
+            </p>
+        </div>
+    `;
 
-    listContainer.innerHTML = listData.map(item => `
-        <article class="notif-item rounded-2xl border border-slate-100 bg-white p-5 shadow-sm transition hover:border-slate-200 relative" data-category="${item.kategori}" data-unread="${item.unread}">
+    try {
+        const response = await fetch(API_NOTIFIKASI, {
+            method: "GET",
+            credentials: "include",
+            headers: {
+                "Accept": "application/json"
+            }
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            throw new Error(
+                result.message || "Gagal mengambil data notifikasi."
+            );
+        }
+
+        if (!Array.isArray(result.data)) {
+            throw new Error("Format data notifikasi dari API tidak sesuai.");
+        }
+
+        daftarNotifikasi = result.data.map(item => ({
+            id: String(item.id),
+            kategori: item.kategori || "lainnya",
+            judul: item.judul || "Notifikasi",
+            pesan: item.pesan || "",
+            waktu: item.waktu || "",
+            status: item.status || "info"
+        }));
+
+        // Urutkan dari waktu terbaru
+        daftarNotifikasi.sort((a, b) => {
+            return new Date(b.waktu).getTime() -
+                new Date(a.waktu).getTime();
+        });
+
+        halamanNotifikasiAktif = 1;
+
+        renderDaftarNotifikasi();
+
+    } catch (error) {
+        console.error("Gagal memuat notifikasi:", error);
+
+        daftarNotifikasi = [];
+
+        listContainer.innerHTML = `
+            <div class="rounded-2xl border border-red-100 bg-red-50 p-6 text-center">
+                <p class="text-sm font-semibold text-red-600">
+                    Gagal Memuat Notifikasi
+                </p>
+
+                <p class="mt-1 text-xs text-red-500">
+                    ${escapeHTML(error.message)}
+                </p>
+
+                <button
+                    type="button"
+                    id="btn-reload-notifikasi"
+                    class="mt-4 rounded-xl bg-red-600 px-4 py-2 text-xs font-bold text-white hover:bg-red-700"
+                >
+                    Coba Lagi
+                </button>
+            </div>
+        `;
+
+        const btnReload = document.getElementById(
+            "btn-reload-notifikasi"
+        );
+
+        if (btnReload) {
+            btnReload.addEventListener("click", () => {
+                populateNotifikasiData(userRole);
+            });
+        }
+
+        updateJumlahNotifikasi();
+        updatePagination(0);
+    }
+}
+
+/* =========================================================
+   NOTIFIKASI - FILTER DATA
+========================================================= */
+
+function getNotifikasiSesuaiFilter() {
+    const daftarDibaca = getDaftarNotifikasiDibaca(
+        roleNotifikasiAktif
+    );
+
+    return daftarNotifikasi.filter(item => {
+        const sudahDibaca = daftarDibaca.includes(String(item.id));
+
+        if (filterNotifikasiAktif === "semua") {
+            return true;
+        }
+
+        if (filterNotifikasiAktif === "belum-dibaca") {
+            return !sudahDibaca;
+        }
+
+        return item.kategori === filterNotifikasiAktif;
+    });
+}
+
+/* =========================================================
+   NOTIFIKASI - RENDER ITEM
+========================================================= */
+
+function renderItemNotifikasi(item) {
+    const sudahDibaca = isNotifikasiDibaca(
+        item.id,
+        roleNotifikasiAktif
+    );
+
+    const badge = getLabelKategori(item.kategori);
+    const badgeClass = getBadgeClass(
+        item.kategori,
+        item.status
+    );
+
+    const statusLabel = getLabelStatus(item.status);
+
+    const dotHTML = sudahDibaca
+        ? ""
+        : `
+            <span
+                class="h-2.5 w-2.5 shrink-0 rounded-full bg-indigo-600 unread-dot"
+                title="Belum dibaca"
+            ></span>
+        `;
+
+    return `
+        <article
+            class="notif-item rounded-2xl border border-slate-100 bg-white p-5 shadow-sm transition hover:border-slate-200 relative"
+            data-category="${escapeHTML(item.kategori)}"
+            data-unread="${!sudahDibaca}"
+            data-id="${escapeHTML(item.id)}"
+        >
             <div class="flex items-start justify-between gap-4">
+
                 <div class="flex items-start gap-4">
-                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600 font-bold">
-                        🔔
+
+                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
+                        <svg
+                            class="h-5 w-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="1.8"
+                                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                            />
+                        </svg>
                     </div>
+
                     <div>
                         <div class="flex flex-wrap items-center gap-2">
-                            <h2 class="text-sm font-bold text-slate-800">${item.judul}</h2>
-                            <span class="rounded-full px-2.5 py-0.5 text-[9px] font-bold ${item.badgeClass}">${item.badge}</span>
+
+                            <h2 class="text-sm font-bold text-slate-800">
+                                ${escapeHTML(item.judul)}
+                            </h2>
+
+                            <span class="rounded-full px-2.5 py-0.5 text-[9px] font-bold ${badgeClass}">
+                                ${escapeHTML(badge)}
+                            </span>
+
+                            ${item.status !== "info" ? `
+                                <span class="rounded-full px-2.5 py-0.5 text-[9px] font-bold ${badgeClass}">
+                                    ${escapeHTML(statusLabel)}
+                                </span>
+                            ` : ""}
+
                         </div>
-                        <p class="mt-1 text-xs text-slate-600 leading-relaxed">${item.deskripsi}</p>
-                        <span class="mt-2 block text-[10px] text-slate-400">${item.waktu}</span>
+
+                        <p class="mt-1 text-xs text-slate-600 leading-relaxed">
+                            ${escapeHTML(item.pesan)}
+                        </p>
+
+                        <span class="mt-2 block text-[10px] text-slate-400">
+                            ${escapeHTML(formatWaktuNotifikasi(item.waktu))}
+                        </span>
                     </div>
+
                 </div>
-                ${item.unread ? '<div class="flex items-center gap-3 shrink-0"><span class="h-2.5 w-2.5 rounded-full bg-indigo-600 unread-dot" title="Belum dibaca"></span></div>' : ''}
+
+                <div class="flex items-center gap-3 shrink-0">
+                    ${dotHTML}
+                </div>
+
             </div>
         </article>
-    `).join("");
-
-    const badgeSemua = document.querySelector('[data-filter="semua"] span');
-    if (badgeSemua) badgeSemua.textContent = listData.length;
-
-    const unreadCount = listData.filter(i => i.unread).length;
-    const badgeBelumDibaca = document.querySelector('[data-filter="belum-dibaca"] span');
-    if (badgeBelumDibaca) badgeBelumDibaca.textContent = unreadCount;
+    `;
 }
+
+/* =========================================================
+   NOTIFIKASI - RENDER DAFTAR DAN PAGINATION
+========================================================= */
+
+function renderDaftarNotifikasi() {
+    const listContainer = document.getElementById(
+        "notifikasi-list-container"
+    );
+
+    if (!listContainer) return;
+
+    const dataFilter = getNotifikasiSesuaiFilter();
+
+    const totalHalaman = Math.max(
+        1,
+        Math.ceil(dataFilter.length / JUMLAH_NOTIFIKASI_PER_HALAMAN)
+    );
+
+    if (halamanNotifikasiAktif > totalHalaman) {
+        halamanNotifikasiAktif = totalHalaman;
+    }
+
+    const mulai = (
+        halamanNotifikasiAktif - 1
+    ) * JUMLAH_NOTIFIKASI_PER_HALAMAN;
+
+    const dataHalaman = dataFilter.slice(
+        mulai,
+        mulai + JUMLAH_NOTIFIKASI_PER_HALAMAN
+    );
+
+    if (dataHalaman.length === 0) {
+        listContainer.innerHTML = `
+            <div class="rounded-2xl border border-slate-100 bg-white p-8 text-center shadow-sm">
+
+                <div class="flex justify-center mb-3">
+                    <svg
+                        class="h-10 w-10 text-slate-300"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="1.5"
+                            d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                        />
+                    </svg>
+                </div>
+
+                <p class="text-sm font-semibold text-slate-600">
+                    Tidak Ada Notifikasi
+                </p>
+
+                <p class="mt-1 text-xs text-slate-400">
+                    Belum ada pemberitahuan untuk kategori ini.
+                </p>
+
+            </div>
+        `;
+
+    } else {
+        listContainer.innerHTML = dataHalaman
+            .map(item => renderItemNotifikasi(item))
+            .join("");
+    }
+
+    updateJumlahNotifikasi();
+    updatePagination(dataFilter.length);
+}
+
+/* =========================================================
+   NOTIFIKASI - UPDATE JUMLAH
+========================================================= */
+
+function updateJumlahNotifikasi() {
+    const totalSemua = daftarNotifikasi.length;
+
+    const daftarDibaca = getDaftarNotifikasiDibaca(
+        roleNotifikasiAktif
+    );
+
+    const totalBelumDibaca = daftarNotifikasi.filter(item => {
+        return !daftarDibaca.includes(String(item.id));
+    }).length;
+
+    const countSemua = document.getElementById(
+        "notif-count-semua"
+    );
+
+    const countBelumDibaca = document.getElementById(
+        "notif-count-belum-dibaca"
+    );
+
+    if (countSemua) {
+        countSemua.textContent = totalSemua;
+    }
+
+    if (countBelumDibaca) {
+        countBelumDibaca.textContent = totalBelumDibaca;
+    }
+    updateNotificationDot();
+}
+
+
+/* =========================================================
+   NOTIFIKASI - UPDATE TITIK MERAH HEADER
+========================================================= */
+
+function updateNotificationDot() {
+    const notificationDot = document.getElementById(
+        "notification-dot"
+    );
+
+    if (!notificationDot) return;
+
+    const daftarDibaca = getDaftarNotifikasiDibaca(
+        roleNotifikasiAktif
+    );
+
+    const adaNotifikasiBelumDibaca = daftarNotifikasi.some(item => {
+        return !daftarDibaca.includes(String(item.id));
+    });
+
+    notificationDot.classList.toggle(
+        "hidden",
+        !adaNotifikasiBelumDibaca
+    );
+}
+
+
+/* =========================================================
+   NOTIFIKASI - CEK NOTIFIKASI SAAT HALAMAN DIBUKA
+========================================================= */
+
+async function populateNotifikasiUntukHeader() {
+    try {
+        const response = await fetch(API_NOTIFIKASI, {
+            method: "GET",
+            credentials: "include",
+            headers: {
+                "Accept": "application/json"
+            }
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success || !Array.isArray(result.data)) {
+            throw new Error("Gagal mengambil notifikasi.");
+        }
+
+        daftarNotifikasi = result.data.map(item => ({
+            id: String(item.id),
+            kategori: item.kategori || "lainnya",
+            judul: item.judul || "Notifikasi",
+            pesan: item.pesan || "",
+            waktu: item.waktu || "",
+            status: item.status || "info"
+        }));
+
+        updateNotificationDot();
+
+    } catch (error) {
+        console.error("Gagal mengecek notifikasi header:", error);
+    }
+}
+
+/* =========================================================
+   NOTIFIKASI - CEK OTOMATIS SETIAP 5 DETIK
+========================================================= */
+
+function mulaiCekNotifikasiOtomatis() {
+
+    // Hentikan interval sebelumnya agar tidak bertumpuk
+    if (intervalNotifikasi) {
+        clearInterval(intervalNotifikasi);
+    }
+
+    intervalNotifikasi = setInterval(async () => {
+
+        await populateNotifikasiUntukHeader();
+
+        // Jika halaman notifikasi sedang terbuka,
+        // perbarui daftar notifikasinya juga
+        const listContainer = document.getElementById(
+            "notifikasi-list-container"
+        );
+
+        if (listContainer) {
+            await populateNotifikasiData(roleNotifikasiAktif);
+        }
+
+    }, 5000);
+}
+
+
+/* =========================================================
+   NOTIFIKASI - UPDATE PAGINATION
+========================================================= */
+
+function updatePagination(totalData) {
+    const totalHalaman = Math.max(
+        1,
+        Math.ceil(totalData / JUMLAH_NOTIFIKASI_PER_HALAMAN)
+    );
+
+    const currentPage = document.getElementById(
+        "notif-current-page"
+    );
+
+    const totalPage = document.getElementById(
+        "notif-total-page"
+    );
+
+    const btnPrev = document.getElementById(
+        "btn-notif-prev"
+    );
+
+    const btnNext = document.getElementById(
+        "btn-notif-next"
+    );
+
+    if (currentPage) {
+        currentPage.textContent = halamanNotifikasiAktif;
+    }
+
+    if (totalPage) {
+        totalPage.textContent = totalHalaman;
+    }
+
+    if (btnPrev) {
+        btnPrev.disabled = halamanNotifikasiAktif <= 1;
+
+        btnPrev.className = btnPrev.disabled
+            ? "rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs font-semibold text-slate-400 cursor-not-allowed"
+            : "rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 shadow-sm transition";
+    }
+
+    if (btnNext) {
+        btnNext.disabled = halamanNotifikasiAktif >= totalHalaman;
+
+        btnNext.className = btnNext.disabled
+            ? "rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs font-semibold text-slate-400 cursor-not-allowed"
+            : "rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 shadow-sm transition";
+    }
+}
+
+/* =========================================================
+   NOTIFIKASI - INTERAKSI
+========================================================= */
 
 function setupNotifikasiInteractions() {
     const tabs = document.querySelectorAll(".notif-tab");
-    const items = document.querySelectorAll(".notif-item");
-    const btnMarkAll = document.getElementById("btn-mark-all-read");
 
+    const btnMarkAll = document.getElementById(
+        "btn-mark-all-read"
+    );
+
+    const btnPrev = document.getElementById(
+        "btn-notif-prev"
+    );
+
+    const btnNext = document.getElementById(
+        "btn-notif-next"
+    );
+
+    // Event filter kategori
     tabs.forEach(tab => {
         tab.addEventListener("click", () => {
-            tabs.forEach(t => {
-                t.className = "notif-tab rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 transition";
+            filterNotifikasiAktif = tab.dataset.filter;
+            halamanNotifikasiAktif = 1;
+
+            tabs.forEach(item => {
+                const aktif =
+                    item.dataset.filter === filterNotifikasiAktif;
+
+                item.className = aktif
+                    ? "notif-tab rounded-xl bg-indigo-600 px-4 py-2 text-xs font-bold text-white shadow-sm transition"
+                    : "notif-tab rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 transition";
             });
-            tab.className = "notif-tab rounded-xl bg-indigo-600 px-4 py-2 text-xs font-bold text-white shadow-sm transition";
 
-            const filter = tab.dataset.filter;
-            const currentItems = document.querySelectorAll(".notif-item");
-
-            currentItems.forEach(item => {
-                const category = item.dataset.category;
-                const isUnread = item.dataset.unread === "true";
-
-                if (filter === "semua") {
-                    item.style.display = "block";
-                } else if (filter === "belum-dibaca") {
-                    item.style.display = isUnread ? "block" : "none";
-                } else if (filter === "laporan" && category === "laporan") {
-                    item.style.display = "block";
-                } else if (filter === "materi" && category === "materi") {
-                    item.style.display = "block";
-                } else {
-                    item.style.display = "none";
-                }
-            });
+            renderDaftarNotifikasi();
         });
     });
 
+    // Tandai semua sudah dibaca
     if (btnMarkAll) {
         btnMarkAll.addEventListener("click", () => {
-            document.querySelectorAll(".unread-dot").forEach(dot => dot.remove());
-            document.querySelectorAll(".notif-item").forEach(item => item.dataset.unread = "false");
+            const daftarDibaca = getDaftarNotifikasiDibaca(
+                roleNotifikasiAktif
+            );
+
+            const semuaId = daftarNotifikasi.map(item =>
+                String(item.id)
+            );
+
+            simpanDaftarNotifikasiDibaca(
+                roleNotifikasiAktif,
+                [...daftarDibaca, ...semuaId]
+            );
+
+            renderDaftarNotifikasi();
+
             btnMarkAll.textContent = "Semua Sudah Dibaca";
-            btnMarkAll.classList.add("text-slate-400", "pointer-events-none");
+        });
+    }
+
+    // Pagination sebelumnya
+    if (btnPrev) {
+        btnPrev.addEventListener("click", () => {
+            if (halamanNotifikasiAktif > 1) {
+                halamanNotifikasiAktif--;
+                renderDaftarNotifikasi();
+            }
+        });
+    }
+
+    // Pagination selanjutnya
+    if (btnNext) {
+        btnNext.addEventListener("click", () => {
+            const dataFilter = getNotifikasiSesuaiFilter();
+
+            const totalHalaman = Math.max(
+                1,
+                Math.ceil(
+                    dataFilter.length / JUMLAH_NOTIFIKASI_PER_HALAMAN
+                )
+            );
+
+            if (halamanNotifikasiAktif < totalHalaman) {
+                halamanNotifikasiAktif++;
+                renderDaftarNotifikasi();
+            }
         });
     }
 }
 
 /* =========================================================
-PENGIKAT LANGSUNG TOMBOL NOTIFIKASI
+   PENGIKAT LANGSUNG TOMBOL NOTIFIKASI
 ========================================================= */
 
 function bindNotificationButtonDirectly() {
-    const btnNotifikasi = document.getElementById("btn-notifikasi");
+    const btnNotifikasi = document.getElementById(
+        "btn-notifikasi"
+    );
+
     if (!btnNotifikasi) return;
 
+    // Mencegah event listener terpasang berulang
     if (btnNotifikasi.dataset.bound === "true") return;
+
     btnNotifikasi.dataset.bound = "true";
 
-    btnNotifikasi.addEventListener("click", (e) => {
+    btnNotifikasi.addEventListener("click", async (e) => {
         e.preventDefault();
         e.stopPropagation();
 
         const currentPath = window.location.pathname.toLowerCase();
-        const savedRole = (localStorage.getItem("userRole") || "peserta").toLowerCase();
+
+        const savedRole = (
+            localStorage.getItem("userRole") || "peserta"
+        ).toLowerCase();
 
         let activeRole = savedRole;
-        if (currentPath.includes("/admin/")) activeRole = "admin";
-        else if (currentPath.includes("/mentor/")) activeRole = "mentor";
-        else if (currentPath.includes("/siswa/")) activeRole = "peserta";
 
-        renderNotifikasiView(activeRole);
+        if (currentPath.includes("/admin/")) {
+            activeRole = "admin";
+
+        } else if (currentPath.includes("/mentor/")) {
+            activeRole = "mentor";
+
+        } else if (currentPath.includes("/siswa/")) {
+            activeRole = "peserta";
+        }
+
+        await renderNotifikasiView(activeRole);
     });
 }
 
-setInterval(bindNotificationButtonDirectly, 300);
-
 /* =========================================================
-INISIALISASI HALAMAN SISWA & MENTOR
+   INISIALISASI HALAMAN SISWA & MENTOR
 ========================================================= */
 
 function initStudentPage(path) {
-    if (path.endsWith("/dashboard.html")) initDashboard();
-    else if (path.endsWith("/absensi.html")) initAbsensi();
-    else if (path.endsWith("/izin.html")) initIzin();
-    else if (path.endsWith("/daily-report.html")) initDailyReport();
-    else if (path.endsWith("/materi.html")) initMateri();
-    else if (path.endsWith("/profil.html")) initProfil();
+    if (path.endsWith("/dashboard.html")) {
+        initDashboard();
+
+    } else if (path.endsWith("/absensi.html")) {
+        initAbsensi();
+
+    } else if (path.endsWith("/izin.html")) {
+        initIzin();
+
+    } else if (path.endsWith("/daily-report.html")) {
+        initDailyReport();
+
+    } else if (path.endsWith("/materi.html")) {
+        initMateri();
+
+    } else if (path.endsWith("/profil.html")) {
+        initProfil();
+    }
 }
 
 function initMentorPage(path) {
     if (path.endsWith("/dashboard.html")) {
         initMentorDashboard();
+
     } else if (path.endsWith("/profil.html")) {
         initMentorProfil();
+
     } else if (path.endsWith("/izin.html")) {
         initMentorIzin();
     }
 }
 
 /* =========================================================
-INISIALISASI KOMPONEN UTAMA
+   INISIALISASI KOMPONEN UTAMA
 ========================================================= */
 
 async function initComponents() {
     const path = window.location.pathname.toLowerCase();
+
     if (!path.includes("/pages/")) return;
 
     const app = document.getElementById("app");
 
     try {
-        const savedRole = (localStorage.getItem("userRole") || "").toLowerCase();
+        const savedRole = (
+            localStorage.getItem("userRole") || ""
+        ).toLowerCase();
+
         const userRole = path.includes("/pages/admin/")
             ? "admin"
             : path.includes("/pages/mentor/")
@@ -495,12 +1157,29 @@ async function initComponents() {
             throw new Error(`Role "${userRole}" tidak valid.`);
         }
 
-        if (app) app.classList.add("invisible", "opacity-0");
+        if (app) {
+            app.classList.add("invisible", "opacity-0");
+        }
 
         await Promise.all([
-            loadComponent("sidebar-container", "/component/layout/sidebar.html"),
-            loadComponent("header-container", "/component/layout/header.html").catch(() => {}),
-            loadComponent("footer-container", "/component/layout/footer.html").catch(() => {})
+            loadComponent(
+                "sidebar-container",
+                "/component/layout/sidebar.html"
+            ),
+
+            loadComponent(
+                "header-container",
+                "/component/layout/header.html"
+            ).catch(error => {
+                console.error("Gagal memuat header:", error);
+            }),
+
+            loadComponent(
+                "footer-container",
+                "/component/layout/footer.html"
+            ).catch(error => {
+                console.error("Gagal memuat footer:", error);
+            })
         ]);
 
         setupDynamicLayout(userRole);
@@ -509,16 +1188,29 @@ async function initComponents() {
             await loadHeaderMentorProfile();
         }
 
+        // Memuat notifikasi untuk mengecek titik merah
+        roleNotifikasiAktif = userRole;
+        await populateNotifikasiUntukHeader();
+
+        mulaiCekNotifikasiOtomatis();
+
         if (path.includes("/pages/siswa/")) {
             initStudentPage(path);
+
         } else if (path.includes("/pages/mentor/")) {
             initMentorPage(path);
         }
 
     } catch (error) {
-        console.error("Gagal menginisialisasi komponen:", error);
+        console.error(
+            "Gagal menginisialisasi komponen:",
+            error
+        );
+
     } finally {
-        if (app) app.classList.remove("invisible", "opacity-0");
+        if (app) {
+            app.classList.remove("invisible", "opacity-0");
+        }
     }
 }
 

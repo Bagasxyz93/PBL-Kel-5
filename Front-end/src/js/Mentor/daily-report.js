@@ -1,4 +1,3 @@
-
 /* =========================================================
    LOGIKA HALAMAN KELOLA DAILY REPORT MENTOR
    DATA DIAMBIL DARI DATABASE MELALUI API
@@ -10,6 +9,7 @@ let dataDailyReports = [];
 let statistikDailyReport = {
     total_peserta: 0,
     siswa_sudah_lapor: 0,
+    siswa_belum_lapor: 0,
     persentase_masuk: 0
 };
 
@@ -24,6 +24,7 @@ const API_REKAP_DAILY_REPORT =
     "http://localhost:8000/api/mentor/api_rekap_daily_report.php";
 
 const DATA_PER_PAGE = 10;
+
 
 // =========================================================
 // MENGAMBIL TANGGAL HARI INI BERDASARKAN WIB
@@ -63,7 +64,8 @@ export function initMentorDailyReport() {
 
     console.log("Modul Daily Report Mentor berhasil dimuat.");
 
-    const btnExportRekap = document.getElementById("btn-export-rekap");
+    const btnExportRekap =
+        document.getElementById("btn-export-rekap");
 
     if (btnExportRekap) {
         btnExportRekap.addEventListener(
@@ -72,19 +74,39 @@ export function initMentorDailyReport() {
         );
     }
 
-    const tableBody = document.getElementById("table-report-body");
-    const searchInput = document.getElementById("input-search-report");
-    const filterProgram = document.getElementById("filter-program");
-    const tabButtons = document.querySelectorAll(".tab-btn");
+    const tableBody =
+        document.getElementById("table-report-body");
 
-    const tanggalHariIni = document.getElementById("tanggal-hari-ini");
+    const searchInput =
+        document.getElementById("input-search-report");
+
+    const filterProgram =
+        document.getElementById("filter-program");
+
+    const filterTanggal =
+        document.getElementById("filter-tanggal");
+
+    const tabButtons =
+        document.querySelectorAll(".tab-btn");
+
+    const tanggalHariIni =
+        document.getElementById("tanggal-hari-ini");
+
+    // Tanggal halaman otomatis hari ini berdasarkan WIB.
+    if (filterTanggal) {
+        filterTanggal.value = getTanggalHariIniWIB();
+    }
 
     if (tanggalHariIni) {
-        tanggalHariIni.textContent = new Date().toLocaleDateString("id-ID", {
-            day: "2-digit",
-            month: "short",
-            year: "numeric"
-        });
+        tanggalHariIni.textContent = new Date().toLocaleDateString(
+            "id-ID",
+            {
+                timeZone: "Asia/Jakarta",
+                day: "2-digit",
+                month: "short",
+                year: "numeric"
+            }
+        );
     }
 
     let activeTab = "semua";
@@ -122,6 +144,7 @@ export function initMentorDailyReport() {
         if (isNaN(date.getTime())) return tanggal;
 
         return date.toLocaleDateString("id-ID", {
+            timeZone: "Asia/Jakarta",
             day: "2-digit",
             month: "short",
             year: "numeric"
@@ -139,6 +162,7 @@ export function initMentorDailyReport() {
         if (isNaN(date.getTime())) return "-";
 
         return date.toLocaleTimeString("id-ID", {
+            timeZone: "Asia/Jakarta",
             hour: "2-digit",
             minute: "2-digit"
         }) + " WIB";
@@ -153,36 +177,30 @@ export function initMentorDailyReport() {
     function renderStatus(status) {
 
         if (status === "menunggu") {
-
             return `
                 <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full
                 bg-amber-50 text-amber-600 text-[11px] font-bold">
                     Menunggu
                 </span>
             `;
-
         }
 
         if (status === "diterima") {
-
             return `
                 <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full
                 bg-emerald-50 text-emerald-600 text-[11px] font-bold">
                     Diterima
                 </span>
             `;
-
         }
 
         if (status === "ditolak") {
-
             return `
                 <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full
                 bg-rose-50 text-rose-600 text-[11px] font-bold">
                     Ditolak
                 </span>
             `;
-
         }
 
         return "-";
@@ -197,13 +215,11 @@ export function initMentorDailyReport() {
     function renderLampiran(namaFile) {
 
         if (!namaFile) {
-
             return `
                 <span class="text-slate-400 text-xs">
                     Tidak ada lampiran
                 </span>
             `;
-
         }
 
         return `
@@ -249,23 +265,20 @@ export function initMentorDailyReport() {
             item => item.status === "ditolak"
         ).length;
 
-        const statTotal = document.getElementById("stat-total-masuk");
+        const statTotal =
+            document.getElementById("stat-total-masuk");
 
-        const statPersentase = document.getElementById(
-            "stat-persentase-masuk"
-        );
+        const statPersentase =
+            document.getElementById("stat-persentase-masuk");
 
-        const statMenunggu = document.getElementById(
-            "stat-perlu-diperiksa"
-        );
+        const statMenunggu =
+            document.getElementById("stat-perlu-diperiksa");
 
-        const statDiterima = document.getElementById(
-            "stat-diterima"
-        );
+        const statDiterima =
+            document.getElementById("stat-diterima");
 
-        const statDitolak = document.getElementById(
-            "stat-ditolak"
-        );
+        const statDitolak =
+            document.getElementById("stat-ditolak");
 
         if (statTotal) {
             statTotal.textContent =
@@ -313,7 +326,7 @@ export function initMentorDailyReport() {
 
 
     /* =====================================================
-       7. FILTER PROGRAM DARI DATABASE
+       7. FILTER PROGRAM
     ===================================================== */
 
     function updateFilterProgram() {
@@ -332,6 +345,7 @@ export function initMentorDailyReport() {
 
         filterProgram.innerHTML = `
             <option value="">Semua Program</option>
+
             ${programTerdaftar.map(program => `
                 <option value="${escapeHTML(program)}">
                     ${escapeHTML(program)}
@@ -353,7 +367,6 @@ export function initMentorDailyReport() {
     async function loadDailyReports() {
 
         if (tableBody) {
-
             tableBody.innerHTML = `
                 <tr>
                     <td colspan="8" class="py-8 text-center text-slate-400">
@@ -361,12 +374,23 @@ export function initMentorDailyReport() {
                     </td>
                 </tr>
             `;
-
         }
 
         try {
 
-            const response = await fetch(API_DAILY_REPORT, {
+            // Ambil tanggal yang dipilih pada input.
+            const tanggalDipilih = filterTanggal
+                ? filterTanggal.value
+                : getTanggalHariIniWIB();
+
+            // Kirim tanggal ke API PHP.
+            const url = `${API_DAILY_REPORT}?tanggal=${
+                encodeURIComponent(tanggalDipilih)
+            }`;
+
+            console.log("Mengambil Daily Report:", url);
+
+            const response = await fetch(url, {
                 method: "GET",
                 credentials: "include"
             });
@@ -374,16 +398,16 @@ export function initMentorDailyReport() {
             const result = await response.json();
 
             if (!response.ok || !result.success) {
-
                 throw new Error(
-                    result.message || "Gagal mengambil data Daily Report."
+                    result.message ||
+                    "Gagal mengambil data Daily Report."
                 );
-
             }
 
             statistikDailyReport = result.statistik || {
                 total_peserta: 0,
                 siswa_sudah_lapor: 0,
+                siswa_belum_lapor: 0,
                 persentase_masuk: 0
             };
 
@@ -414,8 +438,20 @@ export function initMentorDailyReport() {
 
             }));
 
-            console.log("Data Daily Report:", dataDailyReports);
-            console.log("Statistik Daily Report:", statistikDailyReport);
+            console.log(
+                "Tanggal yang dipilih:",
+                tanggalDipilih
+            );
+
+            console.log(
+                "Data Daily Report:",
+                dataDailyReports
+            );
+
+            console.log(
+                "Statistik Daily Report:",
+                statistikDailyReport
+            );
 
             updateStatistik();
             updateFilterProgram();
@@ -424,11 +460,11 @@ export function initMentorDailyReport() {
 
             applyFilters();
 
-            // ==========================================
-            // OTOMATIS MEMBUKA DETAIL DARI DASHBOARD
-            // ==========================================
+            // Membuka detail jika halaman diakses dari dashboard.
+            const urlParams = new URLSearchParams(
+                window.location.search
+            );
 
-            const urlParams = new URLSearchParams(window.location.search);
             const reportId = urlParams.get("id");
 
             if (reportId) {
@@ -437,10 +473,12 @@ export function initMentorDailyReport() {
 
         } catch (error) {
 
-            console.error("Kesalahan mengambil Daily Report:", error);
+            console.error(
+                "Kesalahan mengambil Daily Report:",
+                error
+            );
 
             if (tableBody) {
-
                 tableBody.innerHTML = `
                     <tr>
                         <td colspan="8" class="py-8 text-center text-rose-500">
@@ -448,7 +486,6 @@ export function initMentorDailyReport() {
                         </td>
                     </tr>
                 `;
-
             }
 
         }
@@ -458,7 +495,6 @@ export function initMentorDailyReport() {
 
     /* =====================================================
        9. MENAMPILKAN TABEL DAILY REPORT
-       MAKSIMAL 10 DATA SETIAP HALAMAN
     ===================================================== */
 
     function renderTable(data) {
@@ -477,7 +513,8 @@ export function initMentorDailyReport() {
             currentPage = totalPages;
         }
 
-        const startIndex = (currentPage - 1) * DATA_PER_PAGE;
+        const startIndex =
+            (currentPage - 1) * DATA_PER_PAGE;
 
         const endIndex = Math.min(
             startIndex + DATA_PER_PAGE,
@@ -494,12 +531,17 @@ export function initMentorDailyReport() {
             tableBody.innerHTML = `
                 <tr>
                     <td colspan="8" class="py-8 text-center text-slate-400">
-                        Tidak ada laporan harian yang ditemukan.
+                        Tidak ada laporan harian pada tanggal ini.
                     </td>
                 </tr>
             `;
 
-            renderPagination(totalData, totalPages, startIndex, endIndex);
+            renderPagination(
+                totalData,
+                totalPages,
+                startIndex,
+                endIndex
+            );
 
             return;
 
@@ -575,7 +617,12 @@ export function initMentorDailyReport() {
 
         }).join("");
 
-        renderPagination(totalData, totalPages, startIndex, endIndex);
+        renderPagination(
+            totalData,
+            totalPages,
+            startIndex,
+            endIndex
+        );
 
     }
 
@@ -584,7 +631,12 @@ export function initMentorDailyReport() {
        10. KOMPONEN PAGINATION
     ===================================================== */
 
-    function renderPagination(totalData, totalPages, startIndex, endIndex) {
+    function renderPagination(
+        totalData,
+        totalPages,
+        startIndex,
+        endIndex
+    ) {
 
         const container = document.getElementById(
             "pagination-report"
@@ -597,14 +649,14 @@ export function initMentorDailyReport() {
         if (totalData === 0) {
 
             container.innerHTML = `
-                <div class="flex flex-col sm:flex-row items-center justify-between gap-4 w-full">
+                <div class="flex flex-col sm:flex-row items-center
+                justify-between gap-4 w-full">
 
                     <p class="text-xs text-slate-500">
                         Menampilkan 0 - 0 dari 0 laporan harian siswa
                     </p>
 
                     <div class="flex items-center gap-1.5">
-
                         <button type="button" disabled
                             class="w-8 h-8 rounded-lg border border-slate-200
                             flex items-center justify-center text-slate-400">
@@ -616,7 +668,6 @@ export function initMentorDailyReport() {
                             flex items-center justify-center text-slate-400">
                             &gt;
                         </button>
-
                     </div>
 
                 </div>
@@ -632,10 +683,10 @@ export function initMentorDailyReport() {
                 <button
                     type="button"
                     data-page="${i}"
-                    class="w-8 h-8 rounded-lg flex items-center justify-center
-                    transition
+                    class="w-8 h-8 rounded-lg flex items-center
+                    justify-center transition
                     ${currentPage === i
-                        ? "bg-[#00b09b] text-white font-bold shadow-sm shadow-emerald-500/20"
+                        ? "bg-[#00b09b] text-white font-bold shadow-sm"
                         : "border border-slate-200 font-medium text-slate-600 hover:bg-slate-50"}">
                     ${i}
                 </button>
@@ -644,7 +695,8 @@ export function initMentorDailyReport() {
         }
 
         container.innerHTML = `
-            <div class="flex flex-col sm:flex-row items-center justify-between gap-4 w-full">
+            <div class="flex flex-col sm:flex-row items-center
+            justify-between gap-4 w-full">
 
                 <span class="text-xs text-slate-500">
                     Menampilkan ${startIndex + 1} - ${endIndex}
@@ -694,7 +746,8 @@ export function initMentorDailyReport() {
 
         });
 
-        const prevButton = document.getElementById("pagination-prev");
+        const prevButton =
+            document.getElementById("pagination-prev");
 
         if (prevButton) {
 
@@ -709,7 +762,8 @@ export function initMentorDailyReport() {
 
         }
 
-        const nextButton = document.getElementById("pagination-next");
+        const nextButton =
+            document.getElementById("pagination-next");
 
         if (nextButton) {
 
@@ -735,11 +789,15 @@ export function initMentorDailyReport() {
 
         const keyword = (
             searchInput ? searchInput.value : ""
-        ).toLowerCase();
+        ).toLowerCase().trim();
 
         const progVal = (
             filterProgram ? filterProgram.value : ""
-        ).toLowerCase();
+        ).toLowerCase().trim();
+
+        const tanggalVal = filterTanggal
+            ? filterTanggal.value
+            : "";
 
         const filtered = dataDailyReports.filter(item => {
 
@@ -749,7 +807,14 @@ export function initMentorDailyReport() {
 
             const matchProgram =
                 progVal === "" ||
-                (item.program || "").toLowerCase() === progVal;
+                (item.program || "").toLowerCase().trim() === progVal;
+
+            const tanggalLaporan =
+                String(item.tanggal || "").slice(0, 10);
+
+            const matchTanggal =
+                tanggalVal === "" ||
+                tanggalLaporan === tanggalVal;
 
             let matchTab = true;
 
@@ -759,15 +824,18 @@ export function initMentorDailyReport() {
                     item.status === "menunggu" ||
                     item.status === "ditolak";
 
-            }
-
-            else if (activeTab === "selesai") {
+            } else if (activeTab === "selesai") {
 
                 matchTab = item.status === "diterima";
 
             }
 
-            return matchKeyword && matchProgram && matchTab;
+            return (
+                matchKeyword &&
+                matchProgram &&
+                matchTanggal &&
+                matchTab
+            );
 
         });
 
@@ -785,6 +853,16 @@ export function initMentorDailyReport() {
 
     if (filterProgram) {
         filterProgram.addEventListener("change", applyFilters);
+    }
+
+    // PENTING:
+    // Ketika tanggal berubah, ambil ulang data dari database.
+    if (filterTanggal) {
+        filterTanggal.addEventListener("change", () => {
+
+            loadDailyReports();
+
+        });
     }
 
 
@@ -863,7 +941,9 @@ export function initMentorDailyReport() {
 
                 console.error("Kesalahan memuat modal:", error);
 
-                alert("Modal Daily Report gagal dimuat. Periksa lokasi file HTML modal.");
+                alert(
+                    "Modal Daily Report gagal dimuat. Periksa lokasi file HTML modal."
+                );
 
                 return false;
 
@@ -937,9 +1017,13 @@ export function initMentorDailyReport() {
             item => item.status === "ditolak"
         ).length;
 
-        document.getElementById("modal-view-riwayat").classList.remove("hidden");
+        document.getElementById(
+            "modal-view-riwayat"
+        ).classList.remove("hidden");
 
-        document.getElementById("modal-view-detail").classList.add("hidden");
+        document.getElementById(
+            "modal-view-detail"
+        ).classList.add("hidden");
 
         const initial = (dataSiswa.nama || "?")
             .split(" ")
@@ -948,13 +1032,17 @@ export function initMentorDailyReport() {
             .join("")
             .toUpperCase();
 
-        document.getElementById("modal-siswa-initial").textContent =
-            initial;
+        document.getElementById(
+            "modal-siswa-initial"
+        ).textContent = initial;
 
-        document.getElementById("modal-siswa-nama").textContent =
-            dataSiswa.nama;
+        document.getElementById(
+            "modal-siswa-nama"
+        ).textContent = dataSiswa.nama;
 
-        document.getElementById("modal-siswa-info").innerHTML = `
+        document.getElementById(
+            "modal-siswa-info"
+        ).innerHTML = `
             NIS: ${escapeHTML(dataSiswa.nis || "-")}
             •
             <span class="text-indigo-600 font-semibold">
@@ -967,20 +1055,25 @@ export function initMentorDailyReport() {
         );
 
         if (keaktifan) {
-            keaktifan.textContent = hitungTingkatKeaktifan(riwayat);
+            keaktifan.textContent =
+                hitungTingkatKeaktifan(riwayat);
         }
 
-        document.getElementById("modal-stat-total-laporan").textContent =
-            totalLaporan;
+        document.getElementById(
+            "modal-stat-total-laporan"
+        ).textContent = totalLaporan;
 
-        document.getElementById("modal-stat-diterima").textContent =
-            diterima;
+        document.getElementById(
+            "modal-stat-diterima"
+        ).textContent = diterima;
 
-        document.getElementById("modal-stat-menunggu").textContent =
-            menunggu;
+        document.getElementById(
+            "modal-stat-menunggu"
+        ).textContent = menunggu;
 
-        document.getElementById("modal-stat-revisi").textContent =
-            ditolak;
+        document.getElementById(
+            "modal-stat-revisi"
+        ).textContent = ditolak;
 
         renderRiwayatTable(riwayat);
 
@@ -997,7 +1090,9 @@ export function initMentorDailyReport() {
 
     function renderRiwayatTable(riwayat) {
 
-        const tbody = document.getElementById("modal-riwayat-tbody");
+        const tbody = document.getElementById(
+            "modal-riwayat-tbody"
+        );
 
         if (!tbody) return;
 
@@ -1097,7 +1192,8 @@ export function initMentorDailyReport() {
             if (!response.ok || !result.success) {
 
                 throw new Error(
-                    result.message || "Gagal mengambil detail laporan."
+                    result.message ||
+                    "Gagal mengambil detail laporan."
                 );
 
             }
@@ -1142,34 +1238,49 @@ export function initMentorDailyReport() {
                 dataDailyReports[index] = report;
             }
 
-            document.getElementById("modal-view-riwayat").classList.add("hidden");
+            document.getElementById(
+                "modal-view-riwayat"
+            ).classList.add("hidden");
 
-            document.getElementById("modal-view-detail").classList.remove("hidden");
+            document.getElementById(
+                "modal-view-detail"
+            ).classList.remove("hidden");
 
-            document.getElementById("detail-nama-siswa").textContent =
-                report.nama;
+            document.getElementById(
+                "detail-nama-siswa"
+            ).textContent = report.nama;
 
-            document.getElementById("detail-info-siswa").innerHTML = `
+            document.getElementById(
+                "detail-info-siswa"
+            ).innerHTML = `
                 ${escapeHTML(report.program)}
                 •
                 NIS: ${escapeHTML(report.nis || "-")}
             `;
 
-            document.getElementById("detail-tanggal").textContent =
-                formatTanggal(report.tanggal);
+            document.getElementById(
+                "detail-tanggal"
+            ).textContent = formatTanggal(report.tanggal);
 
-            document.getElementById("detail-status").innerHTML =
-                renderStatus(report.status);
+            document.getElementById(
+                "detail-status"
+            ).innerHTML = renderStatus(report.status);
 
-            document.getElementById("detail-judul").textContent =
-                report.judul || "-";
+            document.getElementById(
+                "detail-judul"
+            ).textContent = report.judul || "-";
 
-            document.getElementById("detail-deskripsi").textContent =
-                report.deskripsi || "-";
+            document.getElementById(
+                "detail-deskripsi"
+            ).textContent = report.deskripsi || "-";
 
-            const lampiranNama = document.getElementById("detail-lampiran-nama");
+            const lampiranNama = document.getElementById(
+                "detail-lampiran-nama"
+            );
 
-            const lampiranInfo = document.getElementById("detail-lampiran-info");
+            const lampiranInfo = document.getElementById(
+                "detail-lampiran-info"
+            );
 
             if (lampiranNama) {
                 lampiranNama.textContent =
@@ -1177,30 +1288,41 @@ export function initMentorDailyReport() {
             }
 
             if (lampiranInfo) {
-                lampiranInfo.textContent =
-                    report.lampiran
-                        ? "File lampiran Daily Report"
-                        : "Tidak ada file yang dilampirkan";
+                lampiranInfo.textContent = report.lampiran
+                    ? "File lampiran Daily Report"
+                    : "Tidak ada file yang dilampirkan";
             }
 
-            const textarea = document.getElementById("evaluasi-textarea");
+            const textarea = document.getElementById(
+                "evaluasi-textarea"
+            );
 
             if (textarea) {
                 textarea.value = report.catatan_mentor || "";
             }
 
-            const btnTerima = document.getElementById("btn-terima-laporan");
+            const btnTerima = document.getElementById(
+                "btn-terima-laporan"
+            );
 
-            const btnTolak = document.getElementById("btn-tolak-laporan");
+            const btnTolak = document.getElementById(
+                "btn-tolak-laporan"
+            );
 
             const sudahDinilai = report.status !== "menunggu";
 
             if (btnTerima) {
-                btnTerima.classList.toggle("hidden", sudahDinilai);
+                btnTerima.classList.toggle(
+                    "hidden",
+                    sudahDinilai
+                );
             }
 
             if (btnTolak) {
-                btnTolak.classList.toggle("hidden", sudahDinilai);
+                btnTolak.classList.toggle(
+                    "hidden",
+                    sudahDinilai
+                );
             }
 
             document.getElementById(
@@ -1209,7 +1331,10 @@ export function initMentorDailyReport() {
 
         } catch (error) {
 
-            console.error("Kesalahan detail laporan:", error);
+            console.error(
+                "Kesalahan detail laporan:",
+                error
+            );
 
             alert(error.message);
 
@@ -1232,13 +1357,19 @@ export function initMentorDailyReport() {
 
         }
 
-        const textarea = document.getElementById("evaluasi-textarea");
+        const textarea = document.getElementById(
+            "evaluasi-textarea"
+        );
 
-        const catatan = textarea ? textarea.value.trim() : "";
+        const catatan = textarea
+            ? textarea.value.trim()
+            : "";
 
         if (statusBaru === "ditolak" && catatan === "") {
 
-            alert("Silakan isi catatan evaluasi sebelum menolak laporan.");
+            alert(
+                "Silakan isi catatan evaluasi sebelum menolak laporan."
+            );
 
             if (textarea) textarea.focus();
 
@@ -1246,9 +1377,13 @@ export function initMentorDailyReport() {
 
         }
 
-        const btnTerima = document.getElementById("btn-terima-laporan");
+        const btnTerima = document.getElementById(
+            "btn-terima-laporan"
+        );
 
-        const btnTolak = document.getElementById("btn-tolak-laporan");
+        const btnTolak = document.getElementById(
+            "btn-tolak-laporan"
+        );
 
         if (btnTerima) btnTerima.disabled = true;
 
@@ -1281,22 +1416,30 @@ export function initMentorDailyReport() {
             if (!response.ok || !result.success) {
 
                 throw new Error(
-                    result.message || "Gagal menyimpan penilaian."
+                    result.message ||
+                    "Gagal menyimpan penilaian."
                 );
 
             }
 
-            alert(result.message || "Penilaian berhasil disimpan.");
+            alert(
+                result.message ||
+                "Penilaian berhasil disimpan."
+            );
 
             const idLaporan = activeReportId;
 
+            // Muat ulang sesuai tanggal yang sedang dipilih.
             await loadDailyReports();
 
             await window.openDetailLaporanModal(idLaporan);
 
         } catch (error) {
 
-            console.error("Kesalahan update laporan:", error);
+            console.error(
+                "Kesalahan update laporan:",
+                error
+            );
 
             alert(error.message);
 
@@ -1317,11 +1460,17 @@ export function initMentorDailyReport() {
 
     function setupModalEvents() {
 
-        const modalEl = document.getElementById("modal-detail-daily-report");
+        const modalEl = document.getElementById(
+            "modal-detail-daily-report"
+        );
 
-        const closeBtn = document.getElementById("modal-close-btn");
+        const closeBtn = document.getElementById(
+            "modal-close-btn"
+        );
 
-        const closeFooterBtn = document.getElementById("modal-close-footer-btn");
+        const closeFooterBtn = document.getElementById(
+            "modal-close-footer-btn"
+        );
 
         if (closeBtn) {
 
@@ -1359,9 +1508,13 @@ export function initMentorDailyReport() {
 
         }
 
-        const btnTerima = document.getElementById("btn-terima-laporan");
+        const btnTerima = document.getElementById(
+            "btn-terima-laporan"
+        );
 
-        const btnTolak = document.getElementById("btn-tolak-laporan");
+        const btnTolak = document.getElementById(
+            "btn-tolak-laporan"
+        );
 
         if (btnTerima) {
 
@@ -1396,7 +1549,9 @@ export function initMentorDailyReport() {
 
     document.addEventListener("click", (e) => {
 
-        const targetMainBtn = e.target.closest(".btn-buka-modal");
+        const targetMainBtn = e.target.closest(
+            ".btn-buka-modal"
+        );
 
         if (targetMainBtn) {
 
@@ -1412,7 +1567,9 @@ export function initMentorDailyReport() {
 
         }
 
-        const targetDetailBtn = e.target.closest(".btn-buka-detail-laporan");
+        const targetDetailBtn = e.target.closest(
+            ".btn-buka-detail-laporan"
+        );
 
         if (targetDetailBtn) {
 
@@ -1428,7 +1585,9 @@ export function initMentorDailyReport() {
 
         }
 
-        const targetBackBtn = e.target.closest(".btn-kembali-ke-riwayat");
+        const targetBackBtn = e.target.closest(
+            ".btn-kembali-ke-riwayat"
+        );
 
         if (targetBackBtn) {
 
@@ -1458,13 +1617,15 @@ export function initMentorDailyReport() {
 
 function exportRekapDailyReport() {
 
-    const modalLama = document.getElementById("modal-pilih-tanggal-rekap");
+    const modalLama = document.getElementById(
+        "modal-pilih-tanggal-rekap"
+    );
 
     if (modalLama) {
         modalLama.remove();
     }
 
-    const tanggalHariIni = getTanggalLokal();
+    const tanggalHariIni = getTanggalHariIniWIB();
 
     const modal = document.createElement("div");
 
@@ -1543,19 +1704,25 @@ function exportRekapDailyReport() {
 
     document.body.appendChild(modal);
 
-    const inputTanggal = document.getElementById("input-tanggal-rekap");
+    const inputTanggal = document.getElementById(
+        "input-tanggal-rekap"
+    );
 
-    const btnGenerate = document.getElementById("btn-generate-rekap");
+    const btnGenerate = document.getElementById(
+        "btn-generate-rekap"
+    );
 
     function tutupModal() {
         modal.remove();
     }
 
-    document.getElementById("btn-tutup-pilih-tanggal")
-        .addEventListener("click", tutupModal);
+    document.getElementById(
+        "btn-tutup-pilih-tanggal"
+    ).addEventListener("click", tutupModal);
 
-    document.getElementById("btn-batal-rekap")
-        .addEventListener("click", tutupModal);
+    document.getElementById(
+        "btn-batal-rekap"
+    ).addEventListener("click", tutupModal);
 
     modal.addEventListener("click", (event) => {
 
@@ -1595,7 +1762,8 @@ function exportRekapDailyReport() {
             if (!response.ok || !result.success) {
 
                 throw new Error(
-                    result.message || "Gagal mengambil data rekap."
+                    result.message ||
+                    "Gagal mengambil data rekap."
                 );
 
             }
@@ -1640,17 +1808,7 @@ function exportRekapDailyReport() {
 ========================================================= */
 
 function getTanggalLokal() {
-
-    const sekarang = new Date();
-
-    const tahun = sekarang.getFullYear();
-
-    const bulan = String(sekarang.getMonth() + 1).padStart(2, "0");
-
-    const hari = String(sekarang.getDate()).padStart(2, "0");
-
-    return `${tahun}-${bulan}-${hari}`;
-
+    return getTanggalHariIniWIB();
 }
 
 
@@ -1663,6 +1821,7 @@ function formatTanggalPDF(tanggal) {
     if (isNaN(date.getTime())) return tanggal;
 
     return date.toLocaleDateString("id-ID", {
+        timeZone: "Asia/Jakarta",
         day: "2-digit",
         month: "long",
         year: "numeric"
@@ -1679,7 +1838,9 @@ function buatPDFRekapDailyReport(result) {
 
     if (!window.jspdf || !window.jspdf.jsPDF) {
 
-        alert("Library jsPDF belum dimuat. Periksa script CDN pada HTML.");
+        alert(
+            "Library jsPDF belum dimuat. Periksa script CDN pada HTML."
+        );
 
         return;
 
@@ -1695,7 +1856,9 @@ function buatPDFRekapDailyReport(result) {
 
     if (typeof doc.autoTable !== "function") {
 
-        alert("Plugin jsPDF AutoTable belum dimuat. Periksa script CDN pada HTML.");
+        alert(
+            "Plugin jsPDF AutoTable belum dimuat. Periksa script CDN pada HTML."
+        );
 
         return;
 
@@ -1715,10 +1878,6 @@ function buatPDFRekapDailyReport(result) {
 
     let halamanPertama = true;
 
-
-    /* =====================================================
-       FUNGSI MEMBUAT JUDUL BAGIAN
-    ===================================================== */
 
     function buatJudulBagian(teks, posisiY) {
 
@@ -1742,10 +1901,6 @@ function buatPDFRekapDailyReport(result) {
     }
 
 
-    /* =====================================================
-       FUNGSI MENGHITUNG STATUS LAPORAN
-    ===================================================== */
-
     function hitungStatusLaporan(program) {
 
         let diterima = 0;
@@ -1762,13 +1917,9 @@ function buatPDFRekapDailyReport(result) {
 
                 if (status === "diterima") {
                     diterima++;
-                }
-
-                else if (status === "ditolak") {
+                } else if (status === "ditolak") {
                     ditolak++;
-                }
-
-                else if (status === "menunggu") {
+                } else if (status === "menunggu") {
                     menunggu++;
                 }
 
@@ -1785,15 +1936,10 @@ function buatPDFRekapDailyReport(result) {
     }
 
 
-    /* =====================================================
-       FUNGSI MEMBUAT HEADER PROGRAM
-    ===================================================== */
-
     function buatHeaderProgram(program) {
 
         let posisiY = 17;
 
-        // Judul utama.
         doc.setFont("helvetica", "bold");
         doc.setFontSize(19);
         doc.setTextColor(...warnaUtama);
@@ -1807,7 +1953,6 @@ function buatPDFRekapDailyReport(result) {
 
         posisiY += 7;
 
-        // Subjudul.
         doc.setFont("helvetica", "normal");
         doc.setFontSize(9);
         doc.setTextColor(...warnaAbu);
@@ -1833,7 +1978,6 @@ function buatPDFRekapDailyReport(result) {
 
         posisiY += 9;
 
-        // Identitas mentor.
         doc.setFont("helvetica", "bold");
         doc.setFontSize(9);
         doc.setTextColor(50, 60, 75);
@@ -1881,13 +2025,10 @@ function buatPDFRekapDailyReport(result) {
     }
 
 
-    /* =====================================================
-       FUNGSI FOOTER DAN NOMOR HALAMAN
-    ===================================================== */
-
     function buatFooter() {
 
-        const jumlahHalaman = doc.internal.getNumberOfPages();
+        const jumlahHalaman =
+            doc.internal.getNumberOfPages();
 
         for (let i = 1; i <= jumlahHalaman; i++) {
 
@@ -1926,7 +2067,7 @@ function buatPDFRekapDailyReport(result) {
 
 
     /* =====================================================
-       24. LOOP SETIAP PROGRAM MENTOR
+       LOOP SETIAP PROGRAM MENTOR
     ===================================================== */
 
     result.data.forEach(program => {
@@ -1940,9 +2081,7 @@ function buatPDFRekapDailyReport(result) {
         let posisiY = buatHeaderProgram(program);
 
 
-        /* ================================================
-           RINGKASAN PESERTA
-        ================================================ */
+        // A. RINGKASAN PESERTA
 
         posisiY = buatJudulBagian(
             "A. RINGKASAN PESERTA",
@@ -2002,9 +2141,7 @@ function buatPDFRekapDailyReport(result) {
         posisiY = doc.lastAutoTable.finalY + 9;
 
 
-        /* ================================================
-           RINGKASAN STATUS LAPORAN
-        ================================================ */
+        // B. RINGKASAN STATUS LAPORAN
 
         posisiY = buatJudulBagian(
             "B. RINGKASAN STATUS LAPORAN",
@@ -2063,9 +2200,7 @@ function buatPDFRekapDailyReport(result) {
         posisiY = doc.lastAutoTable.finalY + 9;
 
 
-        /* ================================================
-           RINCIAN DAILY REPORT
-        ================================================ */
+        // C. RINCIAN DAILY REPORT
 
         posisiY = buatJudulBagian(
             "C. RINCIAN DAILY REPORT PESERTA",
@@ -2081,17 +2216,11 @@ function buatPDFRekapDailyReport(result) {
                 barisLaporan.push([
 
                     peserta.nama || "-",
-
                     peserta.nisn || "-",
-
                     laporan.nama_materi || "-",
-
                     laporan.judul || "-",
-
                     laporan.isi_laporan || "-",
-
                     String(laporan.status || "-").toUpperCase(),
-
                     laporan.catatan_mentor || "-"
 
                 ]);
@@ -2162,7 +2291,6 @@ function buatPDFRekapDailyReport(result) {
             },
 
             columnStyles: {
-
                 0: { cellWidth: 32 },
                 1: { cellWidth: 27 },
                 2: { cellWidth: 31 },
@@ -2170,7 +2298,6 @@ function buatPDFRekapDailyReport(result) {
                 4: { cellWidth: 58 },
                 5: { cellWidth: 24 },
                 6: { cellWidth: 53 }
-
             }
 
         });
@@ -2178,15 +2305,14 @@ function buatPDFRekapDailyReport(result) {
         posisiY = doc.lastAutoTable.finalY + 10;
 
 
-        /* ================================================
-           PESERTA BELUM MELAPOR
-        ================================================ */
+        // D. PESERTA BELUM MELAPOR
 
         const belumLapor = program.peserta.filter(
-            peserta => !peserta.laporan || peserta.laporan.length === 0
+            peserta =>
+                !peserta.laporan ||
+                peserta.laporan.length === 0
         );
 
-        // Judul dan tabel tidak dipisahkan jika ruang halaman tidak cukup.
         if (posisiY + 20 > tinggiHalaman - 17) {
 
             doc.addPage();
@@ -2205,11 +2331,8 @@ function buatPDFRekapDailyReport(result) {
             ? belumLapor.map((peserta, index) => [
 
                 index + 1,
-
                 peserta.nama || "-",
-
                 peserta.nisn || "-",
-
                 "Belum mengirim Daily Report"
 
             ])
@@ -2276,16 +2399,7 @@ function buatPDFRekapDailyReport(result) {
     });
 
 
-    /* =====================================================
-       25. TAMBAHKAN FOOTER KE SEMUA HALAMAN
-    ===================================================== */
-
     buatFooter();
-
-
-    /* =====================================================
-       26. SIMPAN PDF
-    ===================================================== */
 
     const namaFile =
         `Rekap-Daily-Report-${result.tanggal}.pdf`;
@@ -2296,7 +2410,7 @@ function buatPDFRekapDailyReport(result) {
 
 
 /* =========================================================
-   27. JALANKAN INISIALISASI MODUL
+   24. JALANKAN INISIALISASI MODUL
 ========================================================= */
 
 initMentorDailyReport();
