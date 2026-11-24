@@ -92,194 +92,232 @@ try {
 
 
     /* =====================================================
-       1. REKAP ABSENSI PESERTA
+       1. REKAP ABSENSI PESERTA BERDASARKAN TANGGAL
     ===================================================== */
-
+    
     if ($aksi === 'rekap') {
-
+    
+        // Mengambil tanggal dari filter
+        // Jika belum ada tanggal yang dikirim, gunakan hari ini
+        $tanggal = $_GET['tanggal'] ?? '';
+    
+        $zonaWaktu = new DateTimeZone('Asia/Jakarta');
+    
+        if ($tanggal === '') {
+            $tanggal = (new DateTimeImmutable(
+                'now',
+                $zonaWaktu
+            ))->format('Y-m-d');
+        }
+    
+        // Validasi format tanggal
+        $date = DateTime::createFromFormat('!Y-m-d', $tanggal);
+    
+        if (!$date || $date->format('Y-m-d') !== $tanggal) {
+            http_response_code(400);
+    
+            echo json_encode([
+                'success' => false,
+                'message' => 'Format tanggal tidak valid.'
+            ]);
+    
+            exit;
+        }
+    
+        // Tanggal tidak boleh melebihi hari ini
+        $hariIni = new DateTimeImmutable('now', $zonaWaktu);
+        $tanggalHariIni = $hariIni->format('Y-m-d');
+    
+        if ($tanggal > $tanggalHariIni) {
+            http_response_code(400);
+    
+            echo json_encode([
+                'success' => false,
+                'message' => 'Tanggal tidak boleh melebihi hari ini.'
+            ]);
+    
+            exit;
+        }
+    
+    
         $sql = "
             SELECT
                 u.id AS peserta_id,
                 u.nama,
                 u.nisn,
-
+    
                 p.id AS program_id,
                 p.nama_program AS program,
-
-                latest_absen.status::text AS status_absen,
-                latest_absen.tanggal,
-                latest_absen.waktu_masuk,
-                latest_absen.waktu_keluar,
-
+    
+                a.status::text AS status_absen,
+                a.tanggal,
+                a.waktu_masuk,
+                a.waktu_keluar,
+    
                 latest_report.status::text AS status_report,
-
+    
                 COALESCE(statistik.total_absensi, 0) AS total_absensi,
                 COALESCE(statistik.total_hadir, 0) AS total_hadir,
-
+    
                 CASE
                     WHEN COALESCE(statistik.total_absensi, 0) = 0
                     THEN 0
-
+    
                     ELSE ROUND(
                         statistik.total_hadir * 100.0 /
                         statistik.total_absensi
                     )
                 END AS persentase_kehadiran
-
+    
             FROM mentor_program mp
-
+    
             JOIN program p
                 ON p.id = mp.program_id
-
+    
             JOIN peserta_program pp
                 ON pp.program_id = p.id
                 AND LOWER(pp.status) = 'aktif'
-
+    
             JOIN users u
                 ON u.id = pp.peserta_id
-
-            LEFT JOIN LATERAL (
-                SELECT
-                    a.status,
-                    a.tanggal,
-                    a.waktu_masuk,
-                    a.waktu_keluar
-
-                FROM absensi a
-
-                WHERE a.peserta_id = u.id
-                  AND a.program_id = p.id
-
-                ORDER BY a.tanggal DESC, a.id DESC
-
-                LIMIT 1
-
-            ) latest_absen ON TRUE
-
+    
+            -- Absensi hanya berdasarkan tanggal yang dipilih
+            LEFT JOIN absensi a
+                ON a.peserta_id = u.id
+                AND a.program_id = p.id
+                AND a.tanggal = :tanggal_absensi
+    
+            -- Daily Report berdasarkan tanggal yang dipilih
             LEFT JOIN LATERAL (
                 SELECT
                     dr.status
-
+    
                 FROM daily_report dr
-
+    
                 JOIN materi m
                     ON m.id = dr.materi_id
-
+    
                 WHERE dr.peserta_id = u.id
-                  AND m.program_id = p.id
-                  AND m.mentor_id = mp.mentor_id
-
-                ORDER BY dr.tanggal DESC, dr.id DESC
-
+                    AND m.program_id = p.id
+                    AND m.mentor_id = mp.mentor_id
+                    AND dr.tanggal = :tanggal_report
+    
+                ORDER BY dr.id DESC
+    
                 LIMIT 1
-
+    
             ) latest_report ON TRUE
-
+    
+            -- Statistik keseluruhan peserta tetap dipertahankan
             LEFT JOIN LATERAL (
                 SELECT
                     COUNT(*) AS total_absensi,
-
+    
                     COUNT(*) FILTER (
-                        WHERE a.status::text = 'hadir'
+                        WHERE ab.status::text = 'hadir'
                     ) AS total_hadir
-
-                FROM absensi a
-
-                WHERE a.peserta_id = u.id
-                  AND a.program_id = p.id
-
+    
+                FROM absensi ab
+    
+                WHERE ab.peserta_id = u.id
+                    AND ab.program_id = p.id
+    
             ) statistik ON TRUE
-
+    
             WHERE mp.mentor_id = :mentor_id
-
+    
             ORDER BY u.nama ASC
         ";
-
+    
         $stmt = $pdo->prepare($sql);
-
+    
         $stmt->execute([
+            ':tanggal_absensi' => $tanggal,
+            ':tanggal_report' => $tanggal,
             ':mentor_id' => $mentorId
         ]);
-
+    
         $hasil = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
+    
         $data = [];
-
+    
         foreach ($hasil as $row) {
-
-            // Status absensi terbaru
+    
+            // Status absensi pada tanggal pilihan
             $status = $row['status_absen']
                 ? ucfirst($row['status_absen'])
                 : 'Belum ada';
-
-            // Status Daily Report terbaru
+    
+            // Status Daily Report pada tanggal pilihan
             $statusReport = $row['status_report']
                 ? ucfirst($row['status_report'])
                 : 'Belum ada';
-
+    
             // Format waktu masuk
             $jamMasuk = $row['waktu_masuk']
                 ? date('H:i', strtotime($row['waktu_masuk'])) . ' WIB'
                 : '-';
-
+    
             // Format waktu keluar
             $jamKeluar = $row['waktu_keluar']
                 ? date('H:i', strtotime($row['waktu_keluar'])) . ' WIB'
                 : '-';
-
-            // Format tanggal
-            $tanggal = $row['tanggal']
+    
+            // Format tanggal absensi
+            $tanggalAbsen = $row['tanggal']
                 ? date('d-m-Y', strtotime($row['tanggal']))
                 : '-';
-
+    
             $tanggalTerbaru = $row['tanggal']
                 ? date('d F Y', strtotime($row['tanggal']))
                 : '-';
-
+    
             $data[] = [
-
+    
                 'peserta_id' => (int) $row['peserta_id'],
-
+    
                 'nama' => $row['nama'],
-
+    
                 'nis' => $row['nisn'] ?? '-',
-
+    
                 'nisn' => $row['nisn'] ?? '-',
-
+    
                 'sub' => '-',
-
+    
                 'program' => $row['program'],
-
-                'waktu' => $tanggal,
-
+    
+                'waktu' => $tanggalAbsen,
+    
                 'statusAbsen' => $status,
-
+    
                 'statusReport' => $statusReport,
-
+    
                 'persentaseKehadiran' =>
                     $row['persentase_kehadiran'] . '%',
-
+    
                 'tanggalTerbaru' => $tanggalTerbaru,
-
+    
                 'jamMasuk' => $jamMasuk,
-
+    
                 'jamKeluar' => $jamKeluar,
-
+    
                 'statusTerbaru' => '● ' . $status,
-
+    
                 'inisial' => strtoupper(
                     substr($row['nama'], 0, 1)
                 )
             ];
         }
-
+    
         echo json_encode([
             'success' => true,
+            'tanggal' => $tanggal,
             'data' => $data
-        ]);
-
+        ], JSON_UNESCAPED_UNICODE);
+    
         exit;
     }
+
 
 
     /* =====================================================
@@ -290,9 +328,7 @@ try {
 
         $pesertaId = $_GET['peserta_id'] ?? null;
 
-        // Validasi ID peserta
         if (!$pesertaId || !ctype_digit((string) $pesertaId)) {
-
             http_response_code(400);
 
             echo json_encode([
@@ -302,6 +338,14 @@ try {
 
             exit;
         }
+
+        // Tanggal mengikuti zona waktu Indonesia
+        $hariIni = new DateTimeImmutable(
+            'now',
+            new DateTimeZone('Asia/Jakarta')
+        );
+
+        $tanggalHariIni = $hariIni->format('Y-m-d');
 
 
         /* -------------------------------------------------
@@ -313,7 +357,6 @@ try {
                 u.id,
                 u.nama,
                 u.nisn,
-
                 p.id AS program_id,
                 p.nama_program AS program
 
@@ -344,9 +387,7 @@ try {
 
         $siswa = $stmtSiswa->fetch(PDO::FETCH_ASSOC);
 
-        // Jika peserta tidak berada di program mentor
         if (!$siswa) {
-
             http_response_code(404);
 
             echo json_encode([
@@ -359,31 +400,50 @@ try {
 
 
         /* -------------------------------------------------
-           MENGAMBIL 5 RIWAYAT ABSENSI TERAKHIR
+           RIWAYAT 5 HARI SEBELUM HARI INI
+           HARI INI TIDAK DIMASUKKAN KE RIWAYAT
         ------------------------------------------------- */
 
+        
         $sqlRiwayat = "
             SELECT
-                id,
-                tanggal,
-                waktu_masuk,
-                waktu_keluar,
-                status,
-                keterangan
+                tanggal_hari.tanggal::date AS tanggal,
 
-            FROM absensi
+                a.waktu_masuk,
+                a.waktu_keluar,
 
-            WHERE peserta_id = :peserta_id
-              AND program_id = :program_id
+                COALESCE(a.status::text, 'alpha') AS status,
 
-            ORDER BY tanggal DESC, id DESC
+                CASE
+                    WHEN a.id IS NULL THEN 'Tidak ada absensi'
+                    ELSE COALESCE(a.keterangan, '-')
+                END AS keterangan
+
+            FROM generate_series(
+                CAST(:hari_ini AS date) - INTERVAL '7 days',
+                CAST(:hari_ini AS date) - INTERVAL '1 day',
+                INTERVAL '1 day'
+            ) AS tanggal_hari(tanggal)
+
+            LEFT JOIN absensi a
+                ON a.tanggal = tanggal_hari.tanggal::date
+                AND a.peserta_id = :peserta_id
+                AND a.program_id = :program_id
+
+            WHERE EXTRACT(
+                ISODOW FROM tanggal_hari.tanggal
+            ) BETWEEN 1 AND 5
+
+            ORDER BY tanggal_hari.tanggal DESC
 
             LIMIT 5
         ";
 
+
         $stmtRiwayat = $pdo->prepare($sqlRiwayat);
 
         $stmtRiwayat->execute([
+            ':hari_ini' => $tanggalHariIni,
             ':peserta_id' => $pesertaId,
             ':program_id' => $siswa['program_id']
         ]);
@@ -394,20 +454,21 @@ try {
 
         foreach ($riwayatDB as $index => $row) {
 
-            $status = ucfirst($row['status']);
+            $statusAsli = strtolower($row['status']);
+            $status = ucfirst($statusAsli);
 
             $statusClass = 'text-slate-600 font-bold';
 
-            if ($row['status'] === 'hadir') {
-
+            if ($statusAsli === 'hadir') {
                 $statusClass = 'text-emerald-600 font-bold';
 
-            } elseif ($row['status'] === 'izin') {
-
+            } elseif ($statusAsli === 'izin') {
                 $statusClass = 'text-blue-600 font-bold';
 
-            } elseif ($row['status'] === 'sakit' || $row['status'] === 'alpha') {
-
+            } elseif (
+                $statusAsli === 'sakit' ||
+                $statusAsli === 'alpha'
+            ) {
                 $statusClass = 'text-rose-600 font-bold';
             }
 
@@ -432,15 +493,50 @@ try {
 
                 'statusClass' => $statusClass,
 
-                'keterangan' => $row['keterangan'] ?? '-'
+                'keterangan' => $row['keterangan']
             ];
         }
 
 
         /* -------------------------------------------------
-           MENGHITUNG PERSENTASE KEHADIRAN
+           DATA ABSENSI HARI INI
+           DIPISAH DARI RIWAYAT
         ------------------------------------------------- */
 
+        $sqlHariIni = "
+            SELECT
+                tanggal,
+                waktu_masuk,
+                waktu_keluar,
+                status,
+                keterangan
+
+            FROM absensi
+
+            WHERE peserta_id = :peserta_id
+              AND program_id = :program_id
+              AND tanggal = CAST(:hari_ini AS date)
+
+            LIMIT 1
+        ";
+
+        $stmtHariIni = $pdo->prepare($sqlHariIni);
+
+        $stmtHariIni->execute([
+            ':peserta_id' => $pesertaId,
+            ':program_id' => $siswa['program_id'],
+            ':hari_ini' => $tanggalHariIni
+        ]);
+
+        $hariIniDB = $stmtHariIni->fetch(PDO::FETCH_ASSOC);
+
+
+        /* -------------------------------------------------
+           PERSENTASE KEHADIRAN
+           HANYA MENGHITUNG ABSENSI SAMPAI KEMARIN
+        ------------------------------------------------- */
+
+        
         $sqlStatistik = "
             SELECT
                 COUNT(*) AS total,
@@ -453,11 +549,56 @@ try {
 
             WHERE peserta_id = :peserta_id
               AND program_id = :program_id
+              AND tanggal < CAST(:hari_ini AS date)
+              AND EXTRACT(ISODOW FROM tanggal) BETWEEN 1 AND 5
+        ";
+
+
+        $stmtStatistik = $pdo->prepare($sqlStatistik);
+
+        /* -------------------------------------------------
+           PERSENTASE KEHADIRAN BULANAN
+           DARI TANGGAL 1 SAMPAI HARI INI
+        ------------------------------------------------- */
+
+        $sqlStatistik = "
+            SELECT
+                COUNT(*) AS total,
+
+                COUNT(*) FILTER (
+                    WHERE a.status::text = 'hadir'
+                ) AS hadir
+
+            FROM generate_series(
+                DATE_TRUNC(
+                    'month',
+                    CAST(:bulan_awal AS date)
+                ),
+                CAST(:hari_ini AS date),
+                INTERVAL '1 day'
+            ) AS tanggal_hari(tanggal)
+
+            LEFT JOIN absensi a
+                ON a.tanggal = tanggal_hari.tanggal::date
+                AND a.peserta_id = :peserta_id
+                AND a.program_id = :program_id
+
+            WHERE EXTRACT(
+                ISODOW FROM tanggal_hari.tanggal
+            ) BETWEEN 1 AND 5
+
+            AND (
+                tanggal_hari.tanggal::date < CAST(:batas_hari_ini AS date)
+                OR a.id IS NOT NULL
+            )
         ";
 
         $stmtStatistik = $pdo->prepare($sqlStatistik);
 
         $stmtStatistik->execute([
+            ':bulan_awal' => $tanggalHariIni,
+            ':hari_ini' => $tanggalHariIni,
+            ':batas_hari_ini' => $tanggalHariIni,
             ':peserta_id' => $pesertaId,
             ':program_id' => $siswa['program_id']
         ]);
@@ -473,25 +614,24 @@ try {
 
 
         /* -------------------------------------------------
-           DATA ABSENSI TERBARU
+           INFORMASI ABSENSI HARI INI
         ------------------------------------------------- */
 
-        $terbaru = $riwayatDB[0] ?? null;
+        $tanggalTerbaru = date(
+            'd F Y',
+            strtotime($tanggalHariIni)
+        );
 
-        $tanggalTerbaru = $terbaru
-            ? date('d F Y', strtotime($terbaru['tanggal']))
+        $jamMasukTerbaru = $hariIniDB && $hariIniDB['waktu_masuk']
+            ? date('H:i', strtotime($hariIniDB['waktu_masuk'])) . ' WIB'
             : '-';
 
-        $jamMasukTerbaru = $terbaru && $terbaru['waktu_masuk']
-            ? date('H:i', strtotime($terbaru['waktu_masuk'])) . ' WIB'
+        $jamKeluarTerbaru = $hariIniDB && $hariIniDB['waktu_keluar']
+            ? date('H:i', strtotime($hariIniDB['waktu_keluar'])) . ' WIB'
             : '-';
 
-        $jamKeluarTerbaru = $terbaru && $terbaru['waktu_keluar']
-            ? date('H:i', strtotime($terbaru['waktu_keluar'])) . ' WIB'
-            : '-';
-
-        $statusTerbaru = $terbaru
-            ? '● ' . ucfirst($terbaru['status'])
+        $statusTerbaru = $hariIniDB
+            ? '● ' . ucfirst($hariIniDB['status'])
             : '● Belum ada data';
 
 
@@ -529,10 +669,11 @@ try {
 
                 'riwayat' => $riwayat
             ]
-        ]);
+        ], JSON_UNESCAPED_UNICODE);
 
         exit;
     }
+
 
 
     /* =====================================================

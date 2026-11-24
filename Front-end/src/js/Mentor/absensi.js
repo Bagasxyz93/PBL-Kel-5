@@ -63,13 +63,12 @@ async function ambilDataAPI(url) {
 
 
 function tanggalHariIni() {
-    const sekarang = new Date();
-
-    const tahun = sekarang.getFullYear();
-    const bulan = String(sekarang.getMonth() + 1).padStart(2, '0');
-    const tanggal = String(sekarang.getDate()).padStart(2, '0');
-
-    return `${tahun}-${bulan}-${tanggal}`;
+    return new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'Asia/Jakarta',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+    }).format(new Date());
 }
 
 
@@ -90,21 +89,42 @@ function formatTanggalIndonesia(tanggal) {
    TANGGAL HALAMAN
 ========================================================= */
 
-function tampilkanTanggal() {
-    const elemen = document.getElementById(
+function tampilkanTanggal(tanggal = tanggalHariIni()) {
+    const buatTanggal = (nilai) => {
+        const [tahun, bulan, hari] = nilai.split('-').map(Number);
+        return new Date(tahun, bulan - 1, hari);
+    };
+
+    const tanggalSekarang = buatTanggal(tanggalHariIni());
+    const tanggalDipilih = buatTanggal(tanggal);
+
+    const tanggalHeader = document.getElementById(
+        'tanggal-hari-ini'
+    );
+
+    const tanggalFilter = document.getElementById(
         'tanggal-filter-label'
     );
 
-    if (!elemen) return;
+    if (tanggalHeader) {
+        tanggalHeader.textContent =
+            tanggalSekarang.toLocaleDateString('id-ID', {
+                weekday: 'long',
+                day: '2-digit',
+                month: 'long',
+                year: 'numeric'
+            });
+    }
 
-    const sekarang = new Date();
-
-    elemen.textContent = sekarang.toLocaleDateString('id-ID', {
-        weekday: 'short',
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric'
-    });
+    if (tanggalFilter) {
+        tanggalFilter.textContent =
+            tanggalDipilih.toLocaleDateString('id-ID', {
+                weekday: 'short',
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric'
+            });
+    }
 }
 
 
@@ -337,6 +357,46 @@ export function initMentorAbsensi() {
     const paginationInfo = document.getElementById(
         'pagination-info'
     );
+
+    const inputTanggalFilter = document.getElementById(
+        'input-tanggal-filter'
+    );
+    
+    let tanggalAbsensiTerpilih = tanggalHariIni();
+    
+    if (inputTanggalFilter) {
+        inputTanggalFilter.addEventListener('change', () => {
+            const tanggal = inputTanggalFilter.value;
+
+            if (!tanggal) return;
+
+            if (tanggal > tanggalHariIni()) {
+                alert('Tanggal tidak boleh melebihi hari ini.');
+
+                inputTanggalFilter.value = tanggalAbsensiTerpilih;
+                return;
+            }
+
+            tanggalAbsensiTerpilih = tanggal;
+            inputTanggalFilter.max = tanggalHariIni();
+
+            loadDataAbsensi();
+        });
+    }
+
+    const wrapperTanggalFilter = document.getElementById('wrapper-tanggal-filter');
+
+    if (wrapperTanggalFilter && inputTanggalFilter) {
+        wrapperTanggalFilter.addEventListener('click', (event) => {
+            if (event.target !== inputTanggalFilter) {
+                if (typeof inputTanggalFilter.showPicker === 'function') {
+                    inputTanggalFilter.showPicker();
+                } else {
+                    inputTanggalFilter.focus();
+                }
+            }
+        });
+    }
 
     if (!tableBody) {
         console.error('Elemen table-absensi-body tidak ditemukan.');
@@ -648,7 +708,7 @@ export function initMentorAbsensi() {
 
         try {
             const result = await ambilDataAPI(
-                `${API_URL}?aksi=rekap`
+                `${API_URL}?aksi=rekap&tanggal=${encodeURIComponent(tanggalAbsensiTerpilih)}`
             );
 
             const data = result.data;
@@ -659,11 +719,13 @@ export function initMentorAbsensi() {
 
             updateStatistik(dataAbsensiSiswaList);
             isiFilterProgram(dataAbsensiSiswaList);
-            tampilkanTanggal();
+            tampilkanTanggal(tanggalAbsensiTerpilih);
 
             applyFilters();
 
-            console.log('Data rekap absensi berhasil dimuat.');
+            console.log(
+                `Rekap absensi tanggal ${tanggalAbsensiTerpilih} berhasil dimuat.`
+            );
 
         } catch (error) {
             console.error('Gagal mengambil data rekap:', error);
@@ -687,6 +749,29 @@ export function initMentorAbsensi() {
         searchInput.addEventListener('input', applyFilters);
     }
 
+    if (inputTanggalFilter) {
+        inputTanggalFilter.addEventListener('change', () => {
+            const tanggal = inputTanggalFilter.value;
+
+            if (!tanggal) return;
+
+            if (tanggal > tanggalHariIni()) {
+                alert('Tanggal tidak boleh melebihi hari ini.');
+
+                inputTanggalFilter.value = tanggalAbsensiTerpilih;
+                return;
+            }
+
+            tanggalAbsensiTerpilih = tanggal;
+
+            // Perbarui batas maksimal tanggal
+            inputTanggalFilter.max = tanggalHariIni();
+
+            // Muat ulang tabel sesuai tanggal pilihan
+            loadDataAbsensi();
+        });
+    }
+
     if (filterProgram) {
         filterProgram.addEventListener('change', applyFilters);
     }
@@ -701,7 +786,15 @@ export function initMentorAbsensi() {
                 filterProgram.value = '';
             }
 
-            applyFilters();
+            // Reset tanggal kembali ke hari ini
+            tanggalAbsensiTerpilih = tanggalHariIni();
+
+            if (inputTanggalFilter) {
+                inputTanggalFilter.value = tanggalAbsensiTerpilih;
+                inputTanggalFilter.max = tanggalHariIni();
+            }
+
+            loadDataAbsensi();
         });
     }
 
