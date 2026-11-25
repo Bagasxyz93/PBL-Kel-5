@@ -1,25 +1,56 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Absen Siswa | SI-IN</title>
-    <!-- Tailwind CSS -->
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/src/css/style.css">
+
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .attendance-card {
+            transition: all .25s ease;
+        }
+
+        .attendance-card:hover {
+            transform: translateY(-2px);
+            border-color: #c7d2fe;
+            box-shadow: 0 8px 24px rgba(79, 70, 229, .06);
+        }
+
+        .detail-card {
+            transition: all .2s ease;
+        }
+
+        .detail-card:hover {
+            background: white;
+            border-color: #c7d2fe;
+        }
+
+        .table-row-hover {
+            transition: background .2s ease;
+        }
+
+        .table-row-hover:hover {
+            background: #f8fafc;
+        }
     </style>
 </head>
 
 <body class="bg-[#f8fafc] m-0 p-0 text-slate-800 h-screen overflow-hidden antialiased">
-    <div
-    id="app"
-    class="flex h-screen w-screen overflow-hidden invisible opacity-0 transition-opacity duration-200"
-    aria-busy="true">
 
-        <!-- Sidebar Fixed / Sticky -->
+    <div id="app"
+        class="flex h-screen w-screen overflow-hidden invisible opacity-0 transition-opacity duration-200"
+        aria-busy="true">
+
+        <!-- Sidebar -->
         <div id="sidebar-container" class="shrink-0 h-full"></div>
 
         <!-- Konten Utama -->
@@ -28,82 +59,213 @@
             <!-- Header -->
             <div id="header-container" class="sticky top-0 z-30 shrink-0"></div>
 
-            <main class="flex-1 p-6 lg:p-8 max-w-7xl w-full mx-auto space-y-6">
+            <main class="flex-1 p-6 lg:p-8 max-w-7xl w-full mx-auto space-y-5">
 
-                <!-- Card Sesi Hari Ini -->
-                <article class="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
-                    <div class="flex items-center justify-between pb-6">
-                        <div class="flex items-center gap-2">
-                            <h1 class="text-xl font-extrabold tracking-tight text-slate-800">
-                                ABSEN
-                            </h1>
-                            <span class="text-xs font-semibold text-slate-400">• Sesi Hari Ini</span>
-                        </div>
-
-                        <!-- Badge Status -->
-                        <span id="status-absen-badge" class="inline-flex items-center gap-1.5 rounded-full bg-emerald-500 px-4 py-1.5 text-xs font-bold text-white shadow-sm">
-                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                <!-- Judul Halaman -->
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                    d="M8 7V3m8 4V3M4 11h16M5 5h14a1 1 0 011 1v14H4V6a1 1 0 011-1z"/>
                             </svg>
-                            HADIR
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-indigo-500">
+                                Kehadiran Peserta
+                            </span>
+                        </div>
+
+                        <h1 class="text-xl font-extrabold tracking-tight text-slate-800">
+                            Absensi
+                        </h1>
+
+                        <p class="text-xs text-slate-400 mt-1">
+                            Pantau kehadiran dan riwayat absensi program kamu.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Sesi Hari Ini -->
+                <article class="attendance-card rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+
+                    <!-- Header Card -->
+                    <div class="flex items-center justify-between mb-5">
+
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-9 h-9 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center">
+                                <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                        d="M8 7V3m8 4V3M4 11h16M5 5h14a1 1 0 011 1v14H4V6a1 1 0 011-1z"/>
+                                </svg>
+                            </div>
+
+                            <div>
+                                <h2 class="text-sm font-extrabold text-slate-800">
+                                    Sesi Hari Ini
+                                </h2>
+                                <p class="text-[10px] text-slate-400 mt-0.5">
+                                    Informasi kehadiran saat ini
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Badge -->
+                        <span id="status-absen-badge"
+                            class="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[10px] font-bold bg-slate-100 text-slate-500">
+                            MEMUAT
                         </span>
+
                     </div>
 
-                    <!-- Grid Detail Sesi -->
-                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                        <div class="rounded-xl bg-slate-50/80 p-4 border border-slate-100">
-                            <p class="text-[10px] font-bold tracking-wider text-slate-400 uppercase">PROGRAM</p>
-                            <p class="mt-1.5 text-xs font-bold text-slate-800">WEB DEVELOPMENT</p>
+                    <!-- Detail -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+
+                        <!-- Program -->
+                        <div class="detail-card rounded-xl border border-slate-100 bg-slate-50/70 p-4">
+                            <div class="flex items-center gap-2 mb-2">
+                                <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                        d="M12 6.5l8 4.5-8 4.5-8-4.5 8-4.5zm-8 8l8 4.5 8-4.5"/>
+                                </svg>
+                                <p class="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+                                    Program
+                                </p>
+                            </div>
+
+                            <p id="program-absen-hari-ini"
+                                class="text-xs font-bold text-slate-800">
+                                -
+                            </p>
                         </div>
 
-                        <div class="rounded-xl bg-slate-50/80 p-4 border border-slate-100">
-                            <p class="text-[10px] font-bold tracking-wider text-slate-400 uppercase">TANGGAL</p>
-                            <p class="mt-1.5 text-xs font-bold text-slate-800" id="tanggal-absen-hari-ini">30/10/2026</p>
+                        <!-- Tanggal -->
+                        <div class="detail-card rounded-xl border border-slate-100 bg-slate-50/70 p-4">
+                            <div class="flex items-center gap-2 mb-2">
+                                <svg class="w-4 h-4 text-violet-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                        d="M8 7V3m8 4V3M4 11h16M5 5h14a1 1 0 011 1v14H4V6a1 1 0 011-1z"/>
+                                </svg>
+                                <p class="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+                                    Tanggal
+                                </p>
+                            </div>
+
+                            <p id="tanggal-absen-hari-ini"
+                                class="text-xs font-bold text-slate-800">
+                                -
+                            </p>
                         </div>
 
-                        <div class="rounded-xl bg-slate-50/80 p-4 border border-slate-100">
-                            <p class="text-[10px] font-bold tracking-wider text-slate-400 uppercase">MENTOR</p>
-                            <p class="mt-1.5 text-xs font-bold text-slate-800">BPK. RENDI KURNIAWAN, S.KOM</p>
+                        <!-- Mentor -->
+                        <div class="detail-card rounded-xl border border-slate-100 bg-slate-50/70 p-4">
+                            <div class="flex items-center gap-2 mb-2">
+                                <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                        d="M16 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2m12-13a4 4 0 110 8 4 4 0 010-8zM8 11a4 4 0 100-8 4 4 0 000 8z"/>
+                                </svg>
+                                <p class="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+                                    Mentor
+                                </p>
+                            </div>
+
+                            <p id="mentor-absen-hari-ini"
+                                class="text-xs font-bold leading-5 text-slate-800">
+                                -
+                            </p>
                         </div>
 
-                        <div class="rounded-xl bg-slate-50/80 p-4 border border-slate-100">
-                            <p class="text-[10px] font-bold tracking-wider text-slate-400 uppercase">JAM</p>
-                            <p class="mt-1.5 text-xs font-bold text-slate-800">06.00 – 13.00 WIB</p>
+                        <!-- Jam -->
+                        <div class="detail-card rounded-xl border border-slate-100 bg-slate-50/70 p-4">
+                            <div class="flex items-center gap-2 mb-2">
+                                <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                        d="M12 8v4l3 2m6-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <p class="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+                                    Waktu Kehadiran
+                                </p>
+                            </div>
+
+                            <p id="jam-absen-hari-ini"
+                                class="text-xs font-bold leading-5 text-slate-800">
+                                -
+                            </p>
                         </div>
+
                     </div>
+
+                    <!-- Info -->
+                    <div class="mt-4 flex items-center gap-2 rounded-xl bg-indigo-50/70 px-3 py-2.5">
+                        <svg class="w-4 h-4 shrink-0 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+
+                        <p class="text-[10px] leading-5 text-indigo-600">
+                            Data kehadiran ditampilkan berdasarkan pencatatan sistem.
+                        </p>
+                    </div>
+
                 </article>
 
-                <!-- Section Riwayat Absen -->
-                <article class="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
-                    <h2 class="text-base font-extrabold tracking-tight text-slate-800 mb-6">
-                        RIWAYAT ABSEN
-                    </h2>
+                <!-- Riwayat Absensi -->
+                <article class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
 
+                    <!-- Header -->
+                    <div class="flex items-center gap-2.5 mb-5">
+                        <div class="w-9 h-9 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                    d="M8 7V3m8 4V3M4 11h16M5 5h14a1 1 0 011 1v14H4V6a1 1 0 011-1z"/>
+                            </svg>
+                        </div>
+
+                        <div>
+                            <h2 class="text-sm font-extrabold text-slate-800">
+                                Riwayat Absensi
+                            </h2>
+                            <p class="text-[10px] text-slate-400 mt-0.5">
+                                Rekap kehadiran sebelumnya
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Table -->
                     <div class="overflow-x-auto">
-                        <table class="w-full text-left text-xs">
+                        <table class="w-full text-left text-xs min-w-[650px]">
+
                             <thead>
-                                <tr class="border-b border-slate-200 text-[11px] font-bold tracking-wider text-slate-400 uppercase">
-                                    <th class="pb-3 pl-2">NAMA</th>
-                                    <th class="pb-3">TANGGAL</th>
-                                    <th class="pb-3">JAM MASUK</th>
-                                    <th class="pb-3">JAM KELUAR</th>
-                                    <th class="pb-3 text-right pr-2">STATUS</th>
+                                <tr class="border-b border-slate-200 text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+                                    <th class="pb-3 pl-2">Nama</th>
+                                    <th class="pb-3">Tanggal</th>
+                                    <th class="pb-3">Jam Masuk</th>
+                                    <th class="pb-3">Jam Keluar</th>
+                                    <th class="pb-3 text-right pr-2">Status</th>
                                 </tr>
                             </thead>
-                            <tbody id="riwayat-absen-container" class="divide-y divide-slate-100 font-medium">
-                                <!-- Data di-render lewat JS -->
+
+                            <tbody id="riwayat-absen-container"
+                                class="divide-y divide-slate-100 font-medium">
+                                <tr>
+                                    <td colspan="5" class="py-8 text-center text-slate-400">
+                                        Memuat riwayat absensi...
+                                    </td>
+                                </tr>
                             </tbody>
+
                         </table>
                     </div>
+
                 </article>
 
             </main>
 
             <!-- Footer -->
             <div id="footer-container" class="shrink-0"></div>
+
         </div>
     </div>
 
     <script type="module" src="/src/js/components.js"></script>
+
 </body>
 </html>

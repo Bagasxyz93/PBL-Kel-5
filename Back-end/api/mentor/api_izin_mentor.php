@@ -1,3 +1,4 @@
+
 <?php
 
 header("Content-Type: application/json; charset=UTF-8");
@@ -13,33 +14,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 require_once __DIR__ . '/../../config/koneksi.php';
 require_once __DIR__ . '/../../config/tab_auth.php';
 
-$userToken = ambilUserToken();
+function responseJSON($success, $message, $code = 200, $data = null)
+{
+    http_response_code($code);
 
-if (!$userToken || $userToken['role'] !== 'mentor') {
-    http_response_code(401);
     echo json_encode([
-        "success" => false,
-        "message" => "Akses hanya untuk mentor."
-    ]);
+        'success' => $success,
+        'message' => $message,
+        'data' => $data
+    ], JSON_UNESCAPED_UNICODE);
+
     exit;
 }
 
+$userToken = ambilUserToken();
+
+if (!$userToken || $userToken['role'] !== 'mentor') {
+    responseJSON(false, "Akses hanya untuk mentor.", 401);
+}
+
 if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
-    http_response_code(405);
-    echo json_encode([
-        "success" => false,
-        "message" => "Metode tidak diizinkan."
-    ]);
-    exit;
+    responseJSON(false, "Metode tidak diizinkan.", 405);
 }
 
 try {
 
-    $mentorId = $userToken['user_id'];
+    $mentorId = (int) $userToken['user_id'];
 
     $sql = "
         SELECT
             pi.id,
+            pi.absensi_id,
             siswa.nama AS nama_siswa,
             COALESCE(siswa.nisn, '-') AS nis,
             p.nama_program,
@@ -78,18 +83,56 @@ try {
 
     $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    echo json_encode([
-        "success" => true,
-        "data" => $data
-    ]);
+    foreach ($data as &$item) {
 
-} catch (PDOException $e) {
+        $alasanLengkap = $item['alasan'] ?? '';
 
-    http_response_code(500);
+        $jenis = null;
 
-    echo json_encode([
-        "success" => false,
-        "message" => "Gagal mengambil data pengajuan izin.",
-        "error" => $e->getMessage()
-    ]);
+        if (preg_match(
+            '/^\s*Jenis:\s*(Izin|Sakit)\s*$/mi',
+            $alasanLengkap,
+            $matches
+        )) {
+            $jenis = strtolower($matches[1]);
+        }
+
+        $alasanBersih = preg_replace(
+            '/^\s*Jenis:\s*(Izin|Sakit)\s*\R?/i',
+            '',
+            $alasanLengkap,
+            1
+        );
+
+        $alasanBersih = preg_replace(
+            '/^\s*Alasan:\s*/i',
+            '',
+            $alasanBersih,
+            1
+        );
+
+        $item['jenis_pengajuan'] = $jenis;
+        $item['alasan_pengajuan'] = trim($alasanBersih);
+    }
+
+    unset($item);
+
+    responseJSON(
+        true,
+        "Data pengajuan izin berhasil diambil.",
+        200,
+        $data
+    );
+
+} catch (Throwable $e) {
+
+    error_log("API izin mentor: " . $e->getMessage());
+
+    responseJSON(
+        false,
+        "Gagal mengambil data pengajuan izin.",
+        500
+    );
 }
+
+?>
