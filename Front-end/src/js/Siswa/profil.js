@@ -1,3 +1,5 @@
+import { API_BASE_URL } from "../api-config.js";
+
 
 /* =========================================================
     LOGIKA HALAMAN PROFIL SISWA

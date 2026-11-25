@@ -1,3 +1,5 @@
+import { API_BASE_URL } from "../api-config.js";
+
 export function initFormUnggahMateri(onSelesaiPublikasi = null) {
     console.log("Modul Form Tambah Materi berhasil dimuat.");
 

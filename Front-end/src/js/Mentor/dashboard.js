@@ -1,3 +1,5 @@
+import { API_BASE_URL } from "../api-config.js";
+
 
 const API_MENTOR = `${API_BASE_URL}/api/mentor`;
 

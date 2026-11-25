@@ -1,3 +1,5 @@
+import { API_BASE_URL } from "../api-config.js";
+
 
 const API_DAILY_REPORT = `${API_BASE_URL}/api/siswa/api_daily_report_siswa.php`;
 const BASE_BACKEND_DAILY_REPORT = `${API_BASE_URL}/`;

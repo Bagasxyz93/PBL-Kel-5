@@ -5,5 +5,8 @@ const isLocalHost =
 export const BACKEND_BASE_URL = isLocalHost
   ? "http://localhost:8000"
   : window.location.origin;
-window.BACKEND_BASE_URL = backendBaseUrl;
-window.API_BASE_URL = `${backendBaseUrl}/Back-end`;
+
+export const API_BASE_URL = `${BACKEND_BASE_URL}/Back-end`;
+
+window.BACKEND_BASE_URL = BACKEND_BASE_URL;
+window.API_BASE_URL = API_BASE_URL;

@@ -1,3 +1,5 @@
+import { API_BASE_URL } from "../api-config.js";
+
 
 const API_URL = `${API_BASE_URL}/api/siswa`;
 
