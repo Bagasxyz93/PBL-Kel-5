@@ -47,34 +47,25 @@
             <!-- Konten -->
             <main class="flex-1 p-8 max-w-7xl w-full mx-auto space-y-6">
 
+                
                 <!-- Judul dan Tombol Aksi -->
-                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-
-                    <div>
-                        <div class="flex items-center gap-2 mb-1.5">
-                            <span class="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-600 text-[11px] font-bold">
-                                Sesi Aktif: Inkubasi Batch 2
-                            </span>
-
-                            <span class="text-xs text-slate-400">
-                                Update terakhir: Hari ini, 09:45 WIB
-                            </span>
-                        </div>
-
+                <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+                
+                    <div class="flex-1 min-w-0">
                         <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">
                             Pemeriksaan & Rekap Absensi Siswa
                         </h1>
-
+                    
                         <p class="text-xs text-slate-500 mt-0.5">
                             Pantau presensi harian, evaluasi status kehadiran kelas inkubasi, dan verifikasi keterhubungan daily report siswa.
                         </p>
                     </div>
-
+                
                     <!-- Tanggal Hari Ini dan Tombol Cetak Rekap -->
-<div class="flex items-center gap-3 flex-wrap">
-
-    <!-- Tanggal Hari Ini -->
-                    <div class="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-600">
+                    <div class="flex items-center gap-3 shrink-0 flex-nowrap">
+                    
+                        <!-- Tanggal Hari Ini -->
+                        <div class="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-600 whitespace-nowrap">
                         
                             <svg class="w-4 h-4 text-[#00b09b]" fill="none"
                                 stroke="currentColor" stroke-width="2"
@@ -85,8 +76,7 @@
                                 <line x1="3" y1="10" x2="21" y2="10"/>
                             </svg>
                         
-                            <span id="tanggal-hari-ini"
-                                class="text-xs font-semibold">
+                            <span id="tanggal-hari-ini" class="text-xs font-semibold">
                                 Memuat tanggal...
                             </span>
                         
@@ -96,22 +86,22 @@
                         <button
                             type="button"
                             id="btn-cetak-rekap"
-                            class="flex items-center gap-2 bg-[#00b09b] hover:bg-[#009b88] text-white px-4 py-2.5 rounded-xl text-xs font-semibold shadow-md shadow-emerald-500/20 transition">
+                            class="flex items-center gap-2 bg-[#00b09b] hover:bg-[#009b88] text-white px-4 py-2.5 rounded-xl text-xs font-semibold shadow-md shadow-emerald-500/20 transition whitespace-nowrap">
                     
                             <svg class="w-4 h-4" fill="none"
                                 stroke="currentColor" stroke-width="2"
                                 viewBox="0 0 24 24">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                                <polyline points="14 2 14 8 20 8"/>
-                                <line x1="16" y1="13" x2="8" y2="13"/>
-                                <line x1="16" y1="17" x2="8" y2="17"/>
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7 10 12 15 17 10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
                             </svg>
                         
-                            Cetak Rekap
+                            Export Rekap
                         </button>
                     
                     </div>
                 </div>
+
 
 
                 <!-- Kartu Statistik -->
