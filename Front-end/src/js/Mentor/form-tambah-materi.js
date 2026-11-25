@@ -1,7 +1,7 @@
 export function initFormUnggahMateri(onSelesaiPublikasi = null) {
     console.log("Modul Form Tambah Materi berhasil dimuat.");
 
-    const API_MATERI = "http://localhost:8000/api/mentor/api_materi.php";
+    const API_MATERI = `${API_BASE_URL}/api/mentor/api_materi.php`;
 
     function getAuthHeaders() {
         const token = sessionStorage.getItem("authToken");

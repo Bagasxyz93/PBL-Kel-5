@@ -147,7 +147,7 @@ async function loadComponent(elementId, filePath) {
 async function loadHeaderMentorProfile() {
     try {
         const response = await fetch(
-            "http://localhost:8000/api/mentor/api_profil_mentor.php",
+            `${API_BASE_URL}/api/mentor/api_profil_mentor.php`,
             {
                 method: "GET",
                 headers: getAuthHeaders()
@@ -205,7 +205,7 @@ async function loadHeaderMentorProfile() {
 async function loadHeaderStudentProfile() {
     try {
         const response = await fetch(
-            "http://localhost:8000/api/siswa/api_dashboard.php",
+            `${API_BASE_URL}/api/siswa/api_dashboard.php`,
             {
                 method: "GET",
                 headers: getAuthHeaders()
@@ -234,7 +234,7 @@ async function loadHeaderStudentProfile() {
 
         try {
             const responseProfil = await fetch(
-                "http://localhost:8000/api/siswa/api_profil_siswa.php",
+                `${API_BASE_URL}/api/siswa/api_profil_siswa.php`,
                 {
                     method: "GET",
                     headers: getAuthHeaders()
@@ -404,7 +404,7 @@ function setupDynamicLayout(role) {
 ========================================================= */
 
 const API_NOTIFIKASI =
-    "http://localhost:8000/api/notifikasi/api_notifikasi.php";
+    `${API_BASE_URL}/api/notifikasi/api_notifikasi.php`;
 
 let daftarNotifikasi = [];
 let roleNotifikasiAktif = "peserta";

@@ -108,7 +108,7 @@ export async function initAdminSiswa() {
     async function loadFilterKelas() {
         try {
             const response = await fetch(
-                "http://localhost:8000/api/admin/api_program.php",
+                `${API_BASE_URL}/api/admin/api_program.php`,
                 {
                     headers: getAuthHeaders()
                 }
@@ -141,7 +141,7 @@ export async function initAdminSiswa() {
     async function loadDataSiswa() {
         try {
             const response = await fetch(
-                "http://localhost:8000/api/admin/api_siswa.php",
+                `${API_BASE_URL}/api/admin/api_siswa.php`,
                 {
                     headers: getAuthHeaders()
                 }
@@ -403,7 +403,7 @@ export async function initAdminSiswa() {
 
             try {
                 const response = await fetch(
-                    "http://localhost:8000/api/admin/api_hapus_siswa.php",
+                    `${API_BASE_URL}/api/admin/api_hapus_siswa.php`,
                     {
                         method: "POST",
                         headers: {

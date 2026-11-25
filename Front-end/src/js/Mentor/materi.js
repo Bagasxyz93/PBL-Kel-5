@@ -1,6 +1,6 @@
 import { initFormUnggahMateri } from './form-tambah-materi.js';
 
-const API_MATERI = "http://localhost:8000/api/mentor/api_materi.php";
+const API_MATERI = `${API_BASE_URL}/api/mentor/api_materi.php`;
 
 function getAuthHeaders() {
     const token = sessionStorage.getItem("authToken");
@@ -417,7 +417,7 @@ export function initMentorMateri() {
 
                             ${item.file_materi ? `
                                 <a
-                                    href="http://localhost:8000/${escapeHTML(item.file_materi)}"
+                                    href=`${API_BASE_URL}/${escapeHTML(item.file_materi)}`
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     class="inline-flex items-center gap-1.5 mt-2 text-xs font-semibold text-sky-600 hover:text-sky-700">

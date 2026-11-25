@@ -18,10 +18,10 @@ let activeReportId = null;
 let mentorDailyReportInitialized = false;
 
 const API_DAILY_REPORT =
-    "http://localhost:8000/api/mentor/api_daily_report.php";
+    `${API_BASE_URL}/api/mentor/api_daily_report.php`;
 
 const API_REKAP_DAILY_REPORT =
-    "http://localhost:8000/api/mentor/api_rekap_daily_report.php";
+    `${API_BASE_URL}/api/mentor/api_rekap_daily_report.php`;
 
 const DATA_PER_PAGE = 10;
 

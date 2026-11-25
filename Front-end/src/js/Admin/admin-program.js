@@ -228,7 +228,7 @@ export async function initAdminProgram() {
     async function loadDataProgram() {
         try {
             const response = await fetch(
-                "http://localhost:8000/api/admin/api_program.php",
+                `${API_BASE_URL}/api/admin/api_program.php`,
                 {
                     headers: getAuthHeaders()
                 }
@@ -316,7 +316,7 @@ export async function initAdminProgram() {
 
             try {
                 const response = await fetch(
-                    "http://localhost:8000/api/admin/api_hapus_program.php",
+                    `${API_BASE_URL}/api/admin/api_hapus_program.php`,
                     {
                         method: "POST",
                         headers: {

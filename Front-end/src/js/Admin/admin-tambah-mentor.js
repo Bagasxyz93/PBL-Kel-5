@@ -18,7 +18,7 @@ async function loadProgramMentor(selectedProgramIds = []) {
 
     try {
         const response = await fetch(
-            "http://localhost:8000/api/admin/api_program.php",
+            `${API_BASE_URL}/api/admin/api_program.php`,
             {
                 headers: getAuthHeaders()
             }
@@ -274,8 +274,8 @@ export async function initAdminTambahMentor(onSuccess, mentor = null) {
 
             // Memilih API tambah atau edit
             const url = mentor
-                ? "http://localhost:8000/api/admin/api_edit_mentor.php"
-                : "http://localhost:8000/api/admin/api_tambah_mentor.php";
+                ? `${API_BASE_URL}/api/admin/api_edit_mentor.php`
+                : `${API_BASE_URL}/api/admin/api_tambah_mentor.php`;
 
             try {
                 const response = await fetch(url, {

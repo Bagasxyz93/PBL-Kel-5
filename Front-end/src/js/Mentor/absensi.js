@@ -13,7 +13,7 @@
 ========================================================= */
 
 const API_URL =
-    'http://localhost:8000/api/mentor/api_absensi_mentor.php';
+    `${API_BASE_URL}/api/mentor/api_absensi_mentor.php`;
 
 const DATA_PER_PAGE = 10;
 
