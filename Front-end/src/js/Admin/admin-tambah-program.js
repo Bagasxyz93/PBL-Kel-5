@@ -1,4 +1,16 @@
 
+function getAuthHeaders() {
+    const token = sessionStorage.getItem("authToken");
+
+    if (!token) {
+        throw new Error("Token login tidak ditemukan. Silakan login kembali.");
+    }
+
+    return {
+        Authorization: `Bearer ${token}`
+    };
+}
+
 export function initAdminTambahProgram(onSuccess, programEdit = null) {
     const formTambahProgram = document.getElementById("formTambahProgram");
     const btnKembali = document.getElementById("btnKembaliProgram");
@@ -8,25 +20,51 @@ export function initAdminTambahProgram(onSuccess, programEdit = null) {
     const inputNama = document.getElementById("namaProgram");
     const inputDeskripsi = document.getElementById("deskripsiProgram");
 
+    if (!formTambahProgram || !inputNama || !inputDeskripsi) {
+        console.error("Elemen form program tidak ditemukan.");
+        return;
+    }
+
     const tombolSubmit = formTambahProgram.querySelector(
         'button[type="submit"]'
     );
 
-    // Jika sedang edit, isi form dengan data program
+    // ==================================================
+    // ISI DATA JIKA MODE EDIT
+    // ==================================================
+
     if (programEdit) {
         inputNama.value = programEdit.nama_program;
         inputDeskripsi.value = programEdit.deskripsi || "";
-        tombolSubmit.textContent = "Simpan Perubahan";
+
+        if (tombolSubmit) {
+            tombolSubmit.textContent = "Simpan Perubahan";
+        }
     }
 
+    // ==================================================
+    // KEMBALI KE TABEL PROGRAM
+    // ==================================================
+
     const handleKembali = () => {
-        if (typeof onSuccess === "function") onSuccess();
+        if (typeof onSuccess === "function") {
+            onSuccess();
+        }
     };
 
-    if (btnKembali) btnKembali.addEventListener("click", handleKembali);
-    if (btnBatal) btnBatal.addEventListener("click", handleKembali);
+    if (btnKembali) {
+        btnKembali.addEventListener("click", handleKembali);
+    }
 
-    if (btnReset && formTambahProgram) {
+    if (btnBatal) {
+        btnBatal.addEventListener("click", handleKembali);
+    }
+
+    // ==================================================
+    // RESET FORM
+    // ==================================================
+
+    if (btnReset) {
         btnReset.addEventListener("click", () => {
             formTambahProgram.reset();
 
@@ -37,46 +75,56 @@ export function initAdminTambahProgram(onSuccess, programEdit = null) {
         });
     }
 
-    if (formTambahProgram) {
-        formTambahProgram.addEventListener("submit", async (e) => {
-            e.preventDefault();
+    // ==================================================
+    // SIMPAN DATA PROGRAM
+    // ==================================================
 
-            const judul = inputNama.value.trim();
-            const sub = inputDeskripsi.value.trim();
+    formTambahProgram.addEventListener("submit", async (e) => {
+        e.preventDefault();
 
-            try {
-                const url = programEdit
-                    ? "http://localhost:8000/api/admin/api_edit_program.php"
-                    : "http://localhost:8000/api/admin/api_tambah_program.php";
+        const judul = inputNama.value.trim();
+        const sub = inputDeskripsi.value.trim();
 
-                const response = await fetch(url, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        id: programEdit ? programEdit.id : null,
-                        nama_program: judul,
-                        deskripsi: sub
-                    })
-                });
+        if (!judul || !sub) {
+            alert("Nama dan deskripsi program wajib diisi.");
+            return;
+        }
 
-                const result = await response.json();
+        try {
+            const url = programEdit
+                ? "http://localhost:8000/api/admin/api_edit_program.php"
+                : "http://localhost:8000/api/admin/api_tambah_program.php";
 
-                if (!response.ok || !result.success) {
-                    throw new Error(result.message || "Gagal menyimpan program.");
-                }
+            const response = await fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    ...getAuthHeaders()
+                },
+                body: JSON.stringify({
+                    id: programEdit ? programEdit.id : null,
+                    nama_program: judul,
+                    deskripsi: sub
+                })
+            });
 
-                alert(result.message);
+            const result = await response.json();
 
-                if (typeof onSuccess === "function") {
-                    onSuccess();
-                }
-
-            } catch (error) {
-                console.error("Gagal menyimpan program:", error);
-                alert(error.message || "Terjadi kesalahan saat menyimpan program.");
+            if (!response.ok || !result.success) {
+                throw new Error(
+                    result.message || "Gagal menyimpan program."
+                );
             }
-        });
-    }
+
+            alert(result.message);
+
+            if (typeof onSuccess === "function") {
+                onSuccess();
+            }
+
+        } catch (error) {
+            console.error("Gagal menyimpan program:", error);
+            alert(error.message || "Terjadi kesalahan saat menyimpan program.");
+        }
+    });
 }

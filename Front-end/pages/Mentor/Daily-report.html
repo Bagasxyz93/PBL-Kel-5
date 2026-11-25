@@ -32,11 +32,6 @@
                 <!-- Menu Pembinaan & Tombol Aksi Atas -->
                 <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <div>
-                        <div class="flex items-center gap-2 mb-1.5">
-                            <span class="text-xs text-slate-400">Menu Pembinaan Siswa</span>
-                            <span class="text-slate-300">•</span>
-                            <span class="text-xs font-bold text-emerald-600">Pemeriksaan Harian Aktif</span>
-                        </div>
                         <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Pemeriksaan Daily Report</h1>
                         <p class="text-xs text-slate-500 mt-0.5">Pantau pencapaian mandiri, progres proyek inkubasi siswa bimbingan, serta berikan tinjauan dan evaluasi langsung setiap hari.</p>
                     </div>
@@ -47,10 +42,16 @@
                             <span id="tanggal-hari-ini">Memuat tanggal...</span>
                         </div>
                         <button
-                                id="btn-export-rekap"
-                                type="button"
-                                class="flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-700 px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold shadow-sm transition">
-                            <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            id="btn-export-rekap"
+                            type="button"
+                            class="flex items-center gap-2 bg-[#00b09b] hover:bg-[#009b88] text-white px-4 py-2.5 rounded-xl text-xs font-semibold shadow-md shadow-emerald-500/20 transition whitespace-nowrap">
+                            <svg class="w-4 h-4 text-white" fill="none"
+                                stroke="currentColor" stroke-width="2"
+                                viewBox="0 0 24 24">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7 10 12 15 17 10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
                             Export Rekap
                         </button>
                     </div>

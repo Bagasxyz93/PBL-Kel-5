@@ -15,10 +15,26 @@ let currentPage = 1;
 const dataPerPage = 10;
 
 // =========================================================
+// TOKEN AUTENTIKASI PER TAB
+// =========================================================
+
+function getAuthHeaders(extraHeaders = {}) {
+    const token = sessionStorage.getItem("authToken");
+
+    if (!token) {
+        throw new Error("Token login tidak ditemukan. Silakan login kembali.");
+    }
+
+    return {
+        ...extraHeaders,
+        "Authorization": `Bearer ${token}`
+    };
+}
+
+// =========================================================
 // FORMAT DATA
 // =========================================================
 
-// Mendapatkan tanggal hari ini berdasarkan zona waktu Jakarta
 function tanggalHariIni() {
     return new Intl.DateTimeFormat("en-CA", {
         timeZone: "Asia/Jakarta",
@@ -28,14 +44,12 @@ function tanggalHariIni() {
     }).format(new Date());
 }
 
-// Mengambil bagian tanggal dari data API
 function ambilTanggal(value) {
     if (!value) return "";
 
     return String(value).replace("T", " ").split(" ")[0];
 }
 
-// Format tanggal menjadi bahasa Indonesia
 function formatTanggal(tanggal) {
     if (!tanggal) return "-";
 
@@ -59,14 +73,12 @@ function formatTanggal(tanggal) {
     });
 }
 
-// Format tanggal dan waktu pengajuan
 function formatTanggalPengajuan(value) {
     if (!value) return "-";
 
     return formatTanggal(ambilTanggal(value));
 }
 
-// Format status
 function formatStatus(status) {
     const daftarStatus = {
         menunggu: "Menunggu Verifikasi",
@@ -77,7 +89,6 @@ function formatStatus(status) {
     return daftarStatus[status] || status;
 }
 
-// Mengamankan teks sebelum ditampilkan ke HTML
 const escapeHTML = (value) => {
     return String(value ?? "").replace(/[&<>"']/g, (char) => ({
         "&": "&amp;",
@@ -93,17 +104,26 @@ const escapeHTML = (value) => {
 // =========================================================
 
 function renderStatistik() {
-    const total = izinData.length;
+    // Statistik mengikuti tanggal yang dipilih pada filter.
+    // Jika filter tanggal kosong, statistik menampilkan seluruh data.
+    const inputTanggal = document.getElementById("input-tanggal-filter");
+    const tanggal = inputTanggal?.value || "";
 
-    const menunggu = izinData.filter(
+    const dataStatistik = izinData.filter(item => {
+        return !tanggal || ambilTanggal(item.tanggal_izin) === tanggal;
+    });
+
+    const total = dataStatistik.length;
+
+    const menunggu = dataStatistik.filter(
         item => item.status === "menunggu"
     ).length;
 
-    const disetujui = izinData.filter(
+    const disetujui = dataStatistik.filter(
         item => item.status === "disetujui"
     ).length;
 
-    const ditolak = izinData.filter(
+    const ditolak = dataStatistik.filter(
         item => item.status === "ditolak"
     ).length;
 
@@ -136,21 +156,16 @@ function getFilteredData() {
 
     return izinData.filter(item => {
 
-        // Pencarian nama, NIS, program, dan alasan
         const cocokKeyword = [
             item.nama_siswa,
-            item.nis,
-            item.nama_program,
-            item.alasan
+            item.nis
         ].some(value =>
             String(value || "").toLowerCase().includes(keyword)
         );
 
-        // Filter status
         const cocokStatus =
             status === "all" || item.status === status;
 
-        // Filter tanggal berdasarkan tanggal izin
         const cocokTanggal =
             !tanggal || ambilTanggal(item.tanggal_izin) === tanggal;
 
@@ -171,16 +186,7 @@ function renderTable(data) {
         tbody.innerHTML = `
             <tr>
                 <td colspan="8" class="text-center py-10 text-slate-400">
-                    <div class="flex flex-col items-center gap-2">
-                        <svg class="w-9 h-9 text-slate-300" fill="none"
-                            stroke="currentColor" stroke-width="1.5"
-                            viewBox="0 0 24 24">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                            <path d="M14 2v6h6M8 13h8M8 17h5"/>
-                        </svg>
-
-                        <span>Tidak ada data permohonan izin.</span>
-                    </div>
+                    Tidak ada pengajuan izin pada hari ini
                 </td>
             </tr>
         `;
@@ -308,7 +314,6 @@ function renderPagination(totalData) {
 
     let tombol = "";
 
-    // Tombol sebelumnya
     tombol += `
         <button
             type="button"
@@ -322,7 +327,6 @@ function renderPagination(totalData) {
         </button>
     `;
 
-    // Tombol nomor halaman
     for (let i = 1; i <= totalHalaman; i++) {
         tombol += `
             <button
@@ -337,7 +341,6 @@ function renderPagination(totalData) {
         `;
     }
 
-    // Tombol berikutnya
     tombol += `
         <button
             type="button"
@@ -363,7 +366,6 @@ function applyFilter() {
 
     const totalHalaman = Math.ceil(filtered.length / dataPerPage);
 
-    // Pastikan halaman tidak melebihi jumlah halaman
     if (totalHalaman > 0 && currentPage > totalHalaman) {
         currentPage = totalHalaman;
     }
@@ -403,7 +405,7 @@ async function loadIzinData() {
     try {
         const response = await fetch(`${API_URL}/api_izin_mentor.php`, {
             method: "GET",
-            credentials: "include"
+            headers: getAuthHeaders()
         });
 
         const result = await response.json();
@@ -414,7 +416,6 @@ async function loadIzinData() {
 
         izinData = Array.isArray(result.data) ? result.data : [];
 
-        // Urutkan berdasarkan waktu pengajuan terbaru
         izinData.sort((a, b) => {
             const tanggalA = new Date(
                 String(a.waktu_pengajuan || "").replace(" ", "T")
@@ -473,12 +474,10 @@ function setupEventListeners() {
     const tbody = document.getElementById("table-izin-body");
     const paginationButtons = document.getElementById("pagination-buttons");
 
-    // Default tanggal hari ini
     if (inputTanggal) {
         inputTanggal.value = tanggalHariIni();
     }
 
-    // Pencarian langsung saat mengetik
     if (searchInput) {
         searchInput.addEventListener("input", () => {
             currentPage = 1;
@@ -486,7 +485,6 @@ function setupEventListeners() {
         });
     }
 
-    // Filter status
     if (filterStatus) {
         filterStatus.addEventListener("change", () => {
             currentPage = 1;
@@ -494,15 +492,14 @@ function setupEventListeners() {
         });
     }
 
-    // Filter tanggal
     if (inputTanggal) {
         inputTanggal.addEventListener("change", () => {
             currentPage = 1;
+            renderStatistik();
             applyFilter();
         });
     }
 
-    // Klik area tanggal untuk membuka kalender
     if (wrapperTanggal && inputTanggal) {
         wrapperTanggal.addEventListener("click", (event) => {
             if (event.target !== inputTanggal) {
@@ -515,7 +512,6 @@ function setupEventListeners() {
         });
     }
 
-    // Klik tombol halaman
     if (paginationButtons) {
         paginationButtons.addEventListener("click", (event) => {
             const tombol = event.target.closest("button[data-page]");
@@ -538,7 +534,6 @@ function setupEventListeners() {
         });
     }
 
-    // Klik tombol Lihat pada tabel
     if (tbody) {
         tbody.addEventListener("click", (event) => {
             const tombol = event.target.closest(".btn-detail-izin");
@@ -548,22 +543,6 @@ function setupEventListeners() {
             openModalDetail(tombol.dataset.izinId);
         });
     }
-}
-
-// =========================================================
-// MEMBUAT URL FILE
-// =========================================================
-
-function buatUrlFile(pathFile) {
-    if (!pathFile) return null;
-
-    if (/^https?:\/\//i.test(pathFile)) {
-        return pathFile;
-    }
-
-    const pathBersih = pathFile.replace(/^\/+/, "");
-
-    return `${BACKEND_URL}/${pathBersih}`;
 }
 
 // =========================================================
@@ -589,7 +568,6 @@ async function openModalDetail(id) {
         return;
     }
 
-    // Muat modal jika belum tersedia
     if (!document.getElementById("modal-izin")) {
         try {
             const response = await fetch(MODAL_URL);
@@ -613,7 +591,6 @@ async function openModalDetail(id) {
         }
     }
 
-    // Fungsi mengisi teks modal
     const isi = (elementId, value) => {
         const element = document.getElementById(elementId);
 
@@ -622,7 +599,6 @@ async function openModalDetail(id) {
         }
     };
 
-    // Identitas pengajuan
     isi("modal-id-pengajuan", `#IZN-${item.id}`);
     isi("modal-siswa-nama", item.nama_siswa);
     isi("modal-siswa-nis", item.nis);
@@ -637,11 +613,7 @@ async function openModalDetail(id) {
             .toUpperCase()
     );
 
-    isi(
-        "modal-tgl-pengajuan",
-        formatTanggalPengajuan(item.waktu_pengajuan)
-    );
-
+    isi("modal-tgl-pengajuan", formatTanggalPengajuan(item.waktu_pengajuan));
     isi("modal-tgl-izin", formatTanggal(item.tanggal_izin));
     isi("modal-alasan-teks", item.alasan);
 
@@ -656,9 +628,8 @@ async function openModalDetail(id) {
     const btnDownloadBukti = document.getElementById("btn-download-bukti");
 
     if (item.bukti_file) {
-        const urlFile = buatUrlFile(item.bukti_file);
-
-        let namaFile = urlFile.split("/").pop().split("?")[0];
+        const namaFilePath = String(item.bukti_file).replace(/\\/g, "/");
+        let namaFile = namaFilePath.split("/").pop().split("?")[0];
 
         try {
             namaFile = decodeURIComponent(namaFile);
@@ -683,20 +654,52 @@ async function openModalDetail(id) {
                     : "FILE";
         }
 
-        // Tombol lihat
+        // Tombol lihat bukti melalui API yang membutuhkan token
         if (btnLihatBukti) {
             btnLihatBukti.disabled = false;
 
-            btnLihatBukti.onclick = () => {
-                window.open(
-                    urlFile,
-                    "_blank",
-                    "noopener,noreferrer"
-                );
+            btnLihatBukti.onclick = async () => {
+                try {
+                    const urlDownload =
+                        `${BACKEND_URL}/api/mentor/download_bukti_izin.php?id=${item.id}`;
+
+                    const response = await fetch(urlDownload, {
+                        method: "GET",
+                        headers: getAuthHeaders()
+                    });
+
+                    if (!response.ok) {
+                        throw new Error("Bukti izin gagal dibuka.");
+                    }
+
+                    const blob = await response.blob();
+
+                    if (blob.size === 0) {
+                        throw new Error("File yang diterima kosong.");
+                    }
+
+                    const blobUrl = URL.createObjectURL(blob);
+                    const tab = window.open(blobUrl, "_blank");
+
+                    if (!tab) {
+                        URL.revokeObjectURL(blobUrl);
+                        throw new Error("Browser memblokir tab baru.");
+                    }
+
+                    tab.opener = null;
+
+                    setTimeout(() => {
+                        URL.revokeObjectURL(blobUrl);
+                    }, 60000);
+
+                } catch (error) {
+                    console.error("Gagal membuka bukti:", error);
+                    alert(error.message);
+                }
             };
         }
 
-        // Tombol download
+        // Tombol download bukti
         if (btnDownloadBukti) {
             btnDownloadBukti.disabled = false;
 
@@ -707,7 +710,7 @@ async function openModalDetail(id) {
 
                     const response = await fetch(urlDownload, {
                         method: "GET",
-                        credentials: "include"
+                        headers: getAuthHeaders()
                     });
 
                     if (!response.ok) {
@@ -752,7 +755,7 @@ async function openModalDetail(id) {
             btnLihatBukti.disabled = true;
             btnLihatBukti.onclick = null;
         }
-        
+
         if (btnDownloadBukti) {
             btnDownloadBukti.disabled = true;
             btnDownloadBukti.onclick = null;
@@ -799,7 +802,6 @@ async function openModalDetail(id) {
     // =====================================================
 
     const catatan = document.getElementById("input-catatan-mentor");
-
     const sudahDiproses = item.status !== "menunggu";
 
     if (catatan) {
@@ -822,7 +824,6 @@ async function openModalDetail(id) {
         btnReject.disabled = sudahDiproses;
     }
 
-    // Tampilkan modal
     const modal = document.getElementById("modal-izin");
 
     if (modal) {
@@ -863,7 +864,6 @@ function setupModalEventListeners() {
     const btnApprove = document.getElementById("btn-approve-modal");
     const btnReject = document.getElementById("btn-reject-modal");
 
-    // Fungsi memproses pengajuan
     async function prosesIzin(aksi) {
         if (!selectedIzinId) {
             alert("Pengajuan belum dipilih.");
@@ -899,10 +899,9 @@ function setupModalEventListeners() {
                 `${API_URL}/api_proses_izin.php`,
                 {
                     method: "POST",
-                    credentials: "include",
-                    headers: {
+                    headers: getAuthHeaders({
                         "Content-Type": "application/json"
-                    },
+                    }),
                     body: JSON.stringify({
                         id: selectedIzinId,
                         aksi: aksi,
@@ -923,7 +922,6 @@ function setupModalEventListeners() {
 
             tutupModal();
 
-            // Muat ulang data dari database
             await loadIzinData();
 
         } catch (error) {

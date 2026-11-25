@@ -1,6 +1,20 @@
+
 import { initAdminTambahMentor } from "./admin-tambah-mentor.js";
 
 let dataMentor = [];
+
+function getAuthHeaders() {
+    const token = sessionStorage.getItem("authToken");
+
+    if (!token) {
+        throw new Error("Token login tidak ditemukan. Silakan login kembali.");
+    }
+
+    return {
+        "Authorization": `Bearer ${token}`
+    };
+}
+
 
 // Memuat pilihan program dari database
 async function loadFilterProgram() {
@@ -9,7 +23,13 @@ async function loadFilterProgram() {
     if (!filterBidang) return;
 
     try {
-        const response = await fetch("http://localhost:8000/api/admin/api_program.php");
+        const response = await fetch(
+            "http://localhost:8000/api/admin/api_program.php",
+            {
+                headers: getAuthHeaders()
+            }
+        );
+
         const result = await response.json();
 
         if (!result.success) {
@@ -30,26 +50,32 @@ async function loadFilterProgram() {
     }
 }
 
+
 // Fungsi Memuat Tampilan Form Tambah Mentor (SPA View)
 async function renderTambahMentorView() {
     const mainContainer = document.getElementById("main-content-area");
+
     if (!mainContainer) return;
 
     try {
         const response = await fetch("/component/Admin/TambahMentor.html");
-        if (!response.ok) throw new Error("Gagal memuat komponen TambahMentor.html");
-        
+
+        if (!response.ok) {
+            throw new Error("Gagal memuat komponen TambahMentor.html");
+        }
+
         mainContainer.innerHTML = await response.text();
 
-        // Inisialisasi logika form tambah mentor dari file terpisah
-        initAdminTambahMentor(() => {
-            initAdminMentor(); // Callback kembali ke tabel mentor setelah simpan/batal
+        // Inisialisasi logika form tambah mentor
+        await initAdminTambahMentor(() => {
+            initAdminMentor();
         });
 
     } catch (error) {
         console.error("Error loading TambahMentor form:", error);
     }
 }
+
 
 // Fungsi Memuat Tampilan Form Edit Mentor
 async function renderEditMentorView(mentorId) {
@@ -69,7 +95,10 @@ async function renderEditMentorView(mentorId) {
 
         // Mengambil detail mentor berdasarkan ID
         const response = await fetch(
-            `http://localhost:8000/api/admin/api_detail_mentor.php?id=${mentorId}`
+            `http://localhost:8000/api/admin/api_detail_mentor.php?id=${mentorId}`,
+            {
+                headers: getAuthHeaders()
+            }
         );
 
         const result = await response.json();
@@ -79,7 +108,7 @@ async function renderEditMentorView(mentorId) {
         }
 
         // Menampilkan form dalam mode edit
-        initAdminTambahMentor(() => {
+        await initAdminTambahMentor(() => {
             initAdminMentor();
         }, result.data);
 
@@ -89,13 +118,15 @@ async function renderEditMentorView(mentorId) {
     }
 }
 
+
 // Fungsi Utama: Tampilan Tabel Data Mentor
 async function initAdminMentor() {
     const mainContainer = document.getElementById("main-content-area");
+
     if (!mainContainer) return;
 
     mainContainer.innerHTML = `
-        <!-- Judul & Tombol Tambah Sesuai Figma -->
+        <!-- Judul & Tombol Tambah -->
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
                 <p class="text-xs font-bold text-slate-400 tracking-wider uppercase mb-1">Kelola Data Mentor</p>
@@ -104,7 +135,7 @@ async function initAdminMentor() {
                     <span class="bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full text-xs font-bold"><span id="mentorCount">3</span> Terdaftar</span>
                 </div>
             </div>
-            
+
             <div>
                 <button id="tambahGuruBtn" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2.5 rounded-xl text-xs font-semibold shadow-md shadow-red-600/25 transition flex items-center gap-1.5">
                     <span>+ Tambah Guru</span>
@@ -112,11 +143,11 @@ async function initAdminMentor() {
             </div>
         </div>
 
-        <!-- 3 Kartu Statistik Ringkasan -->
+        <!-- Kartu Statistik -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4">
                 <div class="w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 shrink-0">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0-4-4H5a4 4 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                 </div>
                 <div>
                     <p class="text-xs font-semibold text-slate-400">Total Mentor Aktif</p>
@@ -126,7 +157,7 @@ async function initAdminMentor() {
 
             <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4">
                 <div class="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 shrink-0">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"/></svg>
                 </div>
                 <div>
                     <p class="text-xs font-semibold text-slate-400">Program Peminatan</p>
@@ -138,7 +169,7 @@ async function initAdminMentor() {
 
             <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4">
                 <div class="w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-600 shrink-0">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0 1 12 2.944a11.955 11.955 0 0 1-8.618 3.04A12.02 12.02 0 0 1 3 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                 </div>
                 <div>
                     <p class="text-xs font-semibold text-slate-400">Status Akun</p>
@@ -149,14 +180,14 @@ async function initAdminMentor() {
             </div>
         </div>
 
-        <!-- Bar Pencarian & Filter -->
+        <!-- Pencarian & Filter -->
         <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
             <div class="relative w-full md:w-96">
                 <svg class="absolute left-3.5 top-3 h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                <input 
-                    type="search" 
-                    id="searchMentor" 
-                    placeholder="Cari nama / NIP..." 
+                <input
+                    type="search"
+                    id="searchMentor"
+                    placeholder="Cari nama / NIP..."
                     class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 pl-10 pr-4 text-xs font-medium text-slate-700 placeholder:text-slate-400 focus:border-indigo-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/10 transition"
                 >
             </div>
@@ -183,7 +214,6 @@ async function initAdminMentor() {
                         </tr>
                     </thead>
                     <tbody id="tabelMentorBody" class="divide-y divide-slate-100 text-xs font-medium text-slate-600">
-                        <!-- Data dimuat dinamis -->
                     </tbody>
                 </table>
             </div>
@@ -202,7 +232,13 @@ async function initAdminMentor() {
 
     // Mengambil data mentor dari database
     try {
-        const response = await fetch("http://localhost:8000/api/admin/api_mentor.php");
+        const response = await fetch(
+            "http://localhost:8000/api/admin/api_mentor.php",
+            {
+                headers: getAuthHeaders()
+            }
+        );
+
         const result = await response.json();
 
         if (!result.success) {
@@ -219,22 +255,30 @@ async function initAdminMentor() {
 
     const searchInput = document.getElementById("searchMentor");
     const filterBidang = document.getElementById("filterBidang");
-    
+
     // Memuat program dari database
     await loadFilterProgram();
-    
+
     // Menghitung jumlah program
     try {
-        const responseProgram = await fetch("http://localhost:8000/api/admin/api_program.php");
+        const responseProgram = await fetch(
+            "http://localhost:8000/api/admin/api_program.php",
+            {
+                headers: getAuthHeaders()
+            }
+        );
+
         const resultProgram = await responseProgram.json();
-    
+
         if (resultProgram.success) {
             document.getElementById("totalBidangPeminatan").textContent =
                 resultProgram.data.length;
         }
+
     } catch (error) {
         console.error("Gagal menghitung jumlah program:", error);
     }
+
     const tabelMentorBody = document.getElementById("tabelMentorBody");
     const tambahGuruBtn = document.getElementById("tambahGuruBtn");
     const mentorCount = document.getElementById("mentorCount");
@@ -263,26 +307,32 @@ async function initAdminMentor() {
 
     function renderTable(data) {
         if (!tabelMentorBody) return;
-        
+
         if (data.length === 0) {
-            tabelMentorBody.innerHTML = `<tr><td colspan="6" class="py-8 text-center text-slate-400">Tidak ada data mentor ditemukan.</td></tr>`;
+            tabelMentorBody.innerHTML = `
+                <tr>
+                    <td colspan="6" class="py-8 text-center text-slate-400">
+                        Tidak ada data mentor ditemukan.
+                    </td>
+                </tr>
+            `;
             return;
         }
 
-       tabelMentorBody.innerHTML = data.map((mentor, index) => {
+        tabelMentorBody.innerHTML = data.map((mentor, index) => {
             const inisial = mentor.nama
                 .split(" ")
                 .map(kata => kata[0])
                 .slice(0, 2)
                 .join("")
                 .toUpperCase();
-            
+
             const statusAktif = mentor.status_akun === "aktif";
-            
+
             return `
                 <tr class="hover:bg-slate-50/80 transition">
                     <td class="py-4 px-6 text-slate-400 font-semibold">${index + 1}</td>
-            
+
                     <td class="py-4 px-6">
                         <div class="flex items-center gap-3">
                             <div class="w-9 h-9 rounded-xl bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center text-xs shrink-0 shadow-sm">
@@ -294,31 +344,31 @@ async function initAdminMentor() {
                             </div>
                         </div>
                     </td>
-            
+
                     <td class="py-4 px-6 font-mono text-slate-600">${mentor.nip}</td>
-            
+
                     <td class="py-4 px-6">
                         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-[11px] font-bold">
                             <span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
                             ${mentor.program}
                         </span>
                     </td>
-            
+
                     <td class="py-4 px-6">
                         <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full ${statusAktif ? "bg-emerald-50 text-emerald-600" : "bg-red-50 text-red-600"} text-[11px] font-bold">
                             <span class="w-1.5 h-1.5 rounded-full ${statusAktif ? "bg-emerald-500" : "bg-red-500"}"></span>
                             ${statusAktif ? "Aktif" : "Non-Aktif"}
                         </span>
                     </td>
-            
+
                     <td class="py-4 px-6 text-right">
                         <div class="flex items-center justify-end gap-2">
                             <button title="Edit" class="p-1.5 rounded-lg text-slate-400 hover:text-amber-600 hover:bg-amber-50 transition action-edit" data-id="${mentor.id}">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-5m-1.414-9.414a2 2 0 0 1 2.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                             </button>
-            
+
                             <button title="Hapus" class="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition action-delete" data-id="${mentor.id}">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0 1 16.138 21H7.862a2 2 0 0 1-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v3M4 7h16"/></svg>
                             </button>
                         </div>
                     </td>
@@ -334,7 +384,7 @@ async function initAdminMentor() {
         const filtered = dataMentor.filter(mentor => {
             const matchKeyword =
                 mentor.nama.toLowerCase().includes(keyword) ||
-                mentor.nip.includes(keyword);
+                String(mentor.nip || "").toLowerCase().includes(keyword);
 
             const matchBidang =
                 selectedBidang === "" ||
@@ -346,8 +396,13 @@ async function initAdminMentor() {
         renderTable(filtered);
     }
 
-    if (searchInput) searchInput.addEventListener("input", filterData);
-    if (filterBidang) filterBidang.addEventListener("change", filterData);
+    if (searchInput) {
+        searchInput.addEventListener("input", filterData);
+    }
+
+    if (filterBidang) {
+        filterBidang.addEventListener("change", filterData);
+    }
 
     if (tambahGuruBtn) {
         tambahGuruBtn.addEventListener("click", () => {
@@ -355,7 +410,7 @@ async function initAdminMentor() {
         });
     }
 
-     // Event tombol Edit dan Hapus Mentor
+    // Event tombol Edit dan Hapus Mentor
     if (tabelMentorBody) {
         tabelMentorBody.addEventListener("click", async (e) => {
 
@@ -386,7 +441,8 @@ async function initAdminMentor() {
                         {
                             method: "POST",
                             headers: {
-                                "Content-Type": "application/json"
+                                "Content-Type": "application/json",
+                                ...getAuthHeaders()
                             },
                             body: JSON.stringify({
                                 id: mentorId
@@ -414,6 +470,7 @@ async function initAdminMentor() {
 
     renderTable(dataMentor);
 }
+
 
 // Inisialisasi awal saat halaman dimuat
 document.addEventListener("DOMContentLoaded", () => {

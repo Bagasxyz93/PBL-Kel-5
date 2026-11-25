@@ -6,17 +6,16 @@
 
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Origin: http://localhost:5173");
-header("Access-Control-Allow-Credentials: true");
 header("Access-Control-Allow-Methods: GET, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
+    http_response_code(204);
     exit;
 }
 
-require_once '../../config/auth_check.php';
 require_once '../../config/koneksi.php';
+require_once '../../config/tab_auth.php';
 
 function responseJSON($success, $message, $code = 200, $data = [])
 {
@@ -31,23 +30,35 @@ function responseJSON($success, $message, $code = 200, $data = [])
     exit;
 }
 
-// Cek login
-if (!isset($_SESSION['user_id'])) {
+// =====================================================
+// 1. CEK TOKEN DAN ROLE
+// =====================================================
+
+$userToken = ambilUserToken();
+
+if (!$userToken) {
     responseJSON(false, 'Silakan login terlebih dahulu.', 401);
 }
 
-// Cek role
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'peserta') {
+if ($userToken['role'] !== 'peserta') {
     responseJSON(false, 'Akses hanya untuk siswa.', 403);
 }
 
-// Cek method
+$pesertaId = (int) $userToken['user_id'];
+
+// =====================================================
+// 2. CEK METHOD
+// =====================================================
+
 if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     responseJSON(false, 'Method tidak diizinkan.', 405);
 }
 
+// =====================================================
+// 3. AMBIL RIWAYAT IZIN
+// =====================================================
+
 try {
-    $pesertaId = (int) $_SESSION['user_id'];
 
     $query = "
         SELECT
@@ -77,6 +88,7 @@ try {
     $riwayat = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     foreach ($riwayat as &$item) {
+
         $item['tanggal_izin'] = $item['tanggal_izin']
             ? date('d-m-Y', strtotime($item['tanggal_izin']))
             : '-';
@@ -104,6 +116,7 @@ try {
     );
 
 } catch (PDOException $e) {
+
     error_log($e->getMessage());
 
     responseJSON(
@@ -112,3 +125,5 @@ try {
         500
     );
 }
+
+?>

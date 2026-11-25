@@ -1,8 +1,10 @@
+
 <?php
+
 header("Access-Control-Allow-Origin: http://localhost:5173");
 header("Access-Control-Allow-Methods: GET, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type");
-header("Content-Type: application/json");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
+header("Content-Type: application/json; charset=UTF-8");
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(204);
@@ -10,6 +12,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 require_once '../../config/koneksi.php';
+require_once '../../config/tab_auth.php';
+
+// Validasi token Admin
+$userToken = ambilUserToken();
+
+if (!$userToken || $userToken['role'] !== 'admin') {
+    http_response_code(401);
+    echo json_encode([
+        "success" => false,
+        "message" => "Akses ditolak. Silakan login sebagai Admin."
+    ]);
+    exit;
+}
+
+if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
+    http_response_code(405);
+    echo json_encode([
+        "success" => false,
+        "message" => "Method tidak diizinkan."
+    ]);
+    exit;
+}
 
 $id = $_GET['id'] ?? null;
 
@@ -23,6 +47,7 @@ if (!$id || !is_numeric($id)) {
 }
 
 try {
+
     // Mengambil data mentor
     $stmt = $pdo->prepare("
         SELECT
@@ -71,10 +96,15 @@ try {
     ]);
 
 } catch (PDOException $e) {
+
+    error_log($e->getMessage());
     http_response_code(500);
+
     echo json_encode([
         "success" => false,
         "message" => "Gagal mengambil detail mentor."
     ]);
+
 }
+
 ?>

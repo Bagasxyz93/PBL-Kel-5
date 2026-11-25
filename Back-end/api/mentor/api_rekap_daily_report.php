@@ -1,21 +1,9 @@
 
 <?php
 
-session_set_cookie_params([
-    'lifetime' => 0,
-    'path' => '/',
-    'domain' => 'localhost',
-    'secure' => false,
-    'httponly' => true,
-    'samesite' => 'Lax'
-]);
-
-session_start();
-
 header("Access-Control-Allow-Origin: http://localhost:5173");
 header("Access-Control-Allow-Methods: GET, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type");
-header("Access-Control-Allow-Credentials: true");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Content-Type: application/json; charset=UTF-8");
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
@@ -24,18 +12,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 require_once __DIR__ . '/../../config/koneksi.php';
+require_once __DIR__ . '/../../config/tab_auth.php';
 
-// Pastikan mentor sudah login.
+// ==================================================
+// VALIDASI TOKEN MENTOR
+// ==================================================
+
+$userToken = ambilUserToken();
+
 if (
-    !isset($_SESSION['user_id']) ||
-    !isset($_SESSION['role']) ||
-    $_SESSION['role'] !== 'mentor'
+    !$userToken ||
+    $userToken['role'] !== 'mentor'
 ) {
     http_response_code(401);
 
     echo json_encode([
         "success" => false,
-        "message" => "Sesi mentor tidak ditemukan."
+        "message" => "Token mentor tidak valid atau sudah kedaluwarsa."
     ]);
 
     exit;
@@ -53,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     exit;
 }
 
-$mentor_id = (int) $_SESSION['user_id'];
+$mentor_id = (int) $userToken['user_id'];
 $tanggal = $_GET['tanggal'] ?? '';
 
 try {

@@ -1,12 +1,9 @@
 
 <?php
 
-session_start();
-
 header("Access-Control-Allow-Origin: http://localhost:5173");
 header("Access-Control-Allow-Methods: GET, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type");
-header("Access-Control-Allow-Credentials: true");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Content-Type: application/json; charset=UTF-8");
 
 // Menangani preflight request
@@ -16,18 +13,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 require_once __DIR__ . '/../../config/koneksi.php';
+require_once __DIR__ . '/../../config/tab_auth.php';
 
-// Memastikan mentor sudah login
+// Memastikan token mentor valid
+$userToken = ambilUserToken();
+
 if (
-    !isset($_SESSION['user_id']) ||
-    !isset($_SESSION['role']) ||
-    $_SESSION['role'] !== 'mentor'
+    !$userToken ||
+    $userToken['role'] !== 'mentor'
 ) {
     http_response_code(401);
 
     echo json_encode([
         "success" => false,
-        "message" => "Sesi mentor tidak ditemukan."
+        "message" => "Token mentor tidak valid atau sudah kedaluwarsa."
     ]);
 
     exit;
@@ -35,7 +34,7 @@ if (
 
 try {
 
-    $mentorId = $_SESSION['user_id'];
+    $mentorId = $userToken['user_id'];
 
     // ==================================================
     // MENGHITUNG TOTAL SISWA BIMBINGAN
@@ -56,7 +55,6 @@ try {
           AND u.role = 'peserta'
     ");
 
-    // Nama parameter harus sama dengan query
     $stmtTotal->execute([
         ':mentor_id_siswa' => $mentorId
     ]);
@@ -93,30 +91,24 @@ try {
 
                 CASE
 
-                    -- Jika waktu masuk atau keluar terisi,
-                    -- siswa dihitung hadir.
                     WHEN BOOL_OR(
                         a.waktu_masuk IS NOT NULL
                         OR a.waktu_keluar IS NOT NULL
                     )
                     THEN 'hadir'
 
-                    -- Pengajuan izin masih menunggu.
                     WHEN BOOL_OR(pi.status = 'menunggu')
                     THEN 'menunggu'
 
-                    -- Izin sudah disetujui mentor.
                     WHEN BOOL_OR(
                         pi.status = 'disetujui'
                         OR a.status = 'izin'
                     )
                     THEN 'izin'
 
-                    -- Status sakit.
                     WHEN BOOL_OR(a.status = 'sakit')
                     THEN 'sakit'
 
-                    -- Tidak ada kehadiran atau izin.
                     ELSE 'alpha'
 
                 END AS status_hari_ini
@@ -138,7 +130,6 @@ try {
             LEFT JOIN pengajuan_izin pi
                 ON pi.absensi_id = a.id
 
-            -- Sabtu dan Minggu tidak dihitung.
             WHERE EXTRACT(ISODOW FROM CURRENT_DATE) BETWEEN 1 AND 5
 
             GROUP BY sb.peserta_id
@@ -171,7 +162,6 @@ try {
 
     $stmtKehadiran = $pdo->prepare($sqlKehadiran);
 
-    // Kedua parameter memiliki nama yang berbeda.
     $stmtKehadiran->execute([
         ':mentor_id_siswa' => $mentorId,
         ':mentor_id_program' => $mentorId
@@ -192,9 +182,6 @@ try {
     // ==================================================
     // MENGHITUNG PERSENTASE KEHADIRAN
     // ==================================================
-
-    // Siswa yang pengajuan izinnya masih menunggu
-    // tidak dimasukkan ke dalam perhitungan sementara.
 
     $totalDihitung = max(
         0,
@@ -227,7 +214,6 @@ try {
 
 } catch (PDOException $e) {
 
-    // Detail error disimpan di log PHP.
     error_log($e->getMessage());
 
     http_response_code(500);

@@ -1,12 +1,9 @@
-
 <?php
-session_start();
 
 header("Access-Control-Allow-Origin: http://localhost:5173");
 header("Access-Control-Allow-Methods: GET, POST, DELETE, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type");
-header("Access-Control-Allow-Credentials: true");
-header("Content-Type: application/json");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
+header("Content-Type: application/json; charset=UTF-8");
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(204);
@@ -14,22 +11,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 require_once '../../config/koneksi.php';
+require_once '../../config/tab_auth.php';
 
-// Pastikan mentor sudah login
-if (
-    !isset($_SESSION['user_id']) ||
-    !isset($_SESSION['role']) ||
-    $_SESSION['role'] !== 'mentor'
-) {
+// Validasi token mentor
+$userToken = ambilUserToken();
+
+if (!$userToken || $userToken['role'] !== 'mentor') {
     http_response_code(401);
     echo json_encode([
         "success" => false,
-        "message" => "Sesi mentor tidak ditemukan."
+        "message" => "Token mentor tidak valid atau sudah kedaluwarsa."
     ]);
     exit;
 }
 
-$mentor_id = $_SESSION['user_id'];
+$mentor_id = (int) $userToken['user_id'];
 $lokasiFile = null;
 
 try {
@@ -39,7 +35,6 @@ try {
     // ==========================================
     if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
-        // Mengambil materi milik mentor
         $stmtMateri = $pdo->prepare("
             SELECT
                 m.id,
@@ -58,7 +53,6 @@ try {
         $stmtMateri->execute([$mentor_id]);
         $materi = $stmtMateri->fetchAll(PDO::FETCH_ASSOC);
 
-        // Mengambil program yang diampu mentor
         $stmtProgram = $pdo->prepare("
             SELECT
                 p.id,
@@ -83,7 +77,6 @@ try {
         exit;
     }
 
-
     // ==========================================
     // METHOD POST: Menyimpan materi baru
     // ==========================================
@@ -93,7 +86,6 @@ try {
         $program_id = $_POST['program_id'] ?? '';
         $konten_materi = $_POST['konten_materi'] ?? '';
 
-        // Validasi input wajib
         if ($judul === '' || $program_id === '') {
             http_response_code(400);
             echo json_encode([
@@ -112,7 +104,7 @@ try {
             exit;
         }
 
-        // Pastikan program memang diampu mentor
+        // Pastikan program diampu mentor
         $stmtCekProgram = $pdo->prepare("
             SELECT id
             FROM mentor_program
@@ -132,7 +124,7 @@ try {
 
         $file_materi = null;
 
-        // Proses upload file jika ada
+        // Proses upload file
         if (
             isset($_FILES['file_materi']) &&
             $_FILES['file_materi']['error'] !== UPLOAD_ERR_NO_FILE
@@ -144,27 +136,26 @@ try {
                 throw new Exception("File gagal diunggah.");
             }
 
-            // Maksimal ukuran file 50 MB
             if ($file['size'] > 50 * 1024 * 1024) {
                 throw new Exception("Ukuran file maksimal 50 MB.");
             }
 
-            // Format file yang diperbolehkan
             $formatDiizinkan = ['pdf', 'ppt', 'pptx', 'zip', 'mp4'];
-            $ekstensi = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+
+            $ekstensi = strtolower(
+                pathinfo($file['name'], PATHINFO_EXTENSION)
+            );
 
             if (!in_array($ekstensi, $formatDiizinkan, true)) {
                 throw new Exception("Format file tidak diizinkan.");
             }
 
-            // Membuat folder upload jika belum tersedia
             $folderUpload = __DIR__ . '/../../uploads/materi/';
 
             if (!is_dir($folderUpload)) {
                 mkdir($folderUpload, 0755, true);
             }
 
-            // Membuat nama file baru agar tidak bentrok
             $namaFileBaru = bin2hex(random_bytes(16)) . '.' . $ekstensi;
 
             $lokasiFile = $folderUpload . $namaFileBaru;
@@ -173,11 +164,9 @@ try {
                 throw new Exception("File gagal disimpan ke folder upload.");
             }
 
-            // Path yang disimpan ke database
             $file_materi = 'uploads/materi/' . $namaFileBaru;
         }
 
-        // Simpan data materi ke database
         $stmtInsert = $pdo->prepare("
             INSERT INTO materi (
                 mentor_id,
@@ -203,7 +192,7 @@ try {
 
         $materi_id = $stmtInsert->fetchColumn();
 
-        // File sudah tersimpan bersama data materi
+        // File berhasil disimpan bersama data materi
         $lokasiFile = null;
 
         echo json_encode([
@@ -218,17 +207,14 @@ try {
         exit;
     }
 
-
     // ==========================================
     // METHOD DELETE: Menghapus materi
     // ==========================================
     if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
 
-        // Mengambil ID materi dari JSON
         $input = json_decode(file_get_contents("php://input"), true);
         $materi_id = $input['id'] ?? '';
 
-        // Validasi ID materi
         if (!ctype_digit((string) $materi_id) || (int) $materi_id < 1) {
             http_response_code(400);
             echo json_encode([
@@ -238,7 +224,7 @@ try {
             exit;
         }
 
-        // Memastikan materi milik mentor yang sedang login
+        // Pastikan materi milik mentor yang login
         $stmtCek = $pdo->prepare("
             SELECT file_materi
             FROM materi
@@ -259,7 +245,6 @@ try {
 
         $file_materi = $dataMateri['file_materi'];
 
-        // Menghapus data materi dari database
         $pdo->beginTransaction();
 
         $stmtDelete = $pdo->prepare("
@@ -282,7 +267,7 @@ try {
 
         $pdo->commit();
 
-        // Menghapus file fisik jika berasal dari folder upload materi
+        // Hapus file fisik jika file berasal dari folder upload materi
         if (
             $file_materi &&
             preg_match(
@@ -296,10 +281,8 @@ try {
                 $lokasiHapus = $folderBackend . DIRECTORY_SEPARATOR .
                     str_replace('/', DIRECTORY_SEPARATOR, $file_materi);
 
-                if (is_file($lokasiHapus)) {
-                    if (!unlink($lokasiHapus)) {
-                        error_log("File materi gagal dihapus: " . $lokasiHapus);
-                    }
+                if (is_file($lokasiHapus) && !unlink($lokasiHapus)) {
+                    error_log("File materi gagal dihapus: " . $lokasiHapus);
                 }
             }
         }
@@ -312,8 +295,6 @@ try {
         exit;
     }
 
-
-    // Method selain GET, POST, dan DELETE
     http_response_code(405);
 
     echo json_encode([
@@ -323,7 +304,6 @@ try {
 
 } catch (Throwable $e) {
 
-    // Hapus file jika upload berhasil tetapi penyimpanan database gagal
     if ($lokasiFile && file_exists($lokasiFile)) {
         unlink($lokasiFile);
     }
@@ -341,4 +321,5 @@ try {
         "message" => $e->getMessage()
     ]);
 }
+
 ?>

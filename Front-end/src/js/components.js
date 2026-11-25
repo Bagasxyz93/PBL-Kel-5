@@ -103,6 +103,22 @@ const menuIcons = {
 };
 
 /* =========================================================
+   HELPER TOKEN
+========================================================= */
+
+function getAuthHeaders() {
+    const token = sessionStorage.getItem("authToken");
+
+    if (!token) {
+        throw new Error("Token login tidak ditemukan. Silakan login kembali.");
+    }
+
+    return {
+        Authorization: `Bearer ${token}`
+    };
+}
+
+/* =========================================================
    MEMUAT KOMPONEN HTML
 ========================================================= */
 
@@ -132,12 +148,17 @@ async function loadHeaderMentorProfile() {
     try {
         const response = await fetch(
             "http://localhost:8000/api/mentor/api_profil_mentor.php",
-            { credentials: "include" }
+            {
+                method: "GET",
+                headers: getAuthHeaders()
+            }
         );
 
         const result = await response.json();
 
-        if (!response.ok || !result.success) return;
+        if (!response.ok || !result.success) {
+            throw new Error(result.message || "Gagal mengambil profil mentor.");
+        }
 
         const mentor = result.data;
 
@@ -283,6 +304,7 @@ function setupDynamicLayout(role) {
         btnLogout.addEventListener("click", () => {
             localStorage.removeItem("userName");
             localStorage.removeItem("userRole");
+            sessionStorage.removeItem("authToken");
 
             window.location.href = "/index.html";
         });
@@ -309,7 +331,6 @@ let intervalNotifikasi = null;
    NOTIFIKASI - HELPER
 ========================================================= */
 
-// Mengamankan teks dari database sebelum ditampilkan
 function escapeHTML(teks) {
     const elemen = document.createElement("div");
     elemen.textContent = teks ?? "";
@@ -317,8 +338,6 @@ function escapeHTML(teks) {
     return elemen.innerHTML;
 }
 
-
-// Format waktu notifikasi
 function formatWaktuNotifikasi(waktu) {
     if (!waktu) return "-";
 
@@ -336,16 +355,12 @@ function formatWaktuNotifikasi(waktu) {
     });
 }
 
-
-// Key penyimpanan berdasarkan role dan akun
 function getNotificationStorageKey(role) {
     const userName = localStorage.getItem("userName") || "pengguna";
 
     return `notifikasi_dibaca_${role}_${userName}`;
 }
 
-
-// Mengambil daftar ID notifikasi yang sudah dibaca
 function getDaftarNotifikasiDibaca(role) {
     try {
         const data = JSON.parse(
@@ -359,8 +374,6 @@ function getDaftarNotifikasiDibaca(role) {
     }
 }
 
-
-// Menyimpan daftar ID notifikasi yang sudah dibaca
 function simpanDaftarNotifikasiDibaca(role, daftar) {
     localStorage.setItem(
         getNotificationStorageKey(role),
@@ -368,14 +381,10 @@ function simpanDaftarNotifikasiDibaca(role, daftar) {
     );
 }
 
-
-// Menentukan status sudah dibaca
 function isNotifikasiDibaca(id, role) {
     return getDaftarNotifikasiDibaca(role).includes(String(id));
 }
 
-
-// Menentukan label kategori
 function getLabelKategori(kategori) {
     const labels = {
         laporan: "Daily Report",
@@ -387,8 +396,6 @@ function getLabelKategori(kategori) {
     return labels[kategori] || "Informasi";
 }
 
-
-// Menentukan warna badge
 function getBadgeClass(kategori, status) {
     if (kategori === "laporan") {
         if (status === "diterima") {
@@ -425,8 +432,6 @@ function getBadgeClass(kategori, status) {
     return "bg-slate-100 text-slate-600 border border-slate-200";
 }
 
-
-// Menentukan teks status
 function getLabelStatus(status) {
     const labels = {
         diterima: "Diterima",
@@ -437,6 +442,56 @@ function getLabelStatus(status) {
     };
 
     return labels[status] || "Informasi";
+}
+
+/* =========================================================
+   NOTIFIKASI - MENANDAI SUDAH DILIHAT
+========================================================= */
+
+function tandaiNotifikasiSudahDilihat(role, daftar) {
+    const daftarDibaca = getDaftarNotifikasiDibaca(role);
+
+    const semuaId = daftar.map(item => String(item.id));
+
+    simpanDaftarNotifikasiDibaca(
+        role,
+        [...daftarDibaca, ...semuaId]
+    );
+}
+
+/* =========================================================
+   NOTIFIKASI - MENGAMBIL DATA API
+========================================================= */
+
+async function ambilDataNotifikasi() {
+    const response = await fetch(API_NOTIFIKASI, {
+        method: "GET",
+        headers: {
+            "Accept": "application/json",
+            ...getAuthHeaders()
+        }
+    });
+
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+        throw new Error(
+            result.message || "Gagal mengambil data notifikasi."
+        );
+    }
+
+    if (!Array.isArray(result.data)) {
+        throw new Error("Format data notifikasi dari API tidak sesuai.");
+    }
+
+    return result.data.map(item => ({
+        id: String(item.id),
+        kategori: item.kategori || "lainnya",
+        judul: item.judul || "Notifikasi",
+        pesan: item.pesan || "",
+        waktu: item.waktu || "",
+        status: item.status || "info"
+    }));
 }
 
 /* =========================================================
@@ -499,7 +554,7 @@ async function renderNotifikasiView(userRole) {
 }
 
 /* =========================================================
-   NOTIFIKASI - MENGAMBIL DATA API
+   NOTIFIKASI - MENAMPILKAN DATA
 ========================================================= */
 
 async function populateNotifikasiData(userRole) {
@@ -518,40 +573,19 @@ async function populateNotifikasiData(userRole) {
     `;
 
     try {
-        const response = await fetch(API_NOTIFIKASI, {
-            method: "GET",
-            credentials: "include",
-            headers: {
-                "Accept": "application/json"
-            }
-        });
+        daftarNotifikasi = await ambilDataNotifikasi();
 
-        const result = await response.json();
-
-        if (!response.ok || !result.success) {
-            throw new Error(
-                result.message || "Gagal mengambil data notifikasi."
-            );
-        }
-
-        if (!Array.isArray(result.data)) {
-            throw new Error("Format data notifikasi dari API tidak sesuai.");
-        }
-
-        daftarNotifikasi = result.data.map(item => ({
-            id: String(item.id),
-            kategori: item.kategori || "lainnya",
-            judul: item.judul || "Notifikasi",
-            pesan: item.pesan || "",
-            waktu: item.waktu || "",
-            status: item.status || "info"
-        }));
-
-        // Urutkan dari waktu terbaru
         daftarNotifikasi.sort((a, b) => {
             return new Date(b.waktu).getTime() -
                 new Date(a.waktu).getTime();
         });
+
+        // Semua notifikasi dianggap sudah dilihat
+        // ketika halaman notifikasi dibuka.
+        tandaiNotifikasiSudahDilihat(
+            userRole,
+            daftarNotifikasi
+        );
 
         halamanNotifikasiAktif = 1;
 
@@ -632,11 +666,7 @@ function renderItemNotifikasi(item) {
     );
 
     const badge = getLabelKategori(item.kategori);
-    const badgeClass = getBadgeClass(
-        item.kategori,
-        item.status
-    );
-
+    const badgeClass = getBadgeClass(item.kategori, item.status);
     const statusLabel = getLabelStatus(item.status);
 
     const dotHTML = sudahDibaca
@@ -801,13 +831,8 @@ function updateJumlahNotifikasi() {
         return !daftarDibaca.includes(String(item.id));
     }).length;
 
-    const countSemua = document.getElementById(
-        "notif-count-semua"
-    );
-
-    const countBelumDibaca = document.getElementById(
-        "notif-count-belum-dibaca"
-    );
+    const countSemua = document.getElementById("notif-count-semua");
+    const countBelumDibaca = document.getElementById("notif-count-belum-dibaca");
 
     if (countSemua) {
         countSemua.textContent = totalSemua;
@@ -816,9 +841,9 @@ function updateJumlahNotifikasi() {
     if (countBelumDibaca) {
         countBelumDibaca.textContent = totalBelumDibaca;
     }
+
     updateNotificationDot();
 }
-
 
 /* =========================================================
    NOTIFIKASI - UPDATE TITIK MERAH HEADER
@@ -845,37 +870,33 @@ function updateNotificationDot() {
     );
 }
 
-
 /* =========================================================
-   NOTIFIKASI - CEK NOTIFIKASI SAAT HALAMAN DIBUKA
+   NOTIFIKASI - CEK NOTIFIKASI UNTUK HEADER
 ========================================================= */
 
 async function populateNotifikasiUntukHeader() {
     try {
-        const response = await fetch(API_NOTIFIKASI, {
-            method: "GET",
-            credentials: "include",
-            headers: {
-                "Accept": "application/json"
-            }
-        });
+        const dataTerbaru = await ambilDataNotifikasi();
 
-        const result = await response.json();
+        daftarNotifikasi = dataTerbaru;
 
-        if (!response.ok || !result.success || !Array.isArray(result.data)) {
-            throw new Error("Gagal mengambil notifikasi.");
+        const listContainer = document.getElementById(
+            "notifikasi-list-container"
+        );
+
+        // Jika halaman notifikasi sedang terbuka,
+        // notifikasi baru langsung dianggap sudah dilihat.
+        if (listContainer) {
+            tandaiNotifikasiSudahDilihat(
+                roleNotifikasiAktif,
+                daftarNotifikasi
+            );
+
+            updateJumlahNotifikasi();
+
+        } else {
+            updateNotificationDot();
         }
-
-        daftarNotifikasi = result.data.map(item => ({
-            id: String(item.id),
-            kategori: item.kategori || "lainnya",
-            judul: item.judul || "Notifikasi",
-            pesan: item.pesan || "",
-            waktu: item.waktu || "",
-            status: item.status || "info"
-        }));
-
-        updateNotificationDot();
 
     } catch (error) {
         console.error("Gagal mengecek notifikasi header:", error);
@@ -887,29 +908,16 @@ async function populateNotifikasiUntukHeader() {
 ========================================================= */
 
 function mulaiCekNotifikasiOtomatis() {
-
-    // Hentikan interval sebelumnya agar tidak bertumpuk
     if (intervalNotifikasi) {
         clearInterval(intervalNotifikasi);
     }
 
     intervalNotifikasi = setInterval(async () => {
-
+        // Hanya mengecek data terbaru dan memperbarui titik merah.
+        // Tidak me-render ulang daftar notifikasi.
         await populateNotifikasiUntukHeader();
-
-        // Jika halaman notifikasi sedang terbuka,
-        // perbarui daftar notifikasinya juga
-        const listContainer = document.getElementById(
-            "notifikasi-list-container"
-        );
-
-        if (listContainer) {
-            await populateNotifikasiData(roleNotifikasiAktif);
-        }
-
     }, 5000);
 }
-
 
 /* =========================================================
    NOTIFIKASI - UPDATE PAGINATION
@@ -921,21 +929,10 @@ function updatePagination(totalData) {
         Math.ceil(totalData / JUMLAH_NOTIFIKASI_PER_HALAMAN)
     );
 
-    const currentPage = document.getElementById(
-        "notif-current-page"
-    );
-
-    const totalPage = document.getElementById(
-        "notif-total-page"
-    );
-
-    const btnPrev = document.getElementById(
-        "btn-notif-prev"
-    );
-
-    const btnNext = document.getElementById(
-        "btn-notif-next"
-    );
+    const currentPage = document.getElementById("notif-current-page");
+    const totalPage = document.getElementById("notif-total-page");
+    const btnPrev = document.getElementById("btn-notif-prev");
+    const btnNext = document.getElementById("btn-notif-next");
 
     if (currentPage) {
         currentPage.textContent = halamanNotifikasiAktif;
@@ -969,19 +966,15 @@ function updatePagination(totalData) {
 function setupNotifikasiInteractions() {
     const tabs = document.querySelectorAll(".notif-tab");
 
-    const btnMarkAll = document.getElementById(
-        "btn-mark-all-read"
-    );
+    const btnMarkAll = document.getElementById("btn-mark-all-read");
+    const btnPrev = document.getElementById("btn-notif-prev");
+    const btnNext = document.getElementById("btn-notif-next");
 
-    const btnPrev = document.getElementById(
-        "btn-notif-prev"
-    );
+    // Hapus tombol tandai semua sudah dibaca.
+    if (btnMarkAll) {
+        btnMarkAll.remove();
+    }
 
-    const btnNext = document.getElementById(
-        "btn-notif-next"
-    );
-
-    // Event filter kategori
     tabs.forEach(tab => {
         tab.addEventListener("click", () => {
             filterNotifikasiAktif = tab.dataset.filter;
@@ -1000,29 +993,6 @@ function setupNotifikasiInteractions() {
         });
     });
 
-    // Tandai semua sudah dibaca
-    if (btnMarkAll) {
-        btnMarkAll.addEventListener("click", () => {
-            const daftarDibaca = getDaftarNotifikasiDibaca(
-                roleNotifikasiAktif
-            );
-
-            const semuaId = daftarNotifikasi.map(item =>
-                String(item.id)
-            );
-
-            simpanDaftarNotifikasiDibaca(
-                roleNotifikasiAktif,
-                [...daftarDibaca, ...semuaId]
-            );
-
-            renderDaftarNotifikasi();
-
-            btnMarkAll.textContent = "Semua Sudah Dibaca";
-        });
-    }
-
-    // Pagination sebelumnya
     if (btnPrev) {
         btnPrev.addEventListener("click", () => {
             if (halamanNotifikasiAktif > 1) {
@@ -1032,16 +1002,13 @@ function setupNotifikasiInteractions() {
         });
     }
 
-    // Pagination selanjutnya
     if (btnNext) {
         btnNext.addEventListener("click", () => {
             const dataFilter = getNotifikasiSesuaiFilter();
 
             const totalHalaman = Math.max(
                 1,
-                Math.ceil(
-                    dataFilter.length / JUMLAH_NOTIFIKASI_PER_HALAMAN
-                )
+                Math.ceil(dataFilter.length / JUMLAH_NOTIFIKASI_PER_HALAMAN)
             );
 
             if (halamanNotifikasiAktif < totalHalaman) {
@@ -1057,13 +1024,10 @@ function setupNotifikasiInteractions() {
 ========================================================= */
 
 function bindNotificationButtonDirectly() {
-    const btnNotifikasi = document.getElementById(
-        "btn-notifikasi"
-    );
+    const btnNotifikasi = document.getElementById("btn-notifikasi");
 
     if (!btnNotifikasi) return;
 
-    // Mencegah event listener terpasang berulang
     if (btnNotifikasi.dataset.bound === "true") return;
 
     btnNotifikasi.dataset.bound = "true";
@@ -1188,8 +1152,8 @@ async function initComponents() {
             await loadHeaderMentorProfile();
         }
 
-        // Memuat notifikasi untuk mengecek titik merah
         roleNotifikasiAktif = userRole;
+
         await populateNotifikasiUntukHeader();
 
         mulaiCekNotifikasiOtomatis();
@@ -1202,10 +1166,7 @@ async function initComponents() {
         }
 
     } catch (error) {
-        console.error(
-            "Gagal menginisialisasi komponen:",
-            error
-        );
+        console.error("Gagal menginisialisasi komponen:", error);
 
     } finally {
         if (app) {

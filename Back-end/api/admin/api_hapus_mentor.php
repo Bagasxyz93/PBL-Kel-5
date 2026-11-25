@@ -1,8 +1,10 @@
+
 <?php
+
 header("Access-Control-Allow-Origin: http://localhost:5173");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type");
-header("Content-Type: application/json");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
+header("Content-Type: application/json; charset=UTF-8");
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(204);
@@ -10,6 +12,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 require_once '../../config/koneksi.php';
+require_once '../../config/tab_auth.php';
+
+// Validasi token Admin
+$userToken = ambilUserToken();
+
+if (!$userToken || $userToken['role'] !== 'admin') {
+    http_response_code(401);
+    echo json_encode([
+        "success" => false,
+        "message" => "Akses ditolak. Silakan login sebagai Admin."
+    ]);
+    exit;
+}
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
@@ -23,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $data = json_decode(file_get_contents("php://input"), true);
 $id = $data['id'] ?? null;
 
-if (!$id) {
+if (!$id || !is_numeric($id)) {
     http_response_code(400);
     echo json_encode([
         "success" => false,
@@ -33,6 +48,7 @@ if (!$id) {
 }
 
 try {
+
     $pdo->beginTransaction();
 
     // Memastikan data merupakan mentor
@@ -40,6 +56,7 @@ try {
         SELECT id FROM users
         WHERE id = ? AND role = 'mentor'
     ");
+
     $cek->execute([$id]);
 
     if (!$cek->fetch()) {
@@ -51,6 +68,7 @@ try {
         DELETE FROM mentor_program
         WHERE mentor_id = ?
     ");
+
     $hapusProgram->execute([$id]);
 
     // Menghapus akun mentor
@@ -58,6 +76,7 @@ try {
         DELETE FROM users
         WHERE id = ? AND role = 'mentor'
     ");
+
     $hapusMentor->execute([$id]);
 
     $pdo->commit();
@@ -68,9 +87,12 @@ try {
     ]);
 
 } catch (PDOException $e) {
+
     if ($pdo->inTransaction()) {
         $pdo->rollBack();
     }
+
+    error_log($e->getMessage());
 
     http_response_code(400);
 
@@ -80,6 +102,7 @@ try {
     ]);
 
 } catch (Exception $e) {
+
     if ($pdo->inTransaction()) {
         $pdo->rollBack();
     }
@@ -90,5 +113,7 @@ try {
         "success" => false,
         "message" => $e->getMessage()
     ]);
+
 }
+
 ?>

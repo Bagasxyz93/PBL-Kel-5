@@ -1,10 +1,9 @@
-
 <?php
 
 header("Access-Control-Allow-Origin: http://localhost:5173");
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type");
-header("Content-Type: application/json");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
+header("Content-Type: application/json; charset=UTF-8");
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(204);
@@ -12,10 +11,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 require_once '../../config/koneksi.php';
+require_once '../../config/tab_auth.php';
+
+// ==================================================
+// VALIDASI TOKEN ADMIN
+// ==================================================
+
+$userToken = ambilUserToken();
+
+if (!$userToken || $userToken['role'] !== 'admin') {
+    http_response_code(401);
+    echo json_encode([
+        "success" => false,
+        "message" => "Akses ditolak. Silakan login sebagai Admin."
+    ]);
+    exit;
+}
 
 try {
 
-    // Mengambil daftar peserta beserta ID RFID
+    // ==================================================
+    // MENGAMBIL DAFTAR PESERTA BESERTA ID RFID
+    // ==================================================
+
     if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
         $stmt = $pdo->prepare("
@@ -45,7 +63,10 @@ try {
         exit;
     }
 
-    // Menyimpan atau memperbarui ID RFID
+    // ==================================================
+    // MENYIMPAN ATAU MEMPERBARUI ID RFID
+    // ==================================================
+
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $input = json_decode(file_get_contents("php://input"), true);
@@ -79,7 +100,7 @@ try {
             WHERE id = :id
               AND role = 'peserta'
         ");
-        
+
         $stmt->execute([
             ':rfid_tanggal' => $idRfid,
             ':rfid_lama' => $idRfid,
@@ -88,11 +109,14 @@ try {
         ]);
 
         if ($stmt->rowCount() === 0) {
-            // Memastikan peserta memang ada, termasuk jika nilainya tidak berubah
+
+            // Memastikan peserta memang ada,
+            // termasuk jika nilainya tidak berubah
             $check = $pdo->prepare("
                 SELECT id FROM users
                 WHERE id = :id AND role = 'peserta'
             ");
+
             $check->execute([':id' => $userId]);
 
             if (!$check->fetch()) {
@@ -113,6 +137,10 @@ try {
         exit;
     }
 
+    // ==================================================
+    // METODE TIDAK DIIZINKAN
+    // ==================================================
+
     http_response_code(405);
     echo json_encode([
         "success" => false,
@@ -120,6 +148,8 @@ try {
     ]);
 
 } catch (PDOException $e) {
+
+    error_log($e->getMessage());
 
     if ($e->getCode() === '23505') {
         http_response_code(409);
@@ -136,6 +166,8 @@ try {
     }
 
 } catch (Exception $e) {
+
+    error_log($e->getMessage());
 
     http_response_code(500);
     echo json_encode([

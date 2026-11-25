@@ -1,9 +1,10 @@
 
 <?php
+
 header("Access-Control-Allow-Origin: http://localhost:5173");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type");
-header("Content-Type: application/json");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
+header("Content-Type: application/json; charset=UTF-8");
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(204);
@@ -11,6 +12,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 require_once '../../config/koneksi.php';
+require_once '../../config/tab_auth.php';
+
+// Validasi token Admin
+$userToken = ambilUserToken();
+
+if (!$userToken || $userToken['role'] !== 'admin') {
+    http_response_code(401);
+    echo json_encode([
+        "success" => false,
+        "message" => "Akses ditolak. Silakan login sebagai Admin."
+    ]);
+    exit;
+}
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
@@ -60,6 +74,7 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
 }
 
 try {
+
     $pdo->beginTransaction();
 
     // Pastikan mentor tersedia
@@ -68,6 +83,7 @@ try {
         WHERE id = ? AND role = 'mentor'
         FOR UPDATE
     ");
+
     $cekMentor->execute([$id]);
 
     if (!$cekMentor->fetch()) {
@@ -80,6 +96,7 @@ try {
         WHERE (username = ? OR email = ? OR nip = ?)
         AND id <> ?
     ");
+
     $cek->execute([$username, $email, $nip, $id]);
 
     if ($cek->fetch()) {
@@ -113,6 +130,7 @@ try {
         FROM mentor_program
         WHERE mentor_id = ?
     ");
+
     $cekProgram->execute([$id]);
 
     $programLama = array_map(
@@ -125,8 +143,10 @@ try {
         array_map('intval', $programIds)
     ));
 
-    if (count($programBaru) !== count($programIds) ||
-        in_array(0, $programBaru, true)) {
+    if (
+        count($programBaru) !== count($programIds) ||
+        in_array(0, $programBaru, true)
+    ) {
         throw new Exception("Daftar program tidak valid.");
     }
 
@@ -146,6 +166,7 @@ try {
     $programDihapus = array_diff($programLama, $programBaru);
 
     if (!empty($programDihapus)) {
+
         $hapusProgram = $pdo->prepare("
             DELETE FROM mentor_program
             WHERE mentor_id = ? AND program_id = ?
@@ -156,10 +177,11 @@ try {
         }
     }
 
-    // Cari program yang benar-benar baru ditambahkan
+    // Cari program yang baru ditambahkan
     $programDitambahkan = array_diff($programBaru, $programLama);
 
     if (!empty($programDitambahkan)) {
+
         $tambahProgram = $pdo->prepare("
             INSERT INTO mentor_program (mentor_id, program_id)
             VALUES (?, ?)
@@ -177,7 +199,23 @@ try {
         "message" => "Data mentor berhasil diperbarui."
     ]);
 
+} catch (PDOException $e) {
+
+    if ($pdo->inTransaction()) {
+        $pdo->rollBack();
+    }
+
+    error_log($e->getMessage());
+
+    http_response_code(400);
+
+    echo json_encode([
+        "success" => false,
+        "message" => "Data mentor gagal diperbarui."
+    ]);
+
 } catch (Exception $e) {
+
     if ($pdo->inTransaction()) {
         $pdo->rollBack();
     }
@@ -188,5 +226,7 @@ try {
         "success" => false,
         "message" => $e->getMessage()
     ]);
+
 }
+
 ?>

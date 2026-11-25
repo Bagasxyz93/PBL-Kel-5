@@ -1,77 +1,70 @@
+
 <?php
 
-session_set_cookie_params([
-    'lifetime' => 0,
-    'path' => '/',
-    'domain' => 'localhost',
-    'secure' => false,
-    'httponly' => true,
-    'samesite' => 'Lax'
-]);
-
-session_start();
-
 require_once '../config/koneksi.php';
+require_once '../config/tab_auth.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header("Location: ../login.php");
+    header("Location: http://localhost:5173/login.php");
     exit;
 }
 
 $username = trim($_POST['username'] ?? '');
 $password = $_POST['password'] ?? '';
 
-if (empty($username) || empty($password)) {
+if ($username === '' || $password === '') {
     header("Location: http://localhost:5173/?error=empty");
     exit;
 }
 
 try {
-    $query = "SELECT * FROM users WHERE username = :username";
+    $stmt = $pdo->prepare("
+        SELECT id, nama, username, password, role
+        FROM users
+        WHERE username = :username
+    ");
 
-    $stmt = $pdo->prepare($query);
-    $stmt->execute([
-        ':username' => $username
-    ]);
-
+    $stmt->execute([':username' => $username]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if ($user && password_verify($password, $user['password'])) {
-
-        session_regenerate_id(true);
-
-        $_SESSION['user_id'] = $user['id'];
-        $_SESSION['nama'] = $user['nama'];
-        $_SESSION['username'] = $user['username'];
-        $_SESSION['role'] = $user['role'];
-
-        switch ($user['role']) {
-            case 'admin':
-                header("Location: http://localhost:5173/pages/Admin/Dashboard.html");
-                break;
-
-            case 'mentor':
-                header("Location: http://localhost:5173/pages/Mentor/Dashboard.html");
-                break;
-
-            case 'peserta':
-                header("Location: http://localhost:5173/pages/Siswa/Dashboard.html");
-                break;
-
-            default:
-                session_destroy();
-                header("Location: http://localhost:5173/login.php");
-                break;
-        }
-
+    if (!$user || !password_verify($password, $user['password'])) {
+        header("Location: http://localhost:5173/?error=invalid");
         exit;
+    }
 
-        } else {
-            header("Location: http://localhost:5173/?error=invalid");
+    $token = buatTokenTab($user);
+
+    $tujuan = '';
+
+    switch ($user['role']) {
+        case 'admin':
+            $tujuan = '/pages/Admin/Dashboard.html';
+            break;
+
+        case 'mentor':
+            $tujuan = '/pages/Mentor/Dashboard.html';
+            break;
+
+        case 'peserta':
+            $tujuan = '/pages/Siswa/Dashboard.html';
+            break;
+
+        default:
+            header("Location: http://localhost:5173/?error=role");
             exit;
-        }
+    }
+
+    // Token dikirim ke halaman tujuan untuk disimpan per tab.
+    header(
+        "Location: http://localhost:5173/auth-redirect.html"
+        . "#token=" . urlencode($token)
+        . "&tujuan=" . urlencode($tujuan)
+    );
+
+    exit;
 
 } catch (PDOException $e) {
+    error_log($e->getMessage());
     die("Terjadi kesalahan database.");
 }
 

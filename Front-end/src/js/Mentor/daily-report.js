@@ -27,6 +27,17 @@ const DATA_PER_PAGE = 10;
 
 
 // =========================================================
+// AUTENTIKASI TOKEN PER TAB
+// =========================================================
+
+function getAuthHeaders() {
+    return {
+        "Authorization": `Bearer ${sessionStorage.getItem("authToken")}`
+    };
+}
+
+
+// =========================================================
 // MENGAMBIL TANGGAL HARI INI BERDASARKAN WIB
 // =========================================================
 
@@ -92,7 +103,6 @@ export function initMentorDailyReport() {
     const tanggalHariIni =
         document.getElementById("tanggal-hari-ini");
 
-    // Tanggal halaman otomatis hari ini berdasarkan WIB.
     if (filterTanggal) {
         filterTanggal.value = getTanggalHariIniWIB();
     }
@@ -378,12 +388,10 @@ export function initMentorDailyReport() {
 
         try {
 
-            // Ambil tanggal yang dipilih pada input.
             const tanggalDipilih = filterTanggal
                 ? filterTanggal.value
                 : getTanggalHariIniWIB();
 
-            // Kirim tanggal ke API PHP.
             const url = `${API_DAILY_REPORT}?tanggal=${
                 encodeURIComponent(tanggalDipilih)
             }`;
@@ -392,7 +400,7 @@ export function initMentorDailyReport() {
 
             const response = await fetch(url, {
                 method: "GET",
-                credentials: "include"
+                headers: getAuthHeaders()
             });
 
             const result = await response.json();
@@ -460,7 +468,6 @@ export function initMentorDailyReport() {
 
             applyFilters();
 
-            // Membuka detail jika halaman diakses dari dashboard.
             const urlParams = new URLSearchParams(
                 window.location.search
             );
@@ -855,13 +862,9 @@ export function initMentorDailyReport() {
         filterProgram.addEventListener("change", applyFilters);
     }
 
-    // PENTING:
-    // Ketika tanggal berubah, ambil ulang data dari database.
     if (filterTanggal) {
         filterTanggal.addEventListener("change", () => {
-
             loadDailyReports();
-
         });
     }
 
@@ -1183,7 +1186,7 @@ export function initMentorDailyReport() {
                 `${API_DAILY_REPORT}?id=${encodeURIComponent(reportId)}`,
                 {
                     method: "GET",
-                    credentials: "include"
+                    headers: getAuthHeaders()
                 }
             );
 
@@ -1395,9 +1398,8 @@ export function initMentorDailyReport() {
 
                 method: "PUT",
 
-                credentials: "include",
-
                 headers: {
+                    ...getAuthHeaders(),
                     "Content-Type": "application/json"
                 },
 
@@ -1429,7 +1431,6 @@ export function initMentorDailyReport() {
 
             const idLaporan = activeReportId;
 
-            // Muat ulang sesuai tanggal yang sedang dipilih.
             await loadDailyReports();
 
             await window.openDetailLaporanModal(idLaporan);
@@ -1753,7 +1754,7 @@ function exportRekapDailyReport() {
                 `${API_REKAP_DAILY_REPORT}?tanggal=${encodeURIComponent(tanggal)}`,
                 {
                     method: "GET",
-                    credentials: "include"
+                    headers: getAuthHeaders()
                 }
             );
 
