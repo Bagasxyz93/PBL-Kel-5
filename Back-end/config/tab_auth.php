@@ -71,8 +71,26 @@ function validasiTokenTab($token) {
 function ambilUserToken() {
 
     $headers = getallheaders();
-    $authorization = $headers['Authorization'] ?? '';
+    $authorization = '';
 
+    // Membaca header Authorization tanpa mempermasalahkan kapitalisasi
+    foreach ($headers as $namaHeader => $nilaiHeader) {
+        if (strtolower($namaHeader) === 'authorization') {
+            $authorization = $nilaiHeader;
+            break;
+        }
+    }
+
+    // Alternatif jika header tidak ditemukan melalui getallheaders()
+    if (!$authorization && isset($_SERVER['HTTP_AUTHORIZATION'])) {
+        $authorization = $_SERVER['HTTP_AUTHORIZATION'];
+    }
+
+    if (!$authorization && isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) {
+        $authorization = $_SERVER['REDIRECT_HTTP_AUTHORIZATION'];
+    }
+
+    // Memastikan format Bearer Token
     if (!preg_match('/Bearer\s+(.+)/i', $authorization, $matches)) {
         return false;
     }

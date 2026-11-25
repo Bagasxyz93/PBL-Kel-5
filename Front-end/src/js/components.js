@@ -22,7 +22,7 @@ const roleConfig = {
         bgClass: "bg-[#1e1b4b]",
         logoBg: "bg-indigo-600 shadow-indigo-500/20",
         activeColor: "bg-indigo-600 text-white shadow-md shadow-indigo-600/30",
-        roleBadgeText: "Siswa Web Dev",
+        roleBadgeText: "Memuat program...",
         roleBadgeColor: "text-indigo-600",
         versionText: "Versi Siswa v2.0",
         avatarBg: "bg-indigo-600 shadow-indigo-500/20",
@@ -197,6 +197,93 @@ async function loadHeaderMentorProfile() {
     }
 }
 
+
+/* =========================================================
+   MENGAMBIL PROFIL SISWA UNTUK HEADER
+========================================================= */
+
+async function loadHeaderStudentProfile() {
+    try {
+        const response = await fetch(
+            "http://localhost:8000/api/siswa/api_dashboard.php",
+            {
+                method: "GET",
+                headers: getAuthHeaders()
+            }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            throw new Error(result.message || "Gagal mengambil profil siswa.");
+        }
+
+        const namaSiswa = result.data.nama || "Peserta";
+
+        const headerUserName = document.getElementById("header-user-name");
+        const headerUserRoleBadge = document.getElementById("header-user-role-badge");
+        const headerUserAvatar = document.getElementById("header-user-avatar");
+
+        // Nama siswa
+        if (headerUserName) {
+            headerUserName.textContent = namaSiswa;
+        }
+
+        // Ambil program siswa dari API profil siswa
+        let namaProgram = "Program Inkubasi";
+
+        try {
+            const responseProfil = await fetch(
+                "http://localhost:8000/api/siswa/api_profil_siswa.php",
+                {
+                    method: "GET",
+                    headers: getAuthHeaders()
+                }
+            );
+
+            const resultProfil = await responseProfil.json();
+
+            if (responseProfil.ok && resultProfil.success) {
+                const dataProfil = resultProfil.data;
+
+                if (Array.isArray(dataProfil.program)) {
+                    namaProgram = dataProfil.program
+                        .map(item => item.nama_program || item.nama)
+                        .filter(Boolean)
+                        .join(", ") || namaProgram;
+                } else if (typeof dataProfil.program === "string") {
+                    namaProgram = dataProfil.program || namaProgram;
+                } else if (dataProfil.nama_program) {
+                    namaProgram = dataProfil.nama_program;
+                }
+            }
+        } catch (error) {
+            console.warn("Gagal mengambil program siswa:", error);
+        }
+
+        // Badge program
+        if (headerUserRoleBadge) {
+            headerUserRoleBadge.textContent = namaProgram;
+        }
+
+        // Avatar inisial siswa
+        if (headerUserAvatar) {
+            const inisial = namaSiswa
+                .trim()
+                .split(/\s+/)
+                .slice(0, 2)
+                .map(kata => kata[0])
+                .join("")
+                .toUpperCase();
+
+            headerUserAvatar.textContent = inisial || "PS";
+        }
+
+    } catch (error) {
+        console.error("Gagal memuat profil header siswa:", error);
+    }
+}
+
 /* =========================================================
    RENDER LAYOUT DINAMIS
 ========================================================= */
@@ -265,9 +352,10 @@ function setupDynamicLayout(role) {
     const headerUserAvatar = document.getElementById("header-user-avatar");
 
     if (headerUserName) {
-        headerUserName.textContent = role === "mentor"
-            ? "Memuat nama..."
-            : userName;
+        headerUserName.textContent =
+            role === "mentor" || role === "peserta"
+                ? "Memuat nama..."
+                : userName;
     }
 
     if (headerUserRoleBadge) {
@@ -1150,6 +1238,9 @@ async function initComponents() {
 
         if (userRole === "mentor") {
             await loadHeaderMentorProfile();
+                
+        } else if (userRole === "peserta") {
+            await loadHeaderStudentProfile();
         }
 
         roleNotifikasiAktif = userRole;

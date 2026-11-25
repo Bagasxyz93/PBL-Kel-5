@@ -7,8 +7,11 @@ export function initProfil() {
     console.log("Modul Profil Siswa berhasil dimuat.");
 
     const nama = document.getElementById("profil-nama");
+    const nisn = document.getElementById("profil-nisn");
     const email = document.getElementById("profil-email");
     const telepon = document.getElementById("profil-telepon");
+    const program = document.getElementById("profil-program");
+    const status = document.getElementById("profil-status");
 
     const btnEdit = document.getElementById("btn-edit-profil");
     const btnJadwal = document.getElementById("btn-lihat-jadwal");
@@ -20,40 +23,77 @@ export function initProfil() {
         return;
     }
 
-    // Data awal halaman profil
-    const dataAwal = {
-        nama: nama.textContent.trim(),
-        email: email.textContent.trim(),
-        telepon: telepon.textContent.trim()
-    };
+    const API_PROFIL =
+        "http://localhost:8000/api/siswa/api_profil.php";
 
-    const STORAGE_KEY = "siin_profil_siswa";
+    // Mengambil token login
+    function getAuthHeaders() {
+        const token = sessionStorage.getItem("authToken");
 
-    // Membaca data profil dari localStorage
-    function bacaProfil() {
-        try {
-            const dataTersimpan = localStorage.getItem(STORAGE_KEY);
-
-            if (dataTersimpan) {
-                return {
-                    ...dataAwal,
-                    ...JSON.parse(dataTersimpan)
-                };
-            }
-        } catch (error) {
-            console.error("Gagal membaca data profil:", error);
+        if (!token) {
+            throw new Error("Token login tidak ditemukan.");
         }
 
-        return { ...dataAwal };
+        return {
+            Authorization: `Bearer ${token}`
+        };
     }
 
-    let dataProfil = bacaProfil();
+    // Mengambil data profil dari backend
+    async function ambilProfil() {
+        try {
+            const response = await fetch(API_PROFIL, {
+                method: "GET",
+                headers: getAuthHeaders()
+            });
 
-    // Menampilkan data profil
-    function tampilkanProfil() {
-        nama.textContent = dataProfil.nama;
-        email.textContent = dataProfil.email;
-        telepon.textContent = dataProfil.telepon;
+            const result = await response.json();
+
+            if (!response.ok || !result.success) {
+                throw new Error(
+                    result.message || "Gagal mengambil data profil."
+                );
+            }
+
+            const data = result.data;
+
+            // Menampilkan data profil
+            nama.textContent = data.nama || "-";
+
+            if (nisn) {
+                nisn.textContent = data.nisn || "-";
+            }
+
+            email.textContent = data.email || "-";
+            telepon.textContent = data.telepon || "-";
+
+            if (program) {
+                program.textContent = data.program || "-";
+            }
+
+            if (status) {
+                status.textContent = data.status || "-";
+            }
+
+        } catch (error) {
+            console.error("Gagal mengambil profil:", error);
+
+            nama.textContent = "Gagal memuat data";
+            email.textContent = "-";
+            telepon.textContent = "-";
+
+            if (nisn) {
+                nisn.textContent = "-";
+            }
+
+            if (program) {
+                program.textContent = "-";
+            }
+
+            if (status) {
+                status.textContent = "-";
+            }
+        }
     }
 
     // Notifikasi Toast sederhana
@@ -102,9 +142,6 @@ export function initProfil() {
             : "Lihat Semua";
     });
 
-    // Terapkan data yang tersimpan
-    tampilkanProfil();
-
     // Awalnya tampilkan dua jadwal saja
     if (daftarJadwal) {
         Array.from(daftarJadwal.children).forEach((item, index) => {
@@ -113,6 +150,9 @@ export function initProfil() {
             }
         });
     }
+
+    // Mengambil profil dari database
+    ambilProfil();
 
     // Inisialisasi Pop-up Ubah Password
     setupPasswordModal();

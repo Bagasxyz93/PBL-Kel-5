@@ -1,80 +1,407 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Siswa | SI-IN</title>
-    <!-- Tailwind CSS -->
+
     <script src="https://cdn.tailwindcss.com"></script>
+
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="/src/css/style.css">
-    <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-    </style>
 </head>
 
-<body class="bg-[#f8fafc] m-0 p-0 text-slate-800 h-screen overflow-hidden antialiased">
-    <!-- Wrapper Utama Aplikasi -->
-    <div
-        id="app"
-        class="flex h-screen w-screen overflow-hidden invisible opacity-0 transition-opacity duration-200"
-        aria-busy="true">
+<body class="bg-slate-50 font-['Plus_Jakarta_Sans']">
 
-        <!-- Sidebar Fixed / Sticky sampai bawah -->
-        <div id="sidebar-container" class="shrink-0 h-full"></div>
+<div id="app" class="flex min-h-screen invisible opacity-0 transition-opacity duration-300">
 
-        <!-- Konten Utama (Scrollable area) -->
-        <div class="flex-1 flex flex-col h-full overflow-y-auto relative">
+    <!-- SIDEBAR -->
+    <div id="sidebar-container"></div>
 
-            <!-- Header -->
-            <div id="header-container" class="sticky top-0 z-30 shrink-0"></div>
+    <!-- MAIN -->
+    <div class="flex min-w-0 flex-1 flex-col">
 
-            <main class="flex-1 p-6 lg:p-8 max-w-7xl w-full mx-auto space-y-6">
+        <!-- HEADER -->
+        <div id="header-container"></div>
 
-                <!-- Sapaan -->
-                <section>
-                    <h1 id="sapaan-siswa" class="text-2xl font-bold tracking-tight text-[#1e293b]">
-                        Halo, Nerazuriancta!
-                    </h1>
-                    <p class="mt-1 text-sm font-medium text-slate-400">
-                        Semangat Belajar &amp; Berproses di Inkubasi SI-IN!
-                    </p>
-                </section>
+        <!-- CONTENT -->
+        <main class="flex-1 space-y-8 p-6 lg:p-8">
 
-                <!-- Kartu Statistik -->
-                <section id="statistik-container" class="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
-                </section>
+            <!-- GREETING -->
+            <section>
+                <div id="sapaan-siswa"></div>
+            </section>
 
-                <!-- Section Aktivitas Terbaru (Full 1 Kolom sesuai Figma) -->
-                <section>
-                    <article class="flex min-w-0 flex-col justify-between rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
+            <!-- STATISTIK -->
+            <section>
+                <div id="statistik-container"></div>
+            </section>
+
+            <!-- KEGIATAN & MATERI -->
+            <section class="grid grid-cols-1 gap-6 xl:grid-cols-2">
+
+                <!-- KEGIATAN YANG PERLU DISELESAIKAN -->
+                <div class="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm">
+
+                    <div class="mb-6 flex items-center gap-3">
+
+                        <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600">
+
+                            <!-- ICON CHECKLIST -->
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                class="h-5 w-5"
+                            >
+                                <path d="M9 11l3 3L22 4"/>
+                                <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+                            </svg>
+
+                        </div>
+
                         <div>
-                            <div class="mb-5 flex items-center justify-between">
-                                <h2 class="flex items-center gap-2.5 text-base font-bold text-slate-800">
-                                    <span class="h-2.5 w-2.5 rounded-full bg-[#5865ff]"></span>
-                                    Aktivitas Terbaru
-                                </h2>
-                                <span class="text-xs font-medium text-slate-400">Pekan Ini</span>
+                            <h2 class="text-lg font-bold text-slate-800">
+                                Kegiatan yang Perlu Diselesaikan
+                            </h2>
+
+                            <p class="text-xs text-slate-400">
+                                Jangan lupa selesaikan kegiatanmu
+                            </p>
+                        </div>
+
+                    </div>
+
+                    <div class="space-y-4">
+
+                        <!-- DAILY REPORT -->
+                        <div class="flex flex-col gap-4 rounded-2xl border border-orange-100 bg-orange-50/60 p-5 sm:flex-row sm:items-center sm:justify-between">
+
+                            <div class="flex items-start gap-4">
+
+                                <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-orange-100 text-orange-600">
+
+                                    <!-- ICON FILE -->
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="1.8"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        class="h-5 w-5"
+                                    >
+                                        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                                        <path d="M14 2v6h6"/>
+                                        <path d="M8 13h8"/>
+                                        <path d="M8 17h5"/>
+                                    </svg>
+
+                                </div>
+
+                                <div>
+                                    <h3 class="text-sm font-bold text-slate-800">
+                                        Daily Report
+                                    </h3>
+
+                                    <p class="mt-1 text-xs leading-relaxed text-slate-500">
+                                        Catat kegiatan dan progres belajar yang telah kamu lakukan.
+                                    </p>
+                                </div>
+
                             </div>
 
-                            <div id="aktivitas-container" class="divide-y divide-slate-100"></div>
-                        </div>
+                            <a
+                                href="/pages/Siswa/Daily-report.html"
+                                class="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-orange-500 px-4 py-2.5 text-xs font-bold text-white transition hover:bg-orange-600"
+                            >
+                                Buat Laporan
 
-                        <div class="mt-6 pt-4 text-center border-t border-slate-50">
-                            <a href="/pages/Siswa/Daily-report.html"
-                               class="text-xs font-semibold text-[#5865ff] hover:text-indigo-700 transition-colors inline-flex items-center gap-1">
-                                Lihat Seluruh Riwayat Aktivitas <span aria-hidden="true">→</span>
+                                <!-- ICON ARROW -->
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    class="h-4 w-4"
+                                >
+                                    <path d="M5 12h14"/>
+                                    <path d="m12 5 7 7-7 7"/>
+                                </svg>
+
                             </a>
-                        </div>
-                    </article>
-                </section>
-            </main>
 
-            <!-- Footer -->
-            <div id="footer-container" class="shrink-0"></div>
-        </div>
+                        </div>
+
+                        <!-- BELAJAR MATERI -->
+                        <div class="flex flex-col gap-4 rounded-2xl border border-indigo-100 bg-indigo-50/60 p-5 sm:flex-row sm:items-center sm:justify-between">
+
+                            <div class="flex items-start gap-4">
+
+                                <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-indigo-100 text-indigo-600">
+
+                                    <!-- ICON BOOK -->
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="1.8"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        class="h-5 w-5"
+                                    >
+                                        <path d="M12 7v14"/>
+                                        <path d="M3 5a2 2 0 012-2h5a2 2 0 012 2v16a2 2 0 00-2-2H5a2 2 0 00-2 2z"/>
+                                        <path d="M21 5a2 2 0 00-2-2h-5a2 2 0 00-2 2v16a2 2 0 012-2h5a2 2 0 012 2z"/>
+                                    </svg>
+
+                                </div>
+
+                                <div>
+                                    <h3 class="text-sm font-bold text-slate-800">
+                                        Pelajari Materi
+                                    </h3>
+
+                                    <p class="mt-1 text-xs leading-relaxed text-slate-500">
+                                        Buka materi pembelajaran dan tingkatkan pemahamanmu.
+                                    </p>
+                                </div>
+
+                            </div>
+
+                            <a
+                                href="/pages/Siswa/Materi.html"
+                                class="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-xs font-bold text-white transition hover:bg-indigo-700"
+                            >
+                                Buka Materi
+
+                                <!-- ICON ARROW -->
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    class="h-4 w-4"
+                                >
+                                    <path d="M5 12h14"/>
+                                    <path d="m12 5 7 7-7 7"/>
+                                </svg>
+
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- MATERI TERBARU -->
+                <div class="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm">
+
+                    <div class="mb-6 flex items-center justify-between gap-3">
+
+                        <div class="flex items-center gap-3">
+
+                            <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600">
+
+                                <!-- ICON BOOKMARK -->
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="1.8"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    class="h-5 w-5"
+                                >
+                                    <path d="M6 4a2 2 0 012-2h8a2 2 0 012 2v18l-6-4-6 4z"/>
+                                </svg>
+
+                            </div>
+
+                            <div>
+                                <h2 class="text-lg font-bold text-slate-800">
+                                    Materi Terbaru
+                                </h2>
+
+                                <p class="text-xs text-slate-400">
+                                    Materi yang tersedia untukmu
+                                </p>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div id="materi-terbaru-container" class="space-y-3">
+
+                        <!-- MATERI 1 -->
+                        <div class="flex items-center gap-4 rounded-2xl border border-slate-100 p-4 transition hover:bg-slate-50">
+
+                            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
+
+                                <!-- ICON FILE TEXT -->
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="1.8"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    class="h-5 w-5"
+                                >
+                                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                                    <path d="M14 2v6h6"/>
+                                    <path d="M8 13h8"/>
+                                    <path d="M8 17h5"/>
+                                </svg>
+
+                            </div>
+
+                            <div class="min-w-0 flex-1">
+                                <h3 class="truncate text-sm font-bold text-slate-700">
+                                    TOPIK 4: COBA PPT
+                                </h3>
+
+                                <p class="mt-1 text-xs text-slate-400">
+                                    Materi pembelajaran
+                                </p>
+                            </div>
+
+                            <span class="shrink-0 rounded-full bg-emerald-50 px-2.5 py-1 text-[10px] font-bold text-emerald-600">
+                                Terbaru
+                            </span>
+
+                        </div>
+
+                        <!-- MATERI 2 -->
+                        <div class="flex items-center gap-4 rounded-2xl border border-slate-100 p-4 transition hover:bg-slate-50">
+
+                            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
+
+                                <!-- ICON FILE TEXT -->
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="1.8"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    class="h-5 w-5"
+                                >
+                                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                                    <path d="M14 2v6h6"/>
+                                    <path d="M8 13h8"/>
+                                    <path d="M8 17h5"/>
+                                </svg>
+
+                            </div>
+
+                            <div class="min-w-0 flex-1">
+                                <h3 class="truncate text-sm font-bold text-slate-700">
+                                    TOPIK 3: Contoh Makan Sambil Tidur
+                                </h3>
+
+                                <p class="mt-1 text-xs text-slate-400">
+                                    Materi pembelajaran
+                                </p>
+                            </div>
+
+                        </div>
+
+                        <!-- MATERI 3 -->
+                        <div class="flex items-center gap-4 rounded-2xl border border-slate-100 p-4 transition hover:bg-slate-50">
+
+                            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
+
+                                <!-- ICON FILE TEXT -->
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="1.8"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    class="h-5 w-5"
+                                >
+                                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                                    <path d="M14 2v6h6"/>
+                                    <path d="M8 13h8"/>
+                                    <path d="M8 17h5"/>
+                                </svg>
+
+                            </div>
+
+                            <div class="min-w-0 flex-1">
+                                <h3 class="truncate text-sm font-bold text-slate-700">
+                                    TOPIK 1: Tidur Sambil Makan
+                                </h3>
+
+                                <p class="mt-1 text-xs text-slate-400">
+                                    Materi pembelajaran
+                                </p>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- LIHAT SEMUA -->
+                    <a
+                        href="/pages/Siswa/Materi.html"
+                        class="mt-5 flex items-center justify-center gap-2 rounded-xl border border-slate-200 py-3 text-xs font-bold text-indigo-600 transition hover:bg-indigo-50"
+                    >
+                        Lihat Semua Materi
+
+                        <!-- ICON ARROW -->
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            class="h-4 w-4"
+                        >
+                            <path d="M5 12h14"/>
+                            <path d="m12 5 7 7-7 7"/>
+                        </svg>
+
+                    </a>
+
+                </div>
+
+            </section>
+
+        </main>
+
+        <!-- FOOTER -->
+        <div id="footer-container"></div>
+
     </div>
 
-    <script type="module" src="/src/js/components.js"></script>
+</div>
+
+<script type="module" src="/src/js/components.js"></script>
+
 </body>
 </html>

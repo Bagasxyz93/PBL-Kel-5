@@ -1,4 +1,3 @@
-
 <?php
 
 require_once '../config/koneksi.php';
@@ -54,11 +53,13 @@ try {
             exit;
     }
 
-    // Token dikirim ke halaman tujuan untuk disimpan per tab.
+    // Token, nama, dan role dikirim ke halaman tujuan untuk disimpan per tab.
     header(
         "Location: http://localhost:5173/auth-redirect.html"
         . "#token=" . urlencode($token)
         . "&tujuan=" . urlencode($tujuan)
+        . "&nama=" . urlencode($user['nama'])
+        . "&role=" . urlencode($user['role'])
     );
 
     exit;

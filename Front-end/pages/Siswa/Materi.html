@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -54,18 +55,56 @@
                 </p>
             </section>
 
+            <!-- Banner Materi -->
+            <section class="relative mb-5 overflow-hidden rounded-2xl bg-[#3922b9] p-5 sm:p-6 shadow-sm">
+            
+                <div class="relative flex items-center justify-between gap-4">
+                
+                    <div class="max-w-xl">
+                        <h2 class="text-xl sm:text-2xl font-extrabold tracking-tight text-white">
+                            Materi Pembelajaran
+                        </h2>
+                    
+                        <p class="mt-2 max-w-lg text-xs sm:text-sm leading-relaxed text-white">
+                            Temukan, pelajari, dan pahami materi yang telah diberikan mentor untuk mendukung proses pembelajaranmu.
+                        </p>
+                    </div>
+                
+                    <!-- Ilustrasi -->
+                    <div class="hidden sm:flex h-20 w-20 lg:h-24 lg:w-24 shrink-0 items-center justify-center rounded-2xl bg-white/10">
+                        <svg class="h-12 w-12 lg:h-14 lg:w-14 text-white" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                            <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 1 4 16.5v-11Z"></path>
+                            <path d="M4 16.5A2.5 2.5 0 0 1 6.5 14H20"></path>
+                            <path d="M8 7h8M8 10h6"></path>
+                        </svg>
+                    </div>
+                
+                </div>
+            </section>
+
             <!-- Container Materi -->
-            <section
-                class="rounded-[22px] border border-slate-200/80 bg-[#dce1e9] p-4 sm:p-5"
-            >
+            <section class="rounded-[22px] border border-slate-200/80 bg-[#dce1e9] p-4 sm:p-5 shadow-sm">
 
                 <!-- Header Section -->
                 <div class="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 
-                    <h2 class="flex items-center gap-2.5 text-base font-bold text-slate-800">
-                        <span class="h-4 w-1.5 rounded-full bg-[#5865ff]"></span>
-                        MATERI PEMBELAJARAN
-                    </h2>
+                    <div>
+                        <h2 class="flex items-center gap-2.5 text-base font-bold text-slate-800">
+                            <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-[#5865ff]/10">
+                                <svg class="h-4 w-4 text-[#5865ff]" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                                    <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 1 4 16.5v-11Z"></path>
+                                    <path d="M4 16.5A2.5 2.5 0 0 1 6.5 14H20"></path>
+                                    <path d="M8 7h8M8 10h6"></path>
+                                </svg>
+                            </span>
+
+                            MATERI PEMBELAJARAN
+                        </h2>
+
+                        <p class="ml-10 mt-1 text-[11px] text-slate-500">
+                            Daftar materi yang tersedia untuk programmu.
+                        </p>
+                    </div>
 
                     <!-- Pencarian Materi -->
                     <div class="relative w-full sm:w-56 lg:w-64">
@@ -77,9 +116,9 @@
                         <input
                             type="search"
                             id="search-materi"
-                            placeholder="CARI MATERI"
+                            placeholder="Cari judul materi..."
                             autocomplete="off"
-                            class="h-9 w-full rounded-full border border-slate-200 bg-white px-4 pr-10 text-xs text-slate-700 outline-none transition focus:border-[#5865ff] focus:ring-2 focus:ring-indigo-100"
+                            class="h-10 w-full rounded-xl border border-slate-200 bg-white px-4 pr-10 text-xs text-slate-700 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-[#5865ff] focus:ring-2 focus:ring-indigo-100"
                         >
 
                         <svg
@@ -98,9 +137,9 @@
                 </div>
 
                 <!-- Area Daftar Materi -->
-                <div class="min-h-40 rounded-2xl border border-slate-100 bg-white p-4 sm:p-5">
+                <div class="min-h-40 rounded-2xl border border-slate-200/70 bg-white p-4 sm:p-5 shadow-sm">
 
-                    <!-- Kartu Materi akan dirender otomatis dengan ukuran sama rata via JS -->
+                    <!-- Kartu Materi akan dirender otomatis via JS -->
                     <div
                         id="daftar-materi"
                         class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-stretch w-full"
@@ -111,9 +150,17 @@
                         id="materi-kosong"
                         class="hidden py-10 text-center"
                     >
+                        <div class="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-50">
+                            <svg class="h-7 w-7 text-indigo-400" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24">
+                                <circle cx="11" cy="11" r="7"></circle>
+                                <path d="m16 16 4 4"></path>
+                            </svg>
+                        </div>
+
                         <p class="text-sm font-semibold text-slate-600">
                             Materi tidak ditemukan.
                         </p>
+
                         <p class="mt-1 text-xs text-slate-400">
                             Coba gunakan kata kunci yang berbeda.
                         </p>
