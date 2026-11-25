@@ -1,3 +1,5 @@
+import { API_BASE_URL } from "../api-config.js";
+
 import { initFormUnggahMateri } from './form-tambah-materi.js';
 
 const API_MATERI = `${API_BASE_URL}/api/mentor/api_materi.php`;

@@ -1,3 +1,5 @@
+import { API_BASE_URL } from "../api-config.js";
+
 /* =========================================================
    LOGIKA HALAMAN KELOLA DAILY REPORT MENTOR
    DATA DIAMBIL DARI DATABASE MELALUI API

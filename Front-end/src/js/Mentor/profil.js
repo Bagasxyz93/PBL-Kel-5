@@ -1,3 +1,5 @@
+import { API_BASE_URL } from "../api-config.js";
+
 
 // Mengambil token khusus tab yang sedang digunakan
 function getAuthHeaders() {

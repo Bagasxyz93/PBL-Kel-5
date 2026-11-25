@@ -1,3 +1,5 @@
+import { API_BASE_URL } from "./api-config.js";
+
 
 import { initDashboard } from "./Siswa/dashboard.js";
 import { initAbsensi } from "./Siswa/absensi.js";
