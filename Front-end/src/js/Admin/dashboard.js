@@ -57,7 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
     async function loadDataDashboard() {
         try {
             const response = await fetch(
-                "http://localhost:8000/api/admin/api_dashboard.php",
+                `${API_BASE_URL}/api/admin/api_dashboard.php`,
                 {
                     method: "GET",
                     headers: getAuthHeaders()
@@ -96,7 +96,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         try {
             const response = await fetch(
-                "http://localhost:8000/api/admin/api_program.php",
+                `${API_BASE_URL}/api/admin/api_program.php`,
                 {
                     method: "GET",
                     headers: getAuthHeaders()
@@ -176,7 +176,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         try {
             const response = await fetch(
-                "http://localhost:8000/api/admin/api_aktivitas_dashboard.php",
+                `${API_BASE_URL}/api/admin/api_aktivitas_dashboard.php`,
                 {
                     method: "GET",
                     headers: getAuthHeaders()

@@ -5,7 +5,7 @@ LOGIKA HALAMAN KELOLA DAFTAR RFID ADMIN (SPA STYLE)
 let dataRfidSiswa = [];
 let activeRfidId = null;
 
-const API_RFID = "http://localhost:8000/api/admin/api_rfid.php";
+const API_RFID = `${API_BASE_URL}/api/admin/api_rfid.php`;
 
 let currentPage = 1;
 const rowsPerPage = 5;

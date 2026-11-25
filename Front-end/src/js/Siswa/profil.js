@@ -24,7 +24,7 @@ export function initProfil() {
     }
 
     const API_PROFIL =
-        "http://localhost:8000/api/siswa/api_profil.php";
+        `${API_BASE_URL}/api/siswa/api_profil.php`;
 
     // Mengambil token login
     function getAuthHeaders() {
@@ -167,7 +167,7 @@ async function setupPasswordModal() {
     const editBtn = document.getElementById("btn-edit-profil");
 
     const API_PASSWORD =
-        "http://localhost:8000/api/password/api_ubah_password.php";
+        `${API_BASE_URL}/api/password/api_ubah_password.php`;
 
     let modalContainer = document.getElementById(
         "password-modal-container"

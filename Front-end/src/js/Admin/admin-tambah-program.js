@@ -92,8 +92,8 @@ export function initAdminTambahProgram(onSuccess, programEdit = null) {
 
         try {
             const url = programEdit
-                ? "http://localhost:8000/api/admin/api_edit_program.php"
-                : "http://localhost:8000/api/admin/api_tambah_program.php";
+                ? `${API_BASE_URL}/api/admin/api_edit_program.php`
+                : `${API_BASE_URL}/api/admin/api_tambah_program.php`;
 
             const response = await fetch(url, {
                 method: "POST",

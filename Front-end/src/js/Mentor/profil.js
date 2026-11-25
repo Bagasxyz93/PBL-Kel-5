@@ -18,7 +18,7 @@ export function initMentorProfil() {
     async function loadProfilMentor() {
         try {
             const response = await fetch(
-                "http://localhost:8000/api/mentor/api_profil_mentor.php",
+                `${API_BASE_URL}/api/mentor/api_profil_mentor.php`,
                 {
                     method: "GET",
                     headers: getAuthHeaders()
@@ -127,7 +127,7 @@ async function setupPasswordModal() {
     const editBtn = document.getElementById("btn-edit-profil");
 
     const API_PASSWORD =
-        "http://localhost:8000/api/password/api_ubah_password.php";
+        `${API_BASE_URL}/api/password/api_ubah_password.php`;
 
     let modalContainer = document.getElementById(
         "password-modal-container"

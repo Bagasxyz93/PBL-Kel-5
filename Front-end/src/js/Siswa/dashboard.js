@@ -1,5 +1,5 @@
 
-const API_URL = "http://localhost:8000/api/siswa/api_dashboard.php";
+const API_URL = `${API_BASE_URL}/api/siswa/api_dashboard.php`;
 
 function getAuthHeaders() {
     const token = sessionStorage.getItem("authToken");

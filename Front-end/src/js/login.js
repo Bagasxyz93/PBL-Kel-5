@@ -7,7 +7,7 @@ const formMessage = document.getElementById("formMessage");
 const forgotPassword = document.getElementById("forgotPassword");
 
 // Hubungkan form login ke backend PHP
-loginForm.action = "http://localhost:8000/auth/login_process.php";
+loginForm.action = `${API_BASE_URL}/auth/login_process.php`;
 loginForm.method = "POST";
 
 identityInput.name = "username";

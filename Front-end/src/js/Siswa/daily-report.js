@@ -1,6 +1,6 @@
 
-const API_DAILY_REPORT = "http://localhost:8000/api/siswa/api_daily_report_siswa.php";
-const BASE_BACKEND_DAILY_REPORT = "http://localhost:8000/";
+const API_DAILY_REPORT = `${API_BASE_URL}/api/siswa/api_daily_report_siswa.php`;
+const BASE_BACKEND_DAILY_REPORT = `${API_BASE_URL}/`;
 
 let dataMateriDailyReport = [];
 let dataRiwayatDailyReport = [];

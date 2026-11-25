@@ -3,7 +3,7 @@
     LOGIKA HALAMAN ABSENSI SISWA
 ========================================================= */
 
-const API_URL = "http://localhost:8000/api/siswa/api_absensi.php";
+const API_URL = `${API_BASE_URL}/api/siswa/api_absensi.php`;
 
 /* =========================================================
     FORMAT TANGGAL

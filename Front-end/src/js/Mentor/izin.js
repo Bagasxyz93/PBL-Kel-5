@@ -4,8 +4,8 @@
    TERHUBUNG DENGAN DATABASE POSTGRESQL
 ========================================================= */
 
-const API_URL = "http://localhost:8000/api/mentor";
-const BACKEND_URL = "http://localhost:8000";
+const API_URL = `${API_BASE_URL}/api/mentor`;
+const BACKEND_URL = API_BASE_URL;
 const MODAL_URL = "/component/Mentor/pop-up-izin.html";
 
 let izinData = [];

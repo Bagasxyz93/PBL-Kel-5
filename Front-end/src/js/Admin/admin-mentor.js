@@ -24,7 +24,7 @@ async function loadFilterProgram() {
 
     try {
         const response = await fetch(
-            "http://localhost:8000/api/admin/api_program.php",
+            `${API_BASE_URL}/api/admin/api_program.php`,
             {
                 headers: getAuthHeaders()
             }
@@ -95,7 +95,7 @@ async function renderEditMentorView(mentorId) {
 
         // Mengambil detail mentor berdasarkan ID
         const response = await fetch(
-            `http://localhost:8000/api/admin/api_detail_mentor.php?id=${mentorId}`,
+            `${API_BASE_URL}/api/admin/api_detail_mentor.php?id=${mentorId}`,
             {
                 headers: getAuthHeaders()
             }
@@ -233,7 +233,7 @@ async function initAdminMentor() {
     // Mengambil data mentor dari database
     try {
         const response = await fetch(
-            "http://localhost:8000/api/admin/api_mentor.php",
+            `${API_BASE_URL}/api/admin/api_mentor.php`,
             {
                 headers: getAuthHeaders()
             }
@@ -262,7 +262,7 @@ async function initAdminMentor() {
     // Menghitung jumlah program
     try {
         const responseProgram = await fetch(
-            "http://localhost:8000/api/admin/api_program.php",
+            `${API_BASE_URL}/api/admin/api_program.php`,
             {
                 headers: getAuthHeaders()
             }
@@ -437,7 +437,7 @@ async function initAdminMentor() {
 
                 try {
                     const response = await fetch(
-                        "http://localhost:8000/api/admin/api_hapus_mentor.php",
+                        `${API_BASE_URL}/api/admin/api_hapus_mentor.php`,
                         {
                             method: "POST",
                             headers: {

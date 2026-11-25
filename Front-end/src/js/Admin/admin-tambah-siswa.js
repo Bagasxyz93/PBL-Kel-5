@@ -212,7 +212,7 @@ export async function renderTambahSiswaView(
 
         try {
             const response = await fetch(
-                "http://localhost:8000/api/admin/api_program.php",
+                `${API_BASE_URL}/api/admin/api_program.php`,
                 {
                     headers: getAuthHeaders()
                 }
@@ -258,7 +258,7 @@ export async function renderTambahSiswaView(
 
         try {
             const response = await fetch(
-                `http://localhost:8000/api/admin/api_mentor_program.php?program_id=${programId}`,
+                `${API_BASE_URL}/api/admin/api_mentor_program.php?program_id=${programId}`,
                 {
                     headers: getAuthHeaders()
                 }
@@ -415,8 +415,8 @@ export async function renderTambahSiswaView(
         }
 
         const url = siswaEdit
-            ? "http://localhost:8000/api/admin/api_edit_siswa.php"
-            : "http://localhost:8000/api/admin/api_tambah_siswa.php";
+            ? `${API_BASE_URL}/api/admin/api_edit_siswa.php`
+            : `${API_BASE_URL}/api/admin/api_tambah_siswa.php`;
 
         try {
             const response = await fetch(url, {
@@ -451,7 +451,7 @@ export async function renderTambahSiswaView(
 export async function renderEditSiswaView(siswaId, onKembali) {
     try {
         const response = await fetch(
-            `http://localhost:8000/api/admin/api_detail_siswa.php?id=${siswaId}`,
+            `${API_BASE_URL}/api/admin/api_detail_siswa.php?id=${siswaId}`,
             {
                 headers: getAuthHeaders()
             }

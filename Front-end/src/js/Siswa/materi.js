@@ -3,8 +3,8 @@
     LOGIKA HALAMAN MATERI SISWA
 ========================================================= */
 
-const API_MATERI_SISWA = "http://localhost:8000/api/siswa/api_materi_siswa.php";
-const BASE_BACKEND = "http://localhost:8000/";
+const API_MATERI_SISWA = `${API_BASE_URL}/api/siswa/api_materi_siswa.php`;
+const BASE_BACKEND = `${API_BASE_URL}/`;
 
 let daftarDataMateri = [];
 let modalMateriLoaded = false;
