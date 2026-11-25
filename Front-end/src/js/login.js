@@ -1,3 +1,5 @@
+import { API_BASE_URL } from "./api-config.js";
+
 const loginForm = document.getElementById("loginForm");
 const identityInput = document.getElementById("identity");
 const passwordInput = document.getElementById("password");
