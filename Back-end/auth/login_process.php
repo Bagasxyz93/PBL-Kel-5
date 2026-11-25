@@ -3,8 +3,43 @@
 require_once '../config/koneksi.php';
 require_once '../config/tab_auth.php';
 
+$allowedOrigins = [
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+    'http://localhost',
+    'http://127.0.0.1',
+    'http://100.122.72.0',
+];
+
+$frontendUrl = '';
+
+if (!empty($_SERVER['HTTP_ORIGIN'])) {
+    $origin = rtrim($_SERVER['HTTP_ORIGIN'], '/');
+    if (in_array($origin, $allowedOrigins, true)) {
+        $frontendUrl = $origin;
+    }
+}
+
+if ($frontendUrl === '' && !empty($_SERVER['HTTP_REFERER'])) {
+    $parsed = parse_url($_SERVER['HTTP_REFERER']);
+    if (!empty($parsed['scheme']) && !empty($parsed['host'])) {
+        $refererOrigin = $parsed['scheme'] . '://' . $parsed['host']
+            . (!empty($parsed['port']) ? ':' . $parsed['port'] : '');
+        if (in_array($refererOrigin, $allowedOrigins, true)) {
+            $frontendUrl = $refererOrigin;
+        }
+    }
+}
+
+if ($frontendUrl === '') {
+    $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+    $host = $_SERVER['HTTP_HOST'] ?? '100.122.72.0';
+    $fallbackUrl = $scheme . '://' . $host;
+    $frontendUrl = in_array($fallbackUrl, $allowedOrigins, true) ? $fallbackUrl : 'http://100.122.72.0';
+}
+
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header("Location: http://localhost:5173/login.php");
+    header("Location: {$frontendUrl}/login.php");
     exit;
 }
 
@@ -12,7 +47,7 @@ $username = trim($_POST['username'] ?? '');
 $password = $_POST['password'] ?? '';
 
 if ($username === '' || $password === '') {
-    header("Location: http://localhost:5173/?error=empty");
+    header("Location: {$frontendUrl}/?error=empty");
     exit;
 }
 
@@ -27,7 +62,7 @@ try {
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$user || !password_verify($password, $user['password'])) {
-        header("Location: http://localhost:5173/?error=invalid");
+        header("Location: {$frontendUrl}/?error=invalid");
         exit;
     }
 
@@ -49,13 +84,13 @@ try {
             break;
 
         default:
-            header("Location: http://localhost:5173/?error=role");
+            header("Location: {$frontendUrl}/?error=role");
             exit;
     }
 
     // Token, nama, dan role dikirim ke halaman tujuan untuk disimpan per tab.
     header(
-        "Location: http://localhost:5173/auth-redirect.html"
+        "Location: {$frontendUrl}/auth-redirect.html"
         . "#token=" . urlencode($token)
         . "&tujuan=" . urlencode($tujuan)
         . "&nama=" . urlencode($user['nama'])

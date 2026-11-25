@@ -11,8 +11,7 @@ if (
     isset($_SERVER['HTTP_ORIGIN']) &&
     $_SERVER['HTTP_ORIGIN'] === $allowedOrigin
 ) {
-    header("Access-Control-Allow-Origin: $allowedOrigin");
-}
+    require_once __DIR__ . '/../../config/cors.php';}
 
 header("Access-Control-Allow-Methods: GET, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Accept, Authorization");
