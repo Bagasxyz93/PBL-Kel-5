@@ -3,10 +3,132 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Memproses Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memproses Login | SI-IN</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #f4f8ff, #e8f1ff);
+            color: #1e293b;
+        }
+
+        .loading-container {
+            width: 90%;
+            max-width: 400px;
+            padding: 40px 30px;
+            background: white;
+            border-radius: 24px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(37, 99, 235, 0.08);
+        }
+
+        .logo {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 20px;
+            background: linear-gradient(135deg, #2563eb, #60a5fa);
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            box-shadow: 0 6px 18px rgba(37, 99, 235, 0.2);
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #1e40af;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #64748b;
+            margin-bottom: 30px;
+        }
+
+        .spinner {
+            width: 45px;
+            height: 45px;
+            margin: 0 auto 20px;
+            border: 5px solid #dbeafe;
+            border-top-color: #2563eb;
+            border-right-color: #10b981;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            will-change: transform;
+        }
+
+        .loading-text {
+            font-size: 14px;
+            color: #475569;
+            font-weight: 500;
+        }
+
+        .dots::after {
+            content: "";
+            animation: dots 1.5s infinite;
+        }
+
+        .footer {
+            margin-top: 35px;
+            padding-top: 18px;
+            border-top: 1px solid #f1f5f9;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+        
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes dots {
+            0%   { content: ""; }
+            25%  { content: "."; }
+            50%  { content: ".."; }
+            75%  { content: "..."; }
+            100% { content: ""; }
+        }
+    </style>
 </head>
 <body>
-    <p>Memproses login...</p>
+
+    <div class="loading-container">
+        <div class="logo">SI-IN</div>
+
+        <h1>Selamat Datang!</h1>
+        <p class="subtitle">Sistem Informasi Inkubasi</p>
+
+        <div class="spinner"></div>
+
+        <p class="loading-text">
+            Menyiapkan dashboard<span class="dots"></span>
+        </p>
+
+        <div class="footer">
+            SI-IN &mdash; Sistem Informasi Inkubasi
+        </div>
+    </div>
 
     <script>
         const params = new URLSearchParams(
@@ -30,5 +152,6 @@
             window.location.replace("/?error=login");
         }
     </script>
+
 </body>
 </html>

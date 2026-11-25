@@ -104,17 +104,26 @@ const escapeHTML = (value) => {
 // =========================================================
 
 function renderStatistik() {
-    const total = izinData.length;
+    // Statistik mengikuti tanggal yang dipilih pada filter.
+    // Jika filter tanggal kosong, statistik menampilkan seluruh data.
+    const inputTanggal = document.getElementById("input-tanggal-filter");
+    const tanggal = inputTanggal?.value || "";
 
-    const menunggu = izinData.filter(
+    const dataStatistik = izinData.filter(item => {
+        return !tanggal || ambilTanggal(item.tanggal_izin) === tanggal;
+    });
+
+    const total = dataStatistik.length;
+
+    const menunggu = dataStatistik.filter(
         item => item.status === "menunggu"
     ).length;
 
-    const disetujui = izinData.filter(
+    const disetujui = dataStatistik.filter(
         item => item.status === "disetujui"
     ).length;
 
-    const ditolak = izinData.filter(
+    const ditolak = dataStatistik.filter(
         item => item.status === "ditolak"
     ).length;
 
@@ -149,9 +158,7 @@ function getFilteredData() {
 
         const cocokKeyword = [
             item.nama_siswa,
-            item.nis,
-            item.nama_program,
-            item.alasan
+            item.nis
         ].some(value =>
             String(value || "").toLowerCase().includes(keyword)
         );
@@ -179,15 +186,7 @@ function renderTable(data) {
         tbody.innerHTML = `
             <tr>
                 <td colspan="8" class="text-center py-10 text-slate-400">
-                    <div class="flex flex-col items-center gap-2">
-                        <svg class="w-9 h-9 text-slate-300" fill="none"
-                            stroke="currentColor" stroke-width="1.5"
-                            viewBox="0 0 24 24">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                            <path d="M14 2v6h6M8 13h8M8 17h5"/>
-                        </svg>
-                        <span>Tidak ada data permohonan izin.</span>
-                    </div>
+                    Tidak ada pengajuan izin pada hari ini
                 </td>
             </tr>
         `;
@@ -496,6 +495,7 @@ function setupEventListeners() {
     if (inputTanggal) {
         inputTanggal.addEventListener("change", () => {
             currentPage = 1;
+            renderStatistik();
             applyFilter();
         });
     }
