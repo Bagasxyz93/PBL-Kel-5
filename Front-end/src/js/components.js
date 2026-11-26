@@ -236,7 +236,7 @@ async function loadHeaderStudentProfile() {
 
         try {
             const responseProfil = await fetch(
-                `${API_BASE_URL}/api/siswa/api_profil_siswa.php`,
+                `${API_BASE_URL}/api/siswa/api_profil.php`,
                 {
                     method: "GET",
                     headers: getAuthHeaders()
