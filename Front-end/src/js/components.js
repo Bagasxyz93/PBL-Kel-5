@@ -73,10 +73,10 @@ const roleConfig = {
             { label: "Data Siswa", icon: "siswa", href: "/pages/Admin/Siswa.html", active: ["siswa.html"] },
             { label: "Data Mentor", icon: "mentor", href: "/pages/Admin/Mentor.html", active: ["mentor.html"] },
             { label: "Program Inkubasi", icon: "program", href: "/pages/Admin/Program.html", active: ["program.html"] },
-            { label: "Daftar RFID", icon: "rfid", href: "/pages/Admin/rfid.html", active: ["rfid.html"] }
+            { label: "Daftar RFID", icon: "rfid", href: "/pages/Admin/Rfid.html", active: ["rfid.html"] }
         ]
     }
-};
+};      
 
 /* =========================================================
    IKON MENU
