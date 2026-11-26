@@ -419,7 +419,7 @@ export function initMentorMateri() {
 
                             ${item.file_materi ? `
                                 <a
-                                    href=`${API_BASE_URL}/${escapeHTML(item.file_materi)}`
+                                    href="${API_BASE_URL}/${escapeHTML(item.file_materi)}"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     class="inline-flex items-center gap-1.5 mt-2 text-xs font-semibold text-sky-600 hover:text-sky-700">
