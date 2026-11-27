@@ -66,113 +66,130 @@
 
                 <!-- TIGA KARTU STATISTIK -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-
+                
                     <!-- KARTU TOTAL SISWA -->
-                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
-
+                    <div class="group bg-white p-5 rounded-2xl border border-slate-200 shadow-sm
+                        flex items-center justify-between
+                        transition-all duration-300 ease-out
+                        hover:-translate-y-1 hover:shadow-lg hover:border-blue-200">
+                
                         <div class="space-y-1">
                             <p class="text-[11px] font-semibold text-[#7e8fa9]">
                                 Total Siswa Bimbingan
                             </p>
-
+                        
                             <div class="flex items-baseline gap-2">
-                                <span id="totalSiswaBimbingan" class="text-3xl font-extrabold text-[#29364b]">
+                                <span id="totalSiswaBimbingan" class="text-3xl font-extrabold text-[#29364b] tabular-nums">
                                     0
                                 </span>
-
+                            
                                 <span class="text-xs text-[#7e8fa9]">
                                     Siswa Aktif
                                 </span>
                             </div>
                         </div>
-
+                    
                         <div class="flex items-center gap-3">
-
-                            <span id="programMentorDashboard" class="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg">
+                        
+                            <span id="programMentorDashboard"
+                                class="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg">
                                 Memuat program...
                             </span>
-
-                            <div class="p-3 rounded-xl bg-[#edf5ff] text-[#2864ed]">
-
+                        
+                            <div class="p-3 rounded-xl bg-[#edf5ff] text-[#2864ed]
+                                transition-all duration-300 group-hover:scale-110 group-hover:bg-blue-100">
+                        
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                     <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
                                     <circle cx="9" cy="7" r="4"/>
                                     <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
                                     <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
                                 </svg>
-
+                            
                             </div>
                         </div>
                     </div>
-
+                
+                
                     <!-- KARTU KEHADIRAN -->
-                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
-
+                    <div class="group bg-white p-5 rounded-2xl border border-slate-200 shadow-sm
+                        flex items-center justify-between
+                        transition-all duration-300 ease-out
+                        hover:-translate-y-1 hover:shadow-lg hover:border-emerald-200">
+                
                         <div class="space-y-1">
-
+                        
                             <p class="text-[11px] font-semibold text-[#7e8fa9]">
                                 Kehadiran Hari Ini
                             </p>
-
+                        
                             <div class="flex items-center gap-2">
-
-                                <span class="text-3xl font-extrabold text-[#29364b]">
+                            
+                                <span class="text-3xl font-extrabold text-[#29364b] tabular-nums">
                                     <span id="jumlahHadirHariIni">0</span><span class="text-xl text-[#7e8fa9] font-normal">/</span><span id="totalKehadiranHariIni" class="text-xl text-[#7e8fa9] font-normal">0</span>
                                 </span>
-
-                                <span id="persentaseKehadiran" class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 font-bold text-[11px]">
+                            
+                                <span id="persentaseKehadiran"
+                                    class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 font-bold text-[11px]">
                                     0%
                                 </span>
-
+                            
                             </div>
                         </div>
-
-                        <div class="p-3 rounded-xl bg-emerald-50 text-[#00b09b]">
-
+                    
+                        <div class="p-3 rounded-xl bg-emerald-50 text-[#00b09b]
+                            transition-all duration-300 group-hover:scale-110 group-hover:bg-emerald-100">
+                    
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
                                 <polyline points="22 4 12 14.01 9 11.01"/>
                             </svg>
-
+                        
                         </div>
                     </div>
-
+                
+                
                     <!-- KARTU DAILY REPORT -->
-                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
-
+                    <div class="group bg-white p-5 rounded-2xl border border-slate-200 shadow-sm
+                        flex items-center justify-between
+                        transition-all duration-300 ease-out
+                        hover:-translate-y-1 hover:shadow-lg hover:border-amber-200">
+                
                         <div class="space-y-1">
-
+                        
                             <p class="text-[11px] font-semibold text-[#7e8fa9]">
                                 Daily Report Siswa
                             </p>
-
+                        
                             <div class="flex items-center gap-3">
-
-                                <span id="totalReportMentor" class="text-3xl font-extrabold text-[#29364b]">
+                            
+                                <span id="totalReportMentor" class="text-3xl font-extrabold text-[#29364b] tabular-nums">
                                     0
                                 </span>
-
-                                <span id="perluReview" class="px-2 py-0.5 rounded-full bg-amber-50 text-amber-600 font-bold text-[11px]">
+                            
+                                <span id="perluReview"
+                                    class="px-2 py-0.5 rounded-full bg-amber-50 text-amber-600 font-bold text-[11px]">
                                     0 Perlu Review
                                 </span>
-
+                            
                             </div>
-
+                        
                             <p class="text-[10px] text-[#7e8fa9]">
                                 Data laporan dari database
                             </p>
-
+                        
                         </div>
-
-                        <div class="p-3 rounded-xl bg-amber-50 text-amber-500">
-
+                    
+                        <div class="p-3 rounded-xl bg-amber-50 text-amber-500
+                            transition-all duration-300 group-hover:scale-110 group-hover:bg-amber-100">
+                    
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
                             </svg>
-
+                        
                         </div>
                     </div>
-
+                
                 </div>
 
                 <!-- BAGIAN BAWAH -->

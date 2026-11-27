@@ -1,7 +1,7 @@
-
 <?php
 
 require_once __DIR__ . '/../../config/cors.php';
+
 header("Access-Control-Allow-Methods: GET, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Content-Type: application/json; charset=UTF-8");
@@ -32,35 +32,60 @@ if (!$userToken || $userToken['role'] !== 'admin') {
 }
 
 // ==================================================
-// AMBIL DATA AKTIVITAS DASHBOARD
+// AMBIL AKTIVITAS TERAKHIR
 // ==================================================
 
 try {
 
     $stmt = $pdo->prepare("
         SELECT
-            TO_CHAR(t.tanggal, 'DD/MM') AS tanggal,
-            COALESCE(a.jumlah, 0) + COALESCE(d.jumlah, 0) AS total
-        FROM generate_series(
-            CURRENT_DATE - INTERVAL '6 days',
-            CURRENT_DATE,
-            INTERVAL '1 day'
-        ) AS t(tanggal)
+            aktivitas.tipe,
+            aktivitas.nama,
+            TO_CHAR(
+                aktivitas.created_at,
+                'DD Mon YYYY HH24:MI'
+            ) || ' WIB' AS waktu
+        FROM (
+            SELECT
+                'peserta' AS tipe,
+                nama AS nama,
+                created_at
+            FROM users
+            WHERE role = 'peserta'
+              AND created_at IS NOT NULL
 
-        LEFT JOIN (
-            SELECT tanggal::date AS tanggal, COUNT(*) AS jumlah
-            FROM absensi
-            WHERE status = 'hadir'
-            GROUP BY tanggal::date
-        ) a ON a.tanggal = t.tanggal::date
+            UNION ALL
 
-        LEFT JOIN (
-            SELECT tanggal::date AS tanggal, COUNT(*) AS jumlah
-            FROM daily_report
-            GROUP BY tanggal::date
-        ) d ON d.tanggal = t.tanggal::date
+            SELECT
+                'mentor' AS tipe,
+                nama AS nama,
+                created_at
+            FROM users
+            WHERE role = 'mentor'
+              AND created_at IS NOT NULL
 
-        ORDER BY t.tanggal ASC
+            UNION ALL
+
+            SELECT
+                'program' AS tipe,
+                nama_program AS nama,
+                created_at
+            FROM program
+            WHERE created_at IS NOT NULL
+
+            UNION ALL
+
+            SELECT
+                'materi' AS tipe,
+                judul AS nama,
+                created_at
+            FROM materi
+            WHERE created_at IS NOT NULL
+
+        ) AS aktivitas
+
+        ORDER BY aktivitas.created_at DESC
+        LIMIT 5
     ");
 
     $stmt->execute();
@@ -80,7 +105,7 @@ try {
 
     echo json_encode([
         "success" => false,
-        "message" => "Gagal mengambil aktivitas dashboard."
+        "message" => "Gagal mengambil aktivitas terakhir."
     ]);
 
 }
