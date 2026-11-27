@@ -1,7 +1,8 @@
+
 import { API_BASE_URL } from "../api-config.js";
 
-
 const API_URL = `${API_BASE_URL}/api/siswa/api_dashboard.php`;
+const API_MATERI_URL = `${API_BASE_URL}/api/siswa/api_materi_siswa.php`;
 
 function getAuthHeaders() {
     const token = sessionStorage.getItem("authToken");
@@ -30,6 +31,60 @@ function escapeHTML(value) {
         };
 
         return map[char];
+    });
+}
+
+// =========================================================
+// HELPER TANGGAL WIB
+// =========================================================
+
+function tanggalHariIniWIB() {
+    return new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Asia/Jakarta",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+    }).format(new Date());
+}
+
+function tanggalMateriWIB(value) {
+    if (!value) return null;
+
+    // Jika format tanggal SQL atau ISO memiliki tanggal di awal.
+    // Untuk date-only, tanggal tidak perlu dikonversi zona waktu.
+    if (/^\d{4}-\d{2}-\d{2}$/.test(String(value))) {
+        return String(value);
+    }
+
+    const date = new Date(value);
+
+    if (isNaN(date.getTime())) return null;
+
+    return new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Asia/Jakarta",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+    }).format(date);
+}
+
+function formatTanggalMateri(value) {
+    if (!value) return "Hari ini";
+
+    let date;
+
+    if (/^\d{4}-\d{2}-\d{2}$/.test(String(value))) {
+        date = new Date(`${value}T00:00:00+07:00`);
+    } else {
+        date = new Date(value);
+    }
+
+    if (isNaN(date.getTime())) return "Hari ini";
+
+    return date.toLocaleDateString("id-ID", {
+        day: "numeric",
+        month: "short",
+        timeZone: "Asia/Jakarta"
     });
 }
 
@@ -188,12 +243,10 @@ function renderSapaan(nama) {
     sapaan.innerHTML = `
         <div class="relative overflow-hidden rounded-2xl border border-indigo-100 bg-white p-5 shadow-sm transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-indigo-200 hover:shadow-md hover:shadow-indigo-100/50">
 
-            <!-- AKSEN -->
             <div class="absolute left-0 top-0 h-full w-1.5 bg-indigo-600"></div>
 
             <div class="relative flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 
-                <!-- TEKS -->
                 <div class="pl-2">
 
                     <span class="inline-flex items-center gap-1.5 rounded-full bg-indigo-50 px-2.5 py-1 text-[9px] font-bold tracking-wide text-indigo-600">
@@ -226,7 +279,6 @@ function renderSapaan(nama) {
 
                 </div>
 
-                <!-- ICON -->
                 <div class="hidden h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600 sm:flex">
 
                     <svg
@@ -248,6 +300,172 @@ function renderSapaan(nama) {
 
         </div>
     `;
+}
+
+// =========================================================
+// MATERI TERBARU HARI INI
+// =========================================================
+
+function renderMateriTerbaru(daftarMateri) {
+    const container = document.getElementById("materi-terbaru-container");
+    if (!container) return;
+
+    if (!Array.isArray(daftarMateri) || daftarMateri.length === 0) {
+        container.innerHTML = `
+            <div class="rounded-2xl border border-dashed border-slate-200 bg-slate-50/70 p-6 text-center">
+
+                <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-400">
+
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                        class="h-6 w-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            stroke-width="1.8"
+                            d="M12 7v10m-5-5h10M5 3h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z"/>
+                    </svg>
+
+                </div>
+
+                <p class="mt-3 text-sm font-semibold text-slate-600">
+                    Belum ada materi hari ini
+                </p>
+
+                <p class="mt-1 text-xs leading-relaxed text-slate-400">
+                    Materi baru dari mentor akan muncul di sini ketika tersedia.
+                </p>
+
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = daftarMateri.map((item, index) => {
+        const judul = item.judul || item.nama_materi || "Materi pembelajaran";
+        const tanggal = item.tanggal_publikasi || item.created_at || item.tanggal;
+
+        return `
+            <article class="flex items-center gap-4 rounded-2xl border border-slate-100 p-4 transition hover:border-indigo-100 hover:bg-slate-50">
+
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
+
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        class="h-5 w-5"
+                    >
+                        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                        <path d="M14 2v6h6"/>
+                        <path d="M8 13h8"/>
+                        <path d="M8 17h5"/>
+                    </svg>
+
+                </div>
+
+                <div class="min-w-0 flex-1">
+
+                    <h3 class="truncate text-sm font-bold text-slate-700">
+                        ${escapeHTML(judul)}
+                    </h3>
+
+                    <p class="mt-1 text-xs text-slate-400">
+                        Materi pembelajaran • ${escapeHTML(formatTanggalMateri(tanggal))}
+                    </p>
+
+                </div>
+
+                ${index === 0 ? `
+                    <span class="shrink-0 rounded-full bg-emerald-50 px-2.5 py-1 text-[10px] font-bold text-emerald-600">
+                        Terbaru
+                    </span>
+                ` : ""}
+
+            </article>
+        `;
+    }).join("");
+}
+
+// =========================================================
+// FETCH MATERI SISWA
+// =========================================================
+
+async function fetchMateriTerbaru() {
+    const container = document.getElementById("materi-terbaru-container");
+    if (!container) return;
+
+    try {
+        const response = await fetch(API_MATERI_URL, {
+            method: "GET",
+            headers: getAuthHeaders()
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            throw new Error(result.message || "Gagal mengambil data materi.");
+        }
+
+        // Menyesuaikan kemungkinan bentuk data API
+        let daftarMateri = [];
+
+        if (Array.isArray(result.data)) {
+            daftarMateri = result.data;
+        } else if (Array.isArray(result.data?.materi)) {
+            daftarMateri = result.data.materi;
+        } else if (Array.isArray(result.materi)) {
+            daftarMateri = result.materi;
+        }
+
+        // Filter materi yang tanggal publikasinya hari ini (WIB)
+        const hariIni = tanggalHariIniWIB();
+
+        const materiHariIni = daftarMateri.filter((item) => {
+            const tanggal =
+                item.tanggal_publikasi ||
+                item.created_at ||
+                item.tanggal;
+
+            return tanggalMateriWIB(tanggal) === hariIni;
+        });
+
+        // Urutkan materi terbaru dan tampilkan maksimal 3
+        materiHariIni.sort((a, b) => {
+            const tanggalA = new Date(
+                a.tanggal_publikasi || a.created_at || a.tanggal || 0
+            ).getTime();
+
+            const tanggalB = new Date(
+                b.tanggal_publikasi || b.created_at || b.tanggal || 0
+            ).getTime();
+
+            return tanggalB - tanggalA;
+        });
+
+        renderMateriTerbaru(materiHariIni.slice(0, 3));
+
+    } catch (error) {
+        console.error("Gagal mengambil materi terbaru:", error);
+
+        container.innerHTML = `
+            <div class="rounded-2xl border border-red-100 bg-red-50 p-5 text-center">
+
+                <p class="text-xs font-medium text-red-500">
+                    Gagal memuat materi terbaru.
+                </p>
+
+                <p class="mt-1 text-[10px] text-red-400">
+                    Silakan muat ulang halaman.
+                </p>
+
+            </div>
+        `;
+    }
 }
 
 // =========================================================
@@ -301,4 +519,5 @@ async function fetchDashboard() {
 
 export function initDashboard() {
     fetchDashboard();
+    fetchMateriTerbaru();
 }

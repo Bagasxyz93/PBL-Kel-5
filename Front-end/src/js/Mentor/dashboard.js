@@ -1,14 +1,20 @@
 import { API_BASE_URL } from "../api-config.js";
 
-
 const API_MENTOR = `${API_BASE_URL}/api/mentor`;
 
-// Mengambil token khusus tab yang sedang digunakan
+// ======================================================
+// MENGAMBIL TOKEN
+// ======================================================
+
 function getAuthHeaders() {
     return {
         "Authorization": `Bearer ${sessionStorage.getItem("authToken")}`
     };
 }
+
+// ======================================================
+// INISIALISASI DASHBOARD MENTOR
+// ======================================================
 
 export function initMentorDashboard() {
     console.log("Dashboard Mentor berhasil dimuat.");
@@ -17,6 +23,43 @@ export function initMentorDashboard() {
     loadProfilMentor();
     loadDataSiswa();
     loadDataDailyReport();
+}
+
+// ======================================================
+// ANIMASI ANGKA STATISTIK
+// ======================================================
+
+function animasiAngka(id, target) {
+    const elemen = document.getElementById(id);
+
+    if (!elemen) return;
+
+    target = Number(target) || 0;
+
+    const nilaiAwal = 0;
+    const durasi = 700;
+    const mulai = performance.now();
+
+    function animasi(waktu) {
+        const progress = Math.min((waktu - mulai) / durasi, 1);
+
+        // Easing agar animasi lebih halus
+        const easing = 1 - Math.pow(1 - progress, 3);
+
+        const nilaiSekarang = Math.round(
+            nilaiAwal + (target - nilaiAwal) * easing
+        );
+
+        elemen.textContent = nilaiSekarang;
+
+        if (progress < 1) {
+            requestAnimationFrame(animasi);
+        } else {
+            elemen.textContent = target;
+        }
+    }
+
+    requestAnimationFrame(animasi);
 }
 
 // ======================================================
@@ -159,10 +202,12 @@ async function loadDataSiswa() {
             )
         );
 
-        setText("totalSiswaBimbingan", totalSiswa);
+        // ANIMASI STATISTIK
+        animasiAngka("totalSiswaBimbingan", totalSiswa);
 
-        setText("jumlahHadirHariIni", totalHadir);
-        setText("totalKehadiranHariIni", totalDihitung);
+        animasiAngka("jumlahHadirHariIni", totalHadir);
+        animasiAngka("totalKehadiranHariIni", totalDihitung);
+
         setText("persentaseKehadiran", `${persentase}%`);
 
         setText("grafikPersentase", `${persentase}%`);
@@ -239,7 +284,8 @@ async function loadDataDailyReport() {
             ? result.data
             : [];
 
-        setText("totalReportMentor", daftarLaporan.length);
+        // ANIMASI TOTAL DAILY REPORT
+        animasiAngka("totalReportMentor", daftarLaporan.length);
 
         const totalMenunggu = daftarLaporan.filter(
             item => item.status === "menunggu"
@@ -265,7 +311,7 @@ async function loadDataDailyReport() {
             error
         );
 
-        setText("totalReportMentor", 0);
+        animasiAngka("totalReportMentor", 0);
         setText("perluReview", "0 Perlu Review");
         setText("badgeLaporanBaru", "0 Baru");
 

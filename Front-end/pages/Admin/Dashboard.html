@@ -29,37 +29,74 @@
             <main class="flex-1 p-8 max-w-7xl w-full mx-auto space-y-8">
 
                 <!-- Judul Dashboard -->
-                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                    <div>
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
+                
+                    <!-- KIRI: JUDUL DAN DESKRIPSI -->
+                    <div class="min-w-0">
+                    
                         <span class="inline-block px-3 py-1 rounded-full bg-red-50 text-red-600 text-[11px] font-bold tracking-wide uppercase mb-2">
                             Portal Administrasi
                         </span>
-
+                    
                         <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">
                             Dashboard Admin
                         </h1>
-
+                    
                         <p class="text-xs text-slate-500 mt-1">
                             Selamat datang, Admin! Berikut ringkasan data sistem inkubasi.
                         </p>
-                        
-                        <div class="flex flex-wrap items-center gap-3 mt-3 text-xs font-semibold text-slate-600">
-                            <span id="tanggal-sekarang">Memuat tanggal...</span>
-                            <span class="text-slate-300">|</span>
-                            <span id="jam-sekarang">Memuat jam...</span>
-                        </div>
+                    
                     </div>
-
+                
+                    <!-- KANAN: JAM DAN TANGGAL -->
+                    <div class="flex items-center gap-3 bg-white border border-slate-100
+                        rounded-2xl px-4 py-3 shadow-sm transition-all duration-300
+                        hover:shadow-md hover:border-red-100 shrink-0 w-fit">
+                
+                        <!-- ICON JAM -->
+                        <div class="w-10 h-10 rounded-xl bg-red-50 text-red-500
+                            flex items-center justify-center shrink-0
+                            transition-all duration-300 hover:scale-105">
+                
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor"
+                                stroke-width="1.8" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="9"/>
+                                <path d="M12 7v5l3 2"/>
+                            </svg>
+                        
+                        </div>
+                    
+                        <!-- INFORMASI WAKTU -->
+                        <div class="min-w-0">
+                        
+                            <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                                Waktu Indonesia Barat
+                            </p>
+                        
+                            <p id="jam-sekarang"
+                                class="text-lg font-extrabold text-slate-800 tabular-nums tracking-tight">
+                                Memuat jam...
+                            </p>
+                        
+                            <p id="tanggal-sekarang"
+                                class="text-[11px] font-medium text-slate-500 mt-0.5">
+                                Memuat tanggal...
+                            </p>
+                        
+                        </div>
+                    
+                    </div>
+                
                 </div>
 
                 <!-- 3 Kartu Statistik Utama -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 
                     <!-- Total Siswa -->
-                    <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm relative overflow-hidden flex flex-col justify-between">
+                    <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm relative overflow-hidden flex flex-col justify-between transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-lg hover:border-blue-100">
                         <div>
                             <div class="flex items-center justify-between mb-4">
-                                <div class="w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600">
+                                <div class="w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 transition-all duration-300 group-hover:scale-110 group-hover:bg-indigo-100">
                                     <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
                                         <circle cx="9" cy="7" r="4"/>
@@ -75,14 +112,16 @@
 
                         <div class="mt-6 pt-4 border-t border-slate-50 flex items-center justify-between text-xs">
                             <span class="text-slate-400">Siswa inkubasi aktif</span>
-                            <a href="/pages/Admin/Siswa.html" class="font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-1">
-                                Lihat Data &rarr;
+                            <a href="/pages/Admin/Siswa.html"
+                               class="font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-1 transition-all duration-300 hover:gap-2 group/link">
+                                Lihat Data
+                                <span class="inline-block transition-transform duration-300 group-hover/link:translate-x-1">&rarr;</span>
                             </a>
                         </div>
                     </div>
 
                     <!-- Total Mentor -->
-                    <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm relative overflow-hidden flex flex-col justify-between">
+                    <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm relative overflow-hidden flex flex-col justify-between transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-lg hover:border-blue-100">
                         <div>
                             <div class="flex items-center justify-between mb-4">
                                 <div class="w-12 h-12 rounded-2xl bg-purple-50 flex items-center justify-center text-purple-600">
@@ -99,14 +138,16 @@
 
                         <div class="mt-6 pt-4 border-t border-slate-50 flex items-center justify-between text-xs">
                             <span class="text-slate-400">Mentor tersertifikasi</span>
-                            <a href="/pages/Admin/Mentor.html" class="font-bold text-purple-600 hover:text-purple-700 flex items-center gap-1">
-                                Kelola Mentor &rarr;
+                            <a href="/pages/Admin/Mentor.html"
+                               class="font-bold text-purple-600 hover:text-purple-700 flex items-center gap-1 transition-all duration-300 hover:gap-2 group/link">
+                                Kelola Mentor
+                                <span class="inline-block transition-transform duration-300 group-hover/link:translate-x-1">&rarr;</span>
                             </a>
                         </div>
                     </div>
 
                     <!-- Total Program -->
-                    <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm relative overflow-hidden flex flex-col justify-between">
+                    <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm relative overflow-hidden flex flex-col justify-between transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-lg hover:border-blue-100">
                         <div>
                             <div class="flex items-center justify-between mb-4">
                                 <div class="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600">
@@ -125,74 +166,66 @@
 
                         <div class="mt-6 pt-4 border-t border-slate-50 flex items-center justify-between text-xs">
                             <span class="text-slate-400">Kurikulum inkubasi terdaftar</span>
-                            <a href="/pages/Admin/Program.html" class="font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1">
-                                Kelola Program &rarr;
+                            <a href="/pages/Admin/Program.html"
+                               class="font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1 transition-all duration-300 hover:gap-2 group/link">
+                                Kelola Program
+                                <span class="inline-block transition-transform duration-300 group-hover/link:translate-x-1">&rarr;</span>
                             </a>
                         </div>
                     </div>
 
                 </div>
 
-                <!-- Bagian Bawah: Grafik dan Program -->
+                <!-- Bagian Bawah: Aktivitas Terakhir dan Program -->
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-                    <!-- Grafik Aktivitas -->
-                    <div class="lg:col-span-2 bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between">
-
-                        <div class="flex items-center justify-between mb-6">
-                            <div>
-                                <h3 class="font-bold text-slate-800 text-base">
-                                    Aktivitas Program (7 Hari Terakhir)
-                                </h3>
-
-                                <p class="text-xs text-slate-400 mt-0.5">
-                                    Jumlah presensi hadir dan pengumpulan Daily Report
-                                </p>
-                            </div>
-
-                            <div class="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-100 text-xs text-slate-600 font-medium">
-                                <span class="w-2 h-2 rounded-full bg-blue-600"></span>
-                                Total Aktivitas
-                            </div>
-                        </div>
-
-                        <!-- Grafik Batang dari Database -->
-                        <div
-                            id="grafikAktivitasDashboard"
-                            class="h-56 flex items-end justify-between gap-3 px-4 pt-8 pb-2 border-b border-slate-100"
-                        >
-                            <p class="w-full text-center text-xs text-slate-400">
-                                Memuat data aktivitas...
+                
+                    <!-- Aktivitas Terakhir -->
+                    <div class="lg:col-span-2 bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col transition-all duration-300 hover:shadow-md hover:border-blue-100">
+                    
+                        <div class="mb-5">
+                            <h3 class="font-bold text-slate-800 text-base">
+                                Aktivitas Terakhir
+                            </h3>
+                        
+                            <p class="text-xs text-slate-400 mt-0.5">
+                                Aktivitas terbaru yang terjadi pada sistem SI-IN
                             </p>
                         </div>
-
-                        <!-- Informasi Aktivitas -->
-                        <div class="mt-4 flex items-center justify-between text-xs bg-slate-50 p-3 rounded-xl border border-slate-100">
-                            <span id="totalAktivitasDashboard" class="text-slate-600">
-                                Menghitung total aktivitas...
+                    
+                        <!-- Daftar Aktivitas -->
+                        <div id="aktivitasTerakhirDashboard" class="space-y-4 flex-1">
+                            <p class="text-xs text-slate-400 text-center py-8">
+                                Memuat aktivitas...
+                            </p>
+                        </div>
+                    
+                        <!-- Informasi -->
+                        <div class="mt-5 flex items-center justify-between text-xs bg-slate-50 p-3 rounded-xl border border-slate-100">
+                            <span class="text-slate-600">
+                                Menampilkan aktivitas terbaru
                             </span>
-
+                        
                             <span class="text-[11px] text-slate-400">
-                                7 hari terakhir
+                                Maks. 5 aktivitas
                             </span>
                         </div>
-
+                    
                     </div>
-
+                
                     <!-- Program Tersedia -->
-                    <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between">
-
+                    <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between transition-all duration-300 hover:shadow-md hover:border-blue-100">
+                    
                         <div>
                             <div class="flex items-center justify-between mb-4">
                                 <h3 class="font-bold text-slate-800 text-base">
                                     Program Tersedia
                                 </h3>
-
+                            
                                 <span id="jumlahProgramDashboard" class="bg-blue-50 text-blue-600 px-2.5 py-0.5 rounded-full text-[10px] font-bold">
                                     0 Program
                                 </span>
                             </div>
-
+                        
                             <!-- Daftar Program dari Database -->
                             <div id="daftarProgramDashboard" class="space-y-3">
                                 <p class="text-xs text-slate-400 text-center py-4">
@@ -200,16 +233,16 @@
                                 </p>
                             </div>
                         </div>
-
+                    
                         <!-- Tombol Tambah Program -->
                         <a href="/pages/Admin/Program.html"
-                           class="mt-6 w-full py-3 text-white rounded-xl text-xs font-semibold shadow-md shadow-blue-600/20 transition hover:opacity-95 flex items-center justify-center gap-1.5 text-center"
+                           class="mt-6 w-full py-3 text-white rounded-xl text-xs font-semibold shadow-md shadow-blue-600/20 transition-all duration-300 hover:shadow-lg hover:shadow-blue-600/30 hover:-translate-y-0.5 active:scale-[0.98] flex items-center justify-center gap-1.5 text-center"
                            style="background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%) !important;">
                             <span>+</span> Tambah Program Baru
                         </a>
-
+                    
                     </div>
-
+                
                 </div>
 
             </main>
